@@ -1,0 +1,579 @@
+[
+    {
+        "outputFile": "C:\\Users\\SND\\AndroidStudioProjects\\Dheket\\app\\build\\intermediates\\res\\merged\\debug\\values-af\\values-af.xml",
+        "map": [
+            {
+                "to": {
+                    "startLine": 2,
+                    "startColumn": 4,
+                    "startOffset": 55,
+                    "endColumn": 103,
+                    "endOffset": 154
+                },
+                "from": {
+                    "file": "C:\\Users\\SND\\AndroidStudioProjects\\Dheket\\app\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\22.2.1\\res\\values-af\\values-af.xml",
+                    "position": {
+                        "startLine": 4,
+                        "startColumn": 4,
+                        "startOffset": 291,
+                        "endColumn": 103,
+                        "endOffset": 390
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 3,
+                    "startColumn": 4,
+                    "startOffset": 159,
+                    "endColumn": 99,
+                    "endOffset": 254
+                },
+                "from": {
+                    "file": "C:\\Users\\SND\\AndroidStudioProjects\\Dheket\\app\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\22.2.1\\res\\values-af\\values-af.xml",
+                    "position": {
+                        "startLine": 5,
+                        "startColumn": 4,
+                        "startOffset": 395,
+                        "endColumn": 99,
+                        "endOffset": 490
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 4,
+                    "startColumn": 4,
+                    "startOffset": 259,
+                    "endColumn": 105,
+                    "endOffset": 360
+                },
+                "from": {
+                    "file": "C:\\Users\\SND\\AndroidStudioProjects\\Dheket\\app\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\22.2.1\\res\\values-af\\values-af.xml",
+                    "position": {
+                        "startLine": 6,
+                        "startColumn": 4,
+                        "startOffset": 495,
+                        "endColumn": 105,
+                        "endOffset": 596
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 5,
+                    "startColumn": 4,
+                    "startOffset": 365,
+                    "endColumn": 84,
+                    "endOffset": 445
+                },
+                "from": {
+                    "file": "C:\\Users\\SND\\AndroidStudioProjects\\Dheket\\app\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\22.2.1\\res\\values-af\\values-af.xml",
+                    "position": {
+                        "startLine": 7,
+                        "startColumn": 4,
+                        "startOffset": 601,
+                        "endColumn": 84,
+                        "endOffset": 681
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 6,
+                    "startColumn": 4,
+                    "startOffset": 450,
+                    "endColumn": 102,
+                    "endOffset": 548
+                },
+                "from": {
+                    "file": "C:\\Users\\SND\\AndroidStudioProjects\\Dheket\\app\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\22.2.1\\res\\values-af\\values-af.xml",
+                    "position": {
+                        "startLine": 8,
+                        "startColumn": 4,
+                        "startOffset": 686,
+                        "endColumn": 102,
+                        "endOffset": 784
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 7,
+                    "startColumn": 4,
+                    "startOffset": 553,
+                    "endColumn": 117,
+                    "endOffset": 666
+                },
+                "from": {
+                    "file": "C:\\Users\\SND\\AndroidStudioProjects\\Dheket\\app\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\22.2.1\\res\\values-af\\values-af.xml",
+                    "position": {
+                        "startLine": 9,
+                        "startColumn": 4,
+                        "startOffset": 789,
+                        "endColumn": 117,
+                        "endOffset": 902
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 8,
+                    "startColumn": 4,
+                    "startOffset": 671,
+                    "endColumn": 106,
+                    "endOffset": 773
+                },
+                "from": {
+                    "file": "C:\\Users\\SND\\AndroidStudioProjects\\Dheket\\app\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\22.2.1\\res\\values-af\\values-af.xml",
+                    "position": {
+                        "startLine": 10,
+                        "startColumn": 4,
+                        "startOffset": 907,
+                        "endColumn": 106,
+                        "endOffset": 1009
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 9,
+                    "startColumn": 4,
+                    "startOffset": 778,
+                    "endColumn": 102,
+                    "endOffset": 876
+                },
+                "from": {
+                    "file": "C:\\Users\\SND\\AndroidStudioProjects\\Dheket\\app\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\22.2.1\\res\\values-af\\values-af.xml",
+                    "position": {
+                        "startLine": 11,
+                        "startColumn": 4,
+                        "startOffset": 1014,
+                        "endColumn": 102,
+                        "endOffset": 1112
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 10,
+                    "startColumn": 4,
+                    "startOffset": 881,
+                    "endColumn": 96,
+                    "endOffset": 973
+                },
+                "from": {
+                    "file": "C:\\Users\\SND\\AndroidStudioProjects\\Dheket\\app\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\22.2.1\\res\\values-af\\values-af.xml",
+                    "position": {
+                        "startLine": 12,
+                        "startColumn": 4,
+                        "startOffset": 1117,
+                        "endColumn": 96,
+                        "endOffset": 1209
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 11,
+                    "startColumn": 4,
+                    "startOffset": 978,
+                    "endColumn": 107,
+                    "endOffset": 1081
+                },
+                "from": {
+                    "file": "C:\\Users\\SND\\AndroidStudioProjects\\Dheket\\app\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\22.2.1\\res\\values-af\\values-af.xml",
+                    "position": {
+                        "startLine": 13,
+                        "startColumn": 4,
+                        "startOffset": 1214,
+                        "endColumn": 107,
+                        "endOffset": 1317
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 12,
+                    "startColumn": 4,
+                    "startOffset": 1086,
+                    "endColumn": 101,
+                    "endOffset": 1183
+                },
+                "from": {
+                    "file": "C:\\Users\\SND\\AndroidStudioProjects\\Dheket\\app\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\22.2.1\\res\\values-af\\values-af.xml",
+                    "position": {
+                        "startLine": 14,
+                        "startColumn": 4,
+                        "startOffset": 1322,
+                        "endColumn": 101,
+                        "endOffset": 1419
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 13,
+                    "startColumn": 4,
+                    "startOffset": 1188,
+                    "endColumn": 101,
+                    "endOffset": 1285
+                },
+                "from": {
+                    "file": "C:\\Users\\SND\\AndroidStudioProjects\\Dheket\\app\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\22.2.1\\res\\values-af\\values-af.xml",
+                    "position": {
+                        "startLine": 15,
+                        "startColumn": 4,
+                        "startOffset": 1424,
+                        "endColumn": 101,
+                        "endOffset": 1521
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 14,
+                    "startColumn": 4,
+                    "startOffset": 1290,
+                    "endColumn": 116,
+                    "endOffset": 1402
+                },
+                "from": {
+                    "file": "C:\\Users\\SND\\AndroidStudioProjects\\Dheket\\app\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\22.2.1\\res\\values-af\\values-af.xml",
+                    "position": {
+                        "startLine": 16,
+                        "startColumn": 4,
+                        "startOffset": 1526,
+                        "endColumn": 116,
+                        "endOffset": 1638
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 15,
+                    "startColumn": 4,
+                    "startOffset": 1407,
+                    "endLine": 16,
+                    "endColumn": 23,
+                    "endOffset": 1522
+                },
+                "from": {
+                    "file": "C:\\Users\\SND\\AndroidStudioProjects\\Dheket\\app\\build\\intermediates\\exploded-aar\\com.facebook.android\\facebook-android-sdk\\4.6.0\\res\\values-af\\values-af.xml",
+                    "position": {
+                        "startLine": 4,
+                        "startColumn": 4,
+                        "startOffset": 161,
+                        "endLine": 5,
+                        "endColumn": 23,
+                        "endOffset": 276
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 17,
+                    "startColumn": 4,
+                    "startOffset": 1527,
+                    "endColumn": 124,
+                    "endOffset": 1647
+                },
+                "from": {
+                    "file": "C:\\Users\\SND\\AndroidStudioProjects\\Dheket\\app\\build\\intermediates\\exploded-aar\\com.facebook.android\\facebook-android-sdk\\4.6.0\\res\\values-af\\values-af.xml",
+                    "position": {
+                        "startLine": 6,
+                        "startColumn": 4,
+                        "startOffset": 281,
+                        "endColumn": 124,
+                        "endOffset": 401
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 18,
+                    "startColumn": 4,
+                    "startOffset": 1652,
+                    "endColumn": 93,
+                    "endOffset": 1741
+                },
+                "from": {
+                    "file": "C:\\Users\\SND\\AndroidStudioProjects\\Dheket\\app\\build\\intermediates\\exploded-aar\\com.facebook.android\\facebook-android-sdk\\4.6.0\\res\\values-af\\values-af.xml",
+                    "position": {
+                        "startLine": 7,
+                        "startColumn": 4,
+                        "startOffset": 406,
+                        "endColumn": 93,
+                        "endOffset": 495
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 19,
+                    "startColumn": 4,
+                    "startOffset": 1746,
+                    "endColumn": 66,
+                    "endOffset": 1808
+                },
+                "from": {
+                    "file": "C:\\Users\\SND\\AndroidStudioProjects\\Dheket\\app\\build\\intermediates\\exploded-aar\\com.facebook.android\\facebook-android-sdk\\4.6.0\\res\\values-af\\values-af.xml",
+                    "position": {
+                        "startLine": 8,
+                        "startColumn": 4,
+                        "startOffset": 500,
+                        "endColumn": 66,
+                        "endOffset": 562
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 20,
+                    "startColumn": 4,
+                    "startOffset": 1813,
+                    "endColumn": 70,
+                    "endOffset": 1879
+                },
+                "from": {
+                    "file": "C:\\Users\\SND\\AndroidStudioProjects\\Dheket\\app\\build\\intermediates\\exploded-aar\\com.facebook.android\\facebook-android-sdk\\4.6.0\\res\\values-af\\values-af.xml",
+                    "position": {
+                        "startLine": 9,
+                        "startColumn": 4,
+                        "startOffset": 567,
+                        "endColumn": 70,
+                        "endOffset": 633
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 21,
+                    "startColumn": 4,
+                    "startOffset": 1884,
+                    "endColumn": 61,
+                    "endOffset": 1941
+                },
+                "from": {
+                    "file": "C:\\Users\\SND\\AndroidStudioProjects\\Dheket\\app\\build\\intermediates\\exploded-aar\\com.facebook.android\\facebook-android-sdk\\4.6.0\\res\\values-af\\values-af.xml",
+                    "position": {
+                        "startLine": 10,
+                        "startColumn": 4,
+                        "startOffset": 638,
+                        "endColumn": 61,
+                        "endOffset": 695
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 22,
+                    "startColumn": 4,
+                    "startOffset": 1946,
+                    "endColumn": 75,
+                    "endOffset": 2017
+                },
+                "from": {
+                    "file": "C:\\Users\\SND\\AndroidStudioProjects\\Dheket\\app\\build\\intermediates\\exploded-aar\\com.facebook.android\\facebook-android-sdk\\4.6.0\\res\\values-af\\values-af.xml",
+                    "position": {
+                        "startLine": 11,
+                        "startColumn": 4,
+                        "startOffset": 700,
+                        "endColumn": 75,
+                        "endOffset": 771
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 23,
+                    "startColumn": 4,
+                    "startOffset": 2022,
+                    "endColumn": 73,
+                    "endOffset": 2091
+                },
+                "from": {
+                    "file": "C:\\Users\\SND\\AndroidStudioProjects\\Dheket\\app\\build\\intermediates\\exploded-aar\\com.facebook.android\\facebook-android-sdk\\4.6.0\\res\\values-af\\values-af.xml",
+                    "position": {
+                        "startLine": 12,
+                        "startColumn": 4,
+                        "startOffset": 776,
+                        "endColumn": 73,
+                        "endOffset": 845
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 24,
+                    "startColumn": 4,
+                    "startOffset": 2096,
+                    "endColumn": 91,
+                    "endOffset": 2183
+                },
+                "from": {
+                    "file": "C:\\Users\\SND\\AndroidStudioProjects\\Dheket\\app\\build\\intermediates\\exploded-aar\\com.facebook.android\\facebook-android-sdk\\4.6.0\\res\\values-af\\values-af.xml",
+                    "position": {
+                        "startLine": 13,
+                        "startColumn": 4,
+                        "startOffset": 850,
+                        "endColumn": 91,
+                        "endOffset": 937
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 25,
+                    "startColumn": 4,
+                    "startOffset": 2188,
+                    "endColumn": 73,
+                    "endOffset": 2257
+                },
+                "from": {
+                    "file": "C:\\Users\\SND\\AndroidStudioProjects\\Dheket\\app\\build\\intermediates\\exploded-aar\\com.facebook.android\\facebook-android-sdk\\4.6.0\\res\\values-af\\values-af.xml",
+                    "position": {
+                        "startLine": 14,
+                        "startColumn": 4,
+                        "startOffset": 942,
+                        "endColumn": 73,
+                        "endOffset": 1011
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 26,
+                    "startColumn": 4,
+                    "startOffset": 2262,
+                    "endColumn": 73,
+                    "endOffset": 2331
+                },
+                "from": {
+                    "file": "C:\\Users\\SND\\AndroidStudioProjects\\Dheket\\app\\build\\intermediates\\exploded-aar\\com.facebook.android\\facebook-android-sdk\\4.6.0\\res\\values-af\\values-af.xml",
+                    "position": {
+                        "startLine": 15,
+                        "startColumn": 4,
+                        "startOffset": 1016,
+                        "endColumn": 73,
+                        "endOffset": 1085
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 27,
+                    "startColumn": 4,
+                    "startOffset": 2336,
+                    "endColumn": 82,
+                    "endOffset": 2414
+                },
+                "from": {
+                    "file": "C:\\Users\\SND\\AndroidStudioProjects\\Dheket\\app\\build\\intermediates\\exploded-aar\\com.facebook.android\\facebook-android-sdk\\4.6.0\\res\\values-af\\values-af.xml",
+                    "position": {
+                        "startLine": 16,
+                        "startColumn": 4,
+                        "startOffset": 1090,
+                        "endColumn": 82,
+                        "endOffset": 1168
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 28,
+                    "startColumn": 4,
+                    "startOffset": 2419,
+                    "endColumn": 98,
+                    "endOffset": 2513
+                },
+                "from": {
+                    "file": "C:\\Users\\SND\\AndroidStudioProjects\\Dheket\\app\\build\\intermediates\\exploded-aar\\com.facebook.android\\facebook-android-sdk\\4.6.0\\res\\values-af\\values-af.xml",
+                    "position": {
+                        "startLine": 17,
+                        "startColumn": 4,
+                        "startOffset": 1173,
+                        "endColumn": 98,
+                        "endOffset": 1267
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 29,
+                    "startColumn": 4,
+                    "startOffset": 2518,
+                    "endColumn": 63,
+                    "endOffset": 2577
+                },
+                "from": {
+                    "file": "C:\\Users\\SND\\AndroidStudioProjects\\Dheket\\app\\build\\intermediates\\exploded-aar\\com.facebook.android\\facebook-android-sdk\\4.6.0\\res\\values-af\\values-af.xml",
+                    "position": {
+                        "startLine": 18,
+                        "startColumn": 4,
+                        "startOffset": 1272,
+                        "endColumn": 63,
+                        "endOffset": 1331
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 30,
+                    "startColumn": 4,
+                    "startOffset": 2582,
+                    "endColumn": 63,
+                    "endOffset": 2641
+                },
+                "from": {
+                    "file": "C:\\Users\\SND\\AndroidStudioProjects\\Dheket\\app\\build\\intermediates\\exploded-aar\\com.facebook.android\\facebook-android-sdk\\4.6.0\\res\\values-af\\values-af.xml",
+                    "position": {
+                        "startLine": 19,
+                        "startColumn": 4,
+                        "startOffset": 1336,
+                        "endColumn": 63,
+                        "endOffset": 1395
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 31,
+                    "startColumn": 4,
+                    "startOffset": 2646,
+                    "endColumn": 131,
+                    "endOffset": 2773
+                },
+                "from": {
+                    "file": "C:\\Users\\SND\\AndroidStudioProjects\\Dheket\\app\\build\\intermediates\\exploded-aar\\com.facebook.android\\facebook-android-sdk\\4.6.0\\res\\values-af\\values-af.xml",
+                    "position": {
+                        "startLine": 20,
+                        "startColumn": 4,
+                        "startOffset": 1400,
+                        "endColumn": 131,
+                        "endOffset": 1527
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 32,
+                    "startColumn": 4,
+                    "startOffset": 2778,
+                    "endColumn": 60,
+                    "endOffset": 2834
+                },
+                "from": {
+                    "file": "C:\\Users\\SND\\AndroidStudioProjects\\Dheket\\app\\build\\intermediates\\exploded-aar\\com.facebook.android\\facebook-android-sdk\\4.6.0\\res\\values-af\\values-af.xml",
+                    "position": {
+                        "startLine": 23,
+                        "startColumn": 4,
+                        "startOffset": 1655,
+                        "endColumn": 60,
+                        "endOffset": 1711
+                    }
+                }
+            }
+        ]
+    }
+]
