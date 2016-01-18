@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
+import com.facebook.AccessToken;
+import com.facebook.FacebookSdk;
+
 /**
  * Created by SND on 18/01/2016.
  */
@@ -16,23 +19,20 @@ public class SplashScreenActivity extends Activity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        FacebookSdk.sdkInitialize(getApplicationContext());
 
         new Handler().postDelayed(new Runnable() {
-
-         /*
-          * Showing splash screen with a timer. This will be useful when you
-          * want to show case your app logo / company
-          */
-
             @Override
             public void run() {
-                // This method will be executed once the timer is over
-                // Start your app main activity
-                Intent i = new Intent(SplashScreenActivity.this, FormLoginActivity.class);
-                startActivity(i);
-
-                // close this activity
-                finish();
+                if (AccessToken.getCurrentAccessToken() != null) {
+                    Intent loginWithFb = new Intent(SplashScreenActivity.this, MainMenuActivity.class);
+                    startActivity(loginWithFb);
+                    finish();
+                }else {
+                    Intent i = new Intent(SplashScreenActivity.this, FormLoginActivity.class);
+                    startActivity(i);
+                    finish();
+                }
             }
         }, SPLASH_TIME_OUT);
     }
