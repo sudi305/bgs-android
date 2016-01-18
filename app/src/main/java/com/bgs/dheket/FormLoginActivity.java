@@ -30,8 +30,11 @@ import com.facebook.share.widget.ShareDialog;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * Created by SND on 18/01/2016.
+ */
 
-public class FormLogin extends AppCompatActivity {
+public class FormLoginActivity extends AppCompatActivity {
     CallbackManager callbackManager;
     Button share,details,logout_button;
     ShareDialog shareDialog;
