@@ -21,6 +21,10 @@ android {
 
 repositories {
     mavenCentral()
+    jcenter()
+    maven {
+        url 'https://esri.bintray.com/arcgis'
+    }
 }
 
 dependencies {
@@ -28,4 +32,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:22.2.1'
     compile 'com.facebook.android:facebook-android-sdk:4.6.0'
+    compile 'com.esri.arcgis.android:arcgis-android:10.2.7'
 }

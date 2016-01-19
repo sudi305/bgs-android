@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Dheket</string>
     <string name="facebook_app_id">591231707696050</string>
+    <string name="logout">Log Out</string>
 </resources>
