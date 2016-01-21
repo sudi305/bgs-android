@@ -1,49 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".FormLoginActivity">
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageView"
-        android:layout_gravity="right" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/scrollView"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="1">
 
-    <com.facebook.login.widget.ProfilePictureView
-        android:id="@+id/picture"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:layout_width="200sp"
-        android:layout_height="200sp"/>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <com.facebook.login.widget.LoginButton
-        android:id="@+id/login_button"
-        android:layout_width="200sp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp" />
-    <Button
-        android:id="@+id/details"
-        android:text="Show details"
-        android:layout_gravity="center"
-        android:layout_width="200sp"
-        android:layout_marginBottom="20dp"
-        android:layout_height="wrap_content" />
-    <Button
-        android:id="@+id/share"
-        android:text="Share"
-        android:layout_gravity="center"
-        android:layout_width="200sp"
-        android:layout_height="wrap_content" />
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:layout_marginTop="10dp">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Log Out"
-        android:id="@+id/logout_button"
-        android:layout_gravity="center_horizontal" />
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_gravity="center_vertical"
+                    android:id="@+id/buble_rest">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="10"
+                        android:id="@+id/textView_total_rest"
+                        android:layout_gravity="center_horizontal"
+                        android:textStyle="bold" />
+
+                    <Button
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:textAllCaps="false"
+                        android:text="Restoran"
+                        android:id="@+id/btn_buble_rest"
+                        android:background="@drawable/buble"
+                        android:layout_gravity="center_horizontal"
+                        android:singleLine="true" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="Promo: 0"
+                        android:id="@+id/textView_promo_rest"
+                        android:layout_gravity="center_horizontal"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_gravity="center_vertical"
+                    android:id="@+id/buble_salon">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="7"
+                        android:id="@+id/textView_total_salon"
+                        android:layout_gravity="center_horizontal"
+                        android:textStyle="bold" />
+
+                    <Button
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:textAllCaps="false"
+                        android:text="Salon"
+                        android:id="@+id/btn_buble_salon"
+                        android:background="@drawable/buble"
+                        android:layout_gravity="center_horizontal"
+                        android:singleLine="true" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="Promo: 2"
+                        android:id="@+id/textView_promo_salon"
+                        android:layout_gravity="center_horizontal"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_gravity="center_vertical"
+                    android:id="@+id/buble_apotek">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="15"
+                        android:id="@+id/textView_total_apotek"
+                        android:layout_gravity="center_horizontal"
+                        android:textStyle="bold" />
+
+                    <Button
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:textAllCaps="false"
+                        android:text="Apotek"
+                        android:id="@+id/btn_buble_apotek"
+                        android:background="@drawable/buble"
+                        android:layout_gravity="center_horizontal"
+                        android:singleLine="true" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="Promo: 0"
+                        android:id="@+id/textView_promo_apotek"
+                        android:layout_gravity="center_horizontal"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="220dp"
+                android:layout_height="220dp"
+                android:layout_gravity="center_horizontal">
+
+                <ImageView
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:id="@+id/imageView_userProfile"
+                    android:layout_gravity="center"
+                    android:background="@drawable/ring"
+                    android:layout_weight="1" />
+
+                <com.bgs.common.ProfilePictureView_viaFB
+                    android:layout_width="195dp"
+                    android:layout_height="195dp"
+                    android:id="@+id/view_userProfile"
+                    android:layout_gravity="center" />
+
+                <TextView
+                    android:layout_width="200dp"
+                    android:layout_height="30dp"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="..."
+                    android:id="@+id/textView_usrNm"
+                    android:layout_gravity="center_horizontal|bottom"
+                    android:textAlignment="center"
+                    android:textStyle="bold"
+                    android:singleLine="true"
+                    android:background="@drawable/roundedbutton_square"
+                    android:textColor="#ffffff" />
+
+            </FrameLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:layout_marginBottom="10dp">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:id="@+id/buble_atm"
+                    android:layout_gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="8"
+                        android:id="@+id/textView_total_atm"
+                        android:layout_gravity="center_horizontal"
+                        android:textStyle="bold" />
+
+                    <Button
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:textAllCaps="false"
+                        android:text="ATM"
+                        android:id="@+id/btn_buble_atm"
+                        android:background="@drawable/buble"
+                        android:layout_gravity="center_horizontal"
+                        android:singleLine="true" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="Promo: 0"
+                        android:id="@+id/textView_promo_atm"
+                        android:layout_gravity="center_horizontal"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:id="@+id/buble_mart">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="5"
+                        android:id="@+id/textView_total_mart"
+                        android:layout_gravity="center_horizontal"
+                        android:textStyle="bold" />
+
+                    <Button
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:textAllCaps="false"
+                        android:text="Mart"
+                        android:id="@+id/btn_buble_mart"
+                        android:background="@drawable/buble"
+                        android:layout_gravity="center_horizontal"
+                        android:singleLine="true" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="Promo: 4"
+                        android:id="@+id/textView_promo_mart"
+                        android:layout_gravity="center_horizontal"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:textAllCaps="false"
+                android:text="Search"
+                android:id="@+id/btn_search"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/roundedbutton_square1"
+                android:textStyle="bold"
+                android:textColor="#5e5b5b" />
+
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

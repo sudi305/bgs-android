@@ -6,6 +6,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import com.bgs.common.RoundImage;
@@ -27,10 +29,15 @@ public class SplashScreenActivity extends Activity{
         setContentView(R.layout.activity_splash);
         FacebookSdk.sdkInitialize(getApplicationContext());
         imgLogo = (ImageView)findViewById(R.id.imgLogo);
+        final Animation animAlpha = AnimationUtils.loadAnimation(this, R.anim.anim_alpha);
+
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.logo);
         crop_image_circle = new RoundImage(bitmap);
         imgLogo.setImageDrawable(crop_image_circle);
         imgLogo.setScaleType(ImageView.ScaleType.CENTER);
+        imgLogo.setAnimation(animAlpha);
+
+
 
         new Handler().postDelayed(new Runnable() {
             @Override
