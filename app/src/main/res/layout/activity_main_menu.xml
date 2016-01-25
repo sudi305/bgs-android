@@ -29,23 +29,23 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_gravity="center_vertical"
-                    android:id="@+id/buble_rest">
+                    android:id="@+id/buble_cat1">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:text="10"
-                        android:id="@+id/textView_total_rest"
+                        android:id="@+id/textView_total_cat1"
                         android:layout_gravity="center_horizontal"
                         android:textStyle="bold" />
 
                     <Button
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
+                        android:layout_width="200px"
+                        android:layout_height="200px"
                         android:textAllCaps="false"
-                        android:text="Restoran"
-                        android:id="@+id/btn_buble_rest"
+                        android:text="@string/category1"
+                        android:id="@+id/btn_buble_cat1"
                         android:background="@drawable/buble"
                         android:layout_gravity="center_horizontal"
                         android:singleLine="true" />
@@ -55,7 +55,7 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:text="Promo: 0"
-                        android:id="@+id/textView_promo_rest"
+                        android:id="@+id/textView_promo_cat1"
                         android:layout_gravity="center_horizontal"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -66,23 +66,23 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_gravity="center_vertical"
-                    android:id="@+id/buble_salon">
+                    android:id="@+id/buble_cat2">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:text="7"
-                        android:id="@+id/textView_total_salon"
+                        android:id="@+id/textView_total_cat2"
                         android:layout_gravity="center_horizontal"
                         android:textStyle="bold" />
 
                     <Button
-                        android:layout_width="70dp"
-                        android:layout_height="70dp"
+                        android:layout_width="140px"
+                        android:layout_height="140px"
                         android:textAllCaps="false"
-                        android:text="Salon"
-                        android:id="@+id/btn_buble_salon"
+                        android:text="@string/category2"
+                        android:id="@+id/btn_buble_cat2"
                         android:background="@drawable/buble"
                         android:layout_gravity="center_horizontal"
                         android:singleLine="true" />
@@ -92,7 +92,7 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:text="Promo: 2"
-                        android:id="@+id/textView_promo_salon"
+                        android:id="@+id/textView_promo_cat2"
                         android:layout_gravity="center_horizontal"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -103,23 +103,23 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_gravity="center_vertical"
-                    android:id="@+id/buble_apotek">
+                    android:id="@+id/buble_cat3">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:text="15"
-                        android:id="@+id/textView_total_apotek"
+                        android:id="@+id/textView_total_cat3"
                         android:layout_gravity="center_horizontal"
                         android:textStyle="bold" />
 
                     <Button
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
+                        android:layout_width="200px"
+                        android:layout_height="200px"
                         android:textAllCaps="false"
-                        android:text="Apotek"
-                        android:id="@+id/btn_buble_apotek"
+                        android:text="@string/category3"
+                        android:id="@+id/btn_buble_cat3"
                         android:background="@drawable/buble"
                         android:layout_gravity="center_horizontal"
                         android:singleLine="true" />
@@ -129,7 +129,7 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:text="Promo: 0"
-                        android:id="@+id/textView_promo_apotek"
+                        android:id="@+id/textView_promo_cat3"
                         android:layout_gravity="center_horizontal"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -183,7 +183,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:id="@+id/buble_atm"
+                    android:id="@+id/buble_cat4"
                     android:layout_gravity="center_vertical">
 
                     <TextView
@@ -191,16 +191,16 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:text="8"
-                        android:id="@+id/textView_total_atm"
+                        android:id="@+id/textView_total_cat4"
                         android:layout_gravity="center_horizontal"
                         android:textStyle="bold" />
 
                     <Button
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
+                        android:layout_width="160px"
+                        android:layout_height="160px"
                         android:textAllCaps="false"
-                        android:text="ATM"
-                        android:id="@+id/btn_buble_atm"
+                        android:text="@string/category4"
+                        android:id="@+id/btn_buble_cat4"
                         android:background="@drawable/buble"
                         android:layout_gravity="center_horizontal"
                         android:singleLine="true" />
@@ -210,7 +210,7 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:text="Promo: 0"
-                        android:id="@+id/textView_promo_atm"
+                        android:id="@+id/textView_promo_cat4"
                         android:layout_gravity="center_horizontal"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -221,23 +221,23 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_weight="1"
-                    android:id="@+id/buble_mart">
+                    android:id="@+id/buble_cat5">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:text="5"
-                        android:id="@+id/textView_total_mart"
+                        android:id="@+id/textView_total_cat5"
                         android:layout_gravity="center_horizontal"
                         android:textStyle="bold" />
 
                     <Button
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
+                        android:layout_width="100px"
+                        android:layout_height="100px"
                         android:textAllCaps="false"
-                        android:text="Mart"
-                        android:id="@+id/btn_buble_mart"
+                        android:text="@string/category5"
+                        android:id="@+id/btn_buble_cat5"
                         android:background="@drawable/buble"
                         android:layout_gravity="center_horizontal"
                         android:singleLine="true" />
@@ -247,7 +247,7 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:text="Promo: 4"
-                        android:id="@+id/textView_promo_mart"
+                        android:id="@+id/textView_promo_cat5"
                         android:layout_gravity="center_horizontal"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -257,7 +257,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="34dp"
                 android:textAllCaps="false"
-                android:text="Search"
+                android:text="@string/search"
                 android:id="@+id/btn_search"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="10dp"

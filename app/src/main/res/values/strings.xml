@@ -1,5 +1,13 @@
 <resources>
     <string name="app_name">Dheket</string>
+    <string name="loading">Please wait...</string>
+    <string name="signUpEmail">Sign up with e-mail</string>
     <string name="facebook_app_id">591231707696050</string>
     <string name="logout">Log Out</string>
+    <string name="category1">Category 1</string>
+    <string name="category2">Category 2</string>
+    <string name="category3">Category 3</string>
+    <string name="category4">Category 4</string>
+    <string name="category5">Category 5</string>
+    <string name="search">Search</string>
 </resources>

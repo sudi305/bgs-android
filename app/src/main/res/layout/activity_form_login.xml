@@ -19,7 +19,7 @@
     <Button
         android:layout_width="200sp"
         android:layout_height="wrap_content"
-        android:text="Sign up with e-mail"
+        android:text="@string/signUpEmail"
         android:id="@+id/signup_button"
         android:layout_gravity="center_horizontal"
         android:textAllCaps="false"
