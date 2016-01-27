@@ -2,19 +2,16 @@ package com.bgs.dheket;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.ScaleDrawable;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.StrictMode;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.Log;
@@ -31,7 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bgs.common.ConfigInternetAndGPS;
-import com.bgs.common.Dialogs;
+import com.bgs.common.HttpGetOrPost;
 import com.bgs.common.ProfilePictureView_viaFB;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -40,18 +37,9 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 /**
  * Created by SND on 20/01/2016.
@@ -69,6 +57,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     Dialog details_dialog;
     TextView details_txt,textView_usrNm;
     ConfigInternetAndGPS checkInternetGPS;
+    HttpGetOrPost httpGetOrPost;
 
     private JSONObject jObject;
     private String jsonResult ="";
@@ -118,6 +107,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         details_dialog.setTitle("Details");
         details_txt = (TextView)details_dialog.findViewById(R.id.details);
         textView_usrNm = (TextView)findViewById(R.id.textView_usrNm);
+
+        updateData();
 
         LocationManager myLocationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         Criteria criteria = new Criteria();
@@ -280,65 +271,54 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     }
 
     /**
-     * Method untuk Mengirimkan data ke server
+     * Class CallWebPageTask untuk implementasi class AscyncTask
      */
-    public String getRequest(String Url){
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-        String sreq="";
-        HttpClient client = new DefaultHttpClient();
-        HttpGet request = new HttpGet(Url);
-        try{
-            HttpResponse response = client.execute(request);
-            sreq =setRequest(response);
+    private class CallWebPageTask extends AsyncTask<String, Void, String> {
 
-        }catch(Exception ex){
-            Toast.makeText(this,"Gagal "+sreq, Toast.LENGTH_SHORT).show();
-            Log.e("GAGAL",""+ex);
+        private ProgressDialog dialog;
+        protected Context applicationContext;
+
+        @Override
+        protected void onPreExecute() {
+            //this.dialog = ProgressDialog.show(applicationContext, "Login Process", "Please Wait...", true);
         }
-        return sreq;
-    }
 
-    /**
-     * Method untuk Menerima data dari server
-     */
-    public static String setRequest(HttpResponse response){
-        String result = "";
-        try{
-            InputStream in = response.getEntity().getContent();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            StringBuilder str = new StringBuilder();
-            String line = null;
-            while((line = reader.readLine()) != null){
-                str.append(line + "\n");
+        @Override
+        protected String doInBackground(String... urls) {
+            String response = "";
+            HttpGetOrPost httpGetOrPost = new HttpGetOrPost();
+            response = httpGetOrPost.getRequest(urls[0]);
+            try {
+                //simpan data dari web ke dalam array
+                JSONArray menuItemArray = null;
+                jObject = new JSONObject(response);
+                menuItemArray = jObject.getJSONArray("dheket_totLocation");
+                for (int i = 0; i < menuItemArray.length(); i++) {
+                    id_kategori[i] = menuItemArray.getJSONObject(i).getInt("id_category");
+                    nama_katagori[i] = menuItemArray.getJSONObject(i).getString("category_name").toString();
+                    lokasi[i] = menuItemArray.getJSONObject(i).getInt("total_location");
+                    promo[i] = menuItemArray.getJSONObject(i).getInt("total_promo");
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-            in.close();
-            result = str.toString();
-        }catch(Exception ex){
-            result = "Error";
+
+            return response;
         }
 
-        return result;
+        @Override
+        protected void onPostExecute(String result) {
+            //this.dialog.cancel();
+            updateData();
+        }
     }
 
     public void getDataCategory(double rad,double lat, double lng) {
-        Log.e("DHEKET ", url+"?rad="+rad+"&lat="+lat+"&lng="+lng);
-        try {
-            jsonResult = getRequest(url+"?rad="+rad+"&lat="+lat+"&lng="+lng);
-            jObject = new JSONObject(jsonResult);
-            JSONArray menuItemArray = jObject.getJSONArray("dheket_totLocation");
-            for (int i = 0; i < menuItemArray.length(); i++) {
-                id_kategori[i] = menuItemArray.getJSONObject(i).getInt("id_category");
-                nama_katagori[i] = menuItemArray.getJSONObject(i).getString("category_name").toString();
-                lokasi[i] = menuItemArray.getJSONObject(i).getInt("total_location");
-                promo[i] = menuItemArray.getJSONObject(i).getInt("total_promo");
-            }
-
-            Log.e("cek","SUKSES"+nama_katagori.length+"|");
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.e("cek","Error");
-        }
+        CallWebPageTask task = new CallWebPageTask();
+        task.applicationContext = MainMenuActivity.this;
+        String urls =url+"?rad="+rad+"&lat="+lat+"&lng="+lng;
+        Log.e("Sukses",urls);
+        task.execute(new String[]{urls});
     }
 
     public void updateData(){
@@ -382,11 +362,10 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     public void onLocationChanged(Location location) {
         latitude = location.getLatitude();
         longitude = location.getLongitude();
-        Toast.makeText(getApplicationContext(),"lat "+latitude+" | lgt "+longitude, Toast.LENGTH_LONG).show();
+        //Toast.makeText(getApplicationContext(),"lat "+latitude+" | lgt "+longitude, Toast.LENGTH_LONG).show();
         getDataCategory(radius, latitude, longitude);
         if (tambah==true)radius=radius+0.4;
         else radius=radius-0.4;
-        updateData();
     }
 
     @Override
