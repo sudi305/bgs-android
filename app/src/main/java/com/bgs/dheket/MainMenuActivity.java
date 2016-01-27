@@ -27,9 +27,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bgs.common.ConfigInternetAndGPS;
-import com.bgs.common.HttpGetOrPost;
-import com.bgs.common.ProfilePictureView_viaFB;
+import com.bgs.networkAndSensor.ConfigInternetAndGPS;
+import com.bgs.networkAndSensor.HttpGetOrPost;
+import com.bgs.imageOrView.ProfilePictureView_viaFB;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookSdk;
@@ -68,12 +68,21 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     String url = "http://dheket.esy.es/getLocationPromo.php";
 
     boolean tambah = true;
+    android.support.v7.app.ActionBar actionBar;
 
+    Intent goToScreen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
+        actionBar = getSupportActionBar();
+
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        //actionBar.setHomeAsUpIndicator(R.drawable.logo);
+        actionBar.setHomeButtonEnabled(true);
+
 
         FacebookSdk.sdkInitialize(getApplicationContext());
 
@@ -149,35 +158,35 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         btn_buble_cat1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                toListAndMapScreen();
             }
         });
 
         btn_buble_cat2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                toListAndMapScreen();
             }
         });
 
         btn_buble_cat3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                toListAndMapScreen();
             }
         });
 
         btn_buble_cat4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                toListAndMapScreen();
             }
         });
 
         btn_buble_cat5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                toListAndMapScreen();
             }
         });
 
@@ -190,6 +199,12 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 else tambah=true;
             }
         });
+    }
+
+    public void toListAndMapScreen(){
+        goToScreen = new Intent(MainMenuActivity.this,ListAndMapAllLocActivity.class);
+        startActivity(goToScreen);
+        finish();
     }
 
     public void RequestDataFromFB(){
@@ -231,6 +246,11 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return super.onOptionsItemSelected(item);
+        }
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_logout) {

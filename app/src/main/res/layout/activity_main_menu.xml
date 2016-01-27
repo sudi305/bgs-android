@@ -149,7 +149,7 @@
                     android:background="@drawable/ring"
                     android:layout_weight="1" />
 
-                <com.bgs.common.ProfilePictureView_viaFB
+                <com.bgs.imageOrView.ProfilePictureView_viaFB
                     android:layout_width="195dp"
                     android:layout_height="195dp"
                     android:id="@+id/view_userProfile"

@@ -10,7 +10,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
-import com.bgs.common.RoundImage;
+import com.bgs.imageOrView.RoundImage;
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
 
