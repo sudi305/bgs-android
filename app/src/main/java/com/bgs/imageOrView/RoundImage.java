@@ -20,8 +20,11 @@ public class RoundImage extends Drawable{
     private final RectF mRectF;
     private final int mBitmapWidth;
     private final int mBitmapHeight;
+    private final int oriBitWidth;
+    private final int oriBitHeight;
 
-    public RoundImage(Bitmap bitmap) {
+
+    public RoundImage(Bitmap bitmap,int wH) {
         mBitmap = bitmap;
         mRectF = new RectF();
         mPaint = new Paint();
@@ -30,8 +33,16 @@ public class RoundImage extends Drawable{
         final BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
         mPaint.setShader(shader);
 
-        mBitmapWidth = mBitmap.getWidth();
-        mBitmapHeight = mBitmap.getHeight();
+        oriBitHeight=mBitmap.getHeight();
+        oriBitWidth=mBitmap.getWidth();
+
+        if (oriBitHeight<wH || oriBitWidth<wH){
+            mBitmapWidth = wH;
+            mBitmapHeight = wH;
+        } else {
+            mBitmapWidth = mBitmap.getWidth();
+            mBitmapHeight = mBitmap.getHeight();
+        }
     }
 
     @Override

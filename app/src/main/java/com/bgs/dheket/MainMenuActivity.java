@@ -41,6 +41,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 /**
  * Created by SND on 20/01/2016.
  */
@@ -59,6 +62,11 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     ConfigInternetAndGPS checkInternetGPS;
     HttpGetOrPost httpGetOrPost;
 
+    LocationManager myLocationManager;
+    Criteria criteria;
+    String provider;
+    Location location;
+
     private JSONObject jObject;
     private String jsonResult ="";
     int[] promo=new int[5], lokasi =new int[5], id_kategori=new int[5];
@@ -71,6 +79,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     android.support.v7.app.ActionBar actionBar;
 
     Intent goToScreen;
+    NumberFormat formatter = new DecimalFormat("#0.000");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +91,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         actionBar.setDisplayHomeAsUpEnabled(true);
         //actionBar.setHomeAsUpIndicator(R.drawable.logo);
         actionBar.setHomeButtonEnabled(true);
+        actionBar.setTitle("Dheket");
+        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
 
 
         FacebookSdk.sdkInitialize(getApplicationContext());
@@ -118,16 +129,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         textView_usrNm = (TextView)findViewById(R.id.textView_usrNm);
 
         updateData();
-
-        LocationManager myLocationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        Criteria criteria = new Criteria();
-        String provider = myLocationManager.getBestProvider(criteria, true);
-        Location location = myLocationManager.getLastKnownLocation(provider);
-        if (location != null) {
-            onLocationChanged(location);
-        }
-        myLocationManager.requestLocationUpdates(provider, 20000, 0, this);
-
+        getServiceFromGPS();
 
         final Animation animTranslate = AnimationUtils.loadAnimation(this, R.anim.anim_translate);
         final Animation animScale = AnimationUtils.loadAnimation(this, R.anim.anim_scale);
@@ -158,35 +160,35 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         btn_buble_cat1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toListAndMapScreen();
+                toListAndMapScreen(id_kategori[0],radius,nama_katagori[0]);
             }
         });
 
         btn_buble_cat2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toListAndMapScreen();
+                toListAndMapScreen(id_kategori[1],radius,nama_katagori[1]);
             }
         });
 
         btn_buble_cat3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toListAndMapScreen();
+                toListAndMapScreen(id_kategori[2],radius,nama_katagori[2]);
             }
         });
 
         btn_buble_cat4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toListAndMapScreen();
+                toListAndMapScreen(id_kategori[3],radius,nama_katagori[3]);
             }
         });
 
         btn_buble_cat5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toListAndMapScreen();
+                toListAndMapScreen(id_kategori[4],radius,nama_katagori[4]);
             }
         });
 
@@ -201,8 +203,15 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         });
     }
 
-    public void toListAndMapScreen(){
+    public void toListAndMapScreen(int cat_id,double radius,String kategori){
         goToScreen = new Intent(MainMenuActivity.this,ListAndMapAllLocActivity.class);
+        Bundle paket = new Bundle();
+        paket.putInt("cat_id",cat_id);
+        paket.putString("kategori",kategori);
+        paket.putDouble("radius", radius);
+        paket.putDouble("latitude", latitude);
+        paket.putDouble("longitude",longitude);
+        goToScreen.putExtras(paket);
         startActivity(goToScreen);
         finish();
     }
@@ -281,9 +290,10 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     }
 
     public void resizeBuble(Button button, int lokasi){
-        if (lokasi<=5)lokasi=100;
-        else if (lokasi>5 && lokasi<11) lokasi=lokasi*20;
-        else if (lokasi>10)lokasi=200;
+        final float scale = getResources().getDisplayMetrics().density;
+        if (lokasi<=5)lokasi=(int)(50 * scale + 0.5f);
+        else if (lokasi>5 && lokasi<11) lokasi=(int)((lokasi*10) * scale + 0.5f);
+        else if (lokasi>10)lokasi=(int)(100 * scale + 0.5f);
         ViewGroup.LayoutParams params = button.getLayoutParams();
         params.width=lokasi;
         params.height=lokasi;
@@ -342,6 +352,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     }
 
     public void updateData(){
+        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius "+formatter.format(radius)+" Km</font>"));
         txt_tot_cat1.setText(""+lokasi[0]);
         String cat1 = "-";
         if (nama_katagori[0]!=null) cat1=nama_katagori[0];
@@ -383,9 +394,9 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         latitude = location.getLatitude();
         longitude = location.getLongitude();
         //Toast.makeText(getApplicationContext(),"lat "+latitude+" | lgt "+longitude, Toast.LENGTH_LONG).show();
-        getDataCategory(radius, latitude, longitude);
         if (tambah==true)radius=radius+0.4;
         else radius=radius-0.4;
+        getDataCategory(radius, latitude, longitude);
     }
 
     @Override
@@ -403,5 +414,16 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     public void onProviderDisabled(String provider) {
         String message = "GPS disabled";
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+    }
+
+    public void getServiceFromGPS(){
+        myLocationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        criteria = new Criteria();
+        provider = myLocationManager.getBestProvider(criteria, true);
+        location = myLocationManager.getLastKnownLocation(provider);
+        if (location != null) {
+            onLocationChanged(location);
+        }
+        myLocationManager.requestLocationUpdates(provider, 20000, 0, this);
     }
 }

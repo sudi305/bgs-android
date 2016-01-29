@@ -22,6 +22,7 @@ public class SplashScreenActivity extends Activity{
     private static int SPLASH_TIME_OUT = 3000;
     ImageView imgLogo;
     RoundImage crop_image_circle;
+    int wH_logo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,10 +32,13 @@ public class SplashScreenActivity extends Activity{
         imgLogo = (ImageView)findViewById(R.id.imgLogo);
         final Animation animAlpha = AnimationUtils.loadAnimation(this, R.anim.anim_alpha);
 
+        final float scale = getResources().getDisplayMetrics().density;
+        wH_logo = (int)(200 * scale + 0.5f);
+
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.logo);
-        crop_image_circle = new RoundImage(bitmap);
+        crop_image_circle = new RoundImage(bitmap,wH_logo);
         imgLogo.setImageDrawable(crop_image_circle);
-        imgLogo.setScaleType(ImageView.ScaleType.CENTER);
+        imgLogo.setScaleType(ImageView.ScaleType.CENTER_CROP);
         imgLogo.setAnimation(animAlpha);
 
 

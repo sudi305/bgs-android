@@ -41,8 +41,8 @@
                         android:textStyle="bold" />
 
                     <Button
-                        android:layout_width="200px"
-                        android:layout_height="200px"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
                         android:textAllCaps="false"
                         android:text="@string/category1"
                         android:id="@+id/btn_buble_cat1"
@@ -78,8 +78,8 @@
                         android:textStyle="bold" />
 
                     <Button
-                        android:layout_width="140px"
-                        android:layout_height="140px"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
                         android:textAllCaps="false"
                         android:text="@string/category2"
                         android:id="@+id/btn_buble_cat2"
@@ -115,8 +115,8 @@
                         android:textStyle="bold" />
 
                     <Button
-                        android:layout_width="200px"
-                        android:layout_height="200px"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
                         android:textAllCaps="false"
                         android:text="@string/category3"
                         android:id="@+id/btn_buble_cat3"
@@ -196,8 +196,8 @@
                         android:textStyle="bold" />
 
                     <Button
-                        android:layout_width="160px"
-                        android:layout_height="160px"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
                         android:textAllCaps="false"
                         android:text="@string/category4"
                         android:id="@+id/btn_buble_cat4"
@@ -233,8 +233,8 @@
                         android:textStyle="bold" />
 
                     <Button
-                        android:layout_width="100px"
-                        android:layout_height="100px"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
                         android:textAllCaps="false"
                         android:text="@string/category5"
                         android:id="@+id/btn_buble_cat5"

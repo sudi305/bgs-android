@@ -8,17 +8,23 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.bgs.imageOrView.PagerAdapter;
 import com.facebook.login.LoginManager;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 /**
  * Created by SND on 27/01/2016.
  */
 public class ListAndMapAllLocActivity extends AppCompatActivity {
     android.support.v7.app.ActionBar actionBar;
+    Bundle paket;
+    NumberFormat formatter = new DecimalFormat("#0.000");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +35,11 @@ public class ListAndMapAllLocActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         //actionBar.setHomeAsUpIndicator(R.drawable.logo);
         actionBar.setHomeButtonEnabled(true);
+        actionBar.setTitle("Nearby Locations");
+
+        paket = getIntent().getExtras();
+        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Category "+paket.getString("kategori")+" in Radius "
+                + formatter.format(paket.getDouble("radius")) + " Km</font>"));
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText("List"));
@@ -36,7 +47,8 @@ public class ListAndMapAllLocActivity extends AppCompatActivity {
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        final PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+        final PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount(),
+                paket.getInt("cat_id"), paket.getDouble("radius"), paket.getDouble("latitude"), paket.getDouble("longitude"));
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {

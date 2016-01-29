@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:baselineAligned="false"
+    android:weightSum="1"
+    android:gravity="top">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1">
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:id="@+id/imageView_backPic"
+                android:layout_gravity="center"
+                android:src="#5767be"
+                android:layout_margin="3px" />
+
+            <ImageView
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:id="@+id/imageView_loc_pic"
+                android:src="@drawable/small_logo"
+                android:scaleType="fitCenter"
+                android:layout_margin="5px"
+                android:layout_gravity="left" />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_gravity="left"
+            android:gravity="left|fill">
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Location Name"
+                android:id="@+id/textView_loc_name"
+                android:singleLine="true"
+                android:layout_gravity="center"
+                android:gravity="center_vertical|bottom"
+                android:textStyle="bold"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_weight="0.5"
+                android:layout_marginLeft="5px" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Location Address"
+                android:id="@+id/textView_loc_address"
+                android:singleLine="true"
+                android:layout_alignTop="@+id/imageView3"
+                android:layout_toRightOf="@+id/textView_distance"
+                android:layout_toEndOf="@+id/textView_distance"
+                android:layout_weight="0.2"
+                android:layout_marginLeft="5px"
+                android:gravity="top|center_vertical" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.3">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Promo or Not"
+                    android:id="@+id/textView_promo"
+                    android:layout_weight="1"
+                    android:gravity="top|left"
+                    android:textStyle="bold"
+                    android:layout_below="@+id/imageView3"
+                    android:layout_alignLeft="@+id/textView_loc_id"
+                    android:layout_alignStart="@+id/textView_loc_id"
+                    android:singleLine="true"
+                    android:layout_marginLeft="5px" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Distance in Km"
+                    android:id="@+id/textView_distance"
+                    android:layout_weight="1"
+                    android:singleLine="true"
+                    android:gravity="top|right"
+                    android:textStyle="bold"
+                    android:layout_below="@+id/textView_loc_id"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="-"
+                android:id="@+id/textView_loc_id"
+                android:visibility="gone"
+                android:layout_below="@+id/textView_loc_name"
+                android:background="#000000" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/imageView3"
+                android:src="@drawable/abc_ic_go_search_api_mtrl_alpha"
+                android:layout_below="@+id/textView_distance"
+                android:layout_toRightOf="@+id/textView_loc_id" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>
