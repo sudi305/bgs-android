@@ -2,7 +2,6 @@ package com.bgs.dheket;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -12,61 +11,109 @@ import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
+import com.bgs.common.JSONfunctions;
 import com.bgs.common.Utility;
-import com.bgs.networkAndSensor.HttpGetOrPost;
 import com.facebook.login.LoginManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /**
  * Created by SND on 01/02/2016.
  */
-public class SearchAllCategoryActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
-    android.support.v7.app.ActionBar actionBar;
-    Bundle paket;
-    //NumberFormat formatter = new DecimalFormat("#0.000");
-    Utility formatNumber = new Utility();
-    HttpGetOrPost httpGetOrPost;
+public class SearchAllCategoryActivity extends AppCompatActivity {
 
-    private JSONObject jObject;
-    private String jsonResult ="";
-    int[] id_kategori;
-    String[] nama_katagori,kategori_id;
-    double radius = 0.0;
-    double latitude, longitude;
-    String url = "http://dheket.esy.es/getAllCategory.php";
+    // Declare Variables
+    JSONObject jsonobject;
+    JSONArray jsonarray;
+    ListView listview;
+    ListViewAdapter adapter;
+    ProgressDialog mProgressDialog;
+    ArrayList<HashMap<String, String>> arraylist;
+    static String id_category = ""; //rank
+    static String category_name = "category_name"; //country
+    static String category_id = ""; //population
 
-    ListView listView_allCat;
-
+    boolean tambah = true;  // tombol back
+    android.support.v7.app.ActionBar actionBar;  // tombol back
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_list_map_all_location);
-        actionBar = getSupportActionBar();
-        actionBar.setDisplayShowHomeEnabled(true);
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        // Get the view from listview_main.xml
+        setContentView(R.layout.activity_search_all_category); //listview_main
+
+        actionBar = getSupportActionBar(); // tombol back
+
+        actionBar.setDisplayShowHomeEnabled(true); // tombol back
+        actionBar.setDisplayHomeAsUpEnabled(true); // tombol back
         //actionBar.setHomeAsUpIndicator(R.drawable.logo);
-        actionBar.setHomeButtonEnabled(true);
-        actionBar.setTitle("Dheket");
-
-        paket = getIntent().getExtras();
-        /*actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Category " + paket.getString("kategori") + " in Radius "
-                + formatter.format(paket.getDouble("radius")) + " Km</font>"));*/
-        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>All Category</font>"));
-
-        listView_allCat = (ListView)findViewById(R.id.listView_allcat);
-        //listView_allCat.setAdapter(new ArrayAdapter(this, android.R.layout.simple_list_item_1, nama_katagori));
-        getDataFromServer();
+        actionBar.setHomeButtonEnabled(true); // tombol back
+        actionBar.setTitle("Dheket"); // tombol back
+//        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
+        // Execute DownloadJSON AsyncTask
+        new DownloadJSON().execute();
     }
 
+    // DownloadJSON AsyncTask
+    private class DownloadJSON extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // Create a progressdialog
+            mProgressDialog = new ProgressDialog(SearchAllCategoryActivity.this);
+            // Set progressdialog title
+            mProgressDialog.setTitle("Dheket");
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            // Create an array
+            arraylist = new ArrayList<HashMap<String, String>>();
+            // Retrieve JSON Objects from the given URL address
+            jsonobject = JSONfunctions
+                    .getJSONfromURL("http://dheket.esy.es/getAllCategory.php");
+
+            try {
+                // Locate the array name in JSON
+                jsonarray = jsonobject.getJSONArray("dheket_allCat");  //world population
+
+                for (int i = 0; i < jsonarray.length(); i++) {
+                    HashMap<String, String> map = new HashMap<String, String>();
+                    jsonobject = jsonarray.getJSONObject(i);
+                    // Retrive JSON Objects
+                    map.put("id_category", jsonobject.getString("id_category")); // rank
+                    map.put("category_name", jsonobject.getString("category_name")); //country
+                    map.put("category_id", jsonobject.getString("category_id")); //population
+                    // Set the JSON Objects into the array
+                    arraylist.add(map);
+                }
+            } catch (JSONException e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void args) {
+            // Locate the listview in listview_main.xml
+            listview = (ListView) findViewById(R.id.listview);
+            // Pass the results into ListViewAdapter.java
+            adapter = new ListViewAdapter(SearchAllCategoryActivity.this, arraylist);
+            // Set the adapter ListView
+            listview.setAdapter(adapter);
+        }
+    }
+
+
+    ///
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -116,72 +163,12 @@ public class SearchAllCategoryActivity extends AppCompatActivity implements Adap
         builder.create().show();
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        final int selectId = id_kategori[position];
-        final String selectNameCat = nama_katagori[position];
-        final String selectCatId = kategori_id[position];
-        Toast.makeText(getApplicationContext(), "Id Cat : " + selectId + " | Cat Name : " + selectNameCat, Toast.LENGTH_LONG);
-        /*Intent i = new Intent(getApplicationContext(), SPBUDetail.class);
-        i.putExtra("id_cat", selectId);
-        i.putExtra("name_cat", selectNameCat);
-        i.putExtra("cat_id", selectCatId);
-        startActivity(i);*/
-    }
+    //hhuhjknjhkjh
 
-    public void getDataFromServer(){
-        CallWebPageTask task = new CallWebPageTask();
-        task.applicationContext = SearchAllCategoryActivity.this;
-        Log.e("Sukses", url);
-        task.execute(new String[]{url});
-    }
 
-    /**
-     * Class CallWebPageTask untuk implementasi class AscyncTask
-     */
-    private class CallWebPageTask extends AsyncTask<String, Void, String> {
 
-        private ProgressDialog dialog;
-        protected Context applicationContext;
 
-        @Override
-        protected void onPreExecute() {
-            this.dialog = ProgressDialog.show(applicationContext, "Getting Data From Server", "Please Wait...", true);
-        }
+   // public void updateData(){
 
-        @Override
-        protected String doInBackground(String... urls) {
-            String response = "";
-            httpGetOrPost = new HttpGetOrPost();
-            response = httpGetOrPost.getRequest(urls[0]);
-            try {
-                //simpan data dari web ke dalam array
-                JSONArray menuItemArray = null;
-                jObject = new JSONObject(response);
-                menuItemArray = jObject.getJSONArray("dheket_allCat");
-                id_kategori = new int[menuItemArray.length()];
-                nama_katagori = new String[menuItemArray.length()];
-                kategori_id = new String[menuItemArray.length()];
-                for (int i = 0; i < menuItemArray.length(); i++) {
-                    id_kategori[i] = menuItemArray.getJSONObject(i).getInt("id_category");
-                    nama_katagori[i] = menuItemArray.getJSONObject(i).getString("category_name").toString();
-                    kategori_id[i] = menuItemArray.getJSONObject(i).getString("category_id").toString();
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            return response;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            this.dialog.cancel();
-            updateData();
-        }
-    }
-
-    public void updateData(){
-
-    }
+   // }
 }

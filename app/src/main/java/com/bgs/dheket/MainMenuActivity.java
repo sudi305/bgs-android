@@ -198,12 +198,13 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             @Override
             public void onClick(View v) {
                 btn_search.setAnimation(animButtonPress);
-                btn_search.setText("Internet "+checkInternetGPS.isConnectingToInternet()+" | GPS "+checkInternetGPS.isGPSActived());
-                if (tambah==true)tambah=false;
-                else tambah=true;
-                /*Intent toSearch = new Intent(MainMenuActivity.this,SearchAllCategoryActivity.class);
+                
+               // btn_search.setText("Internet "+checkInternetGPS.isConnectingToInternet()+" | GPS "+checkInternetGPS.isGPSActived());
+               // if (tambah==true)tambah=false;
+               // else tambah=true;
+                Intent toSearch = new Intent(MainMenuActivity.this,SearchAllCategoryActivity.class);
                 startActivity(toSearch);
-                finish();*/
+                finish();
             }
         });
     }

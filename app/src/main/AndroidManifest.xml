@@ -41,6 +41,7 @@
         <activity android:name="com.bgs.dheket.ListAndMapAllLocActivity"/>
         <activity android:name="com.bgs.dheket.DetailLocationActivity"/>
         <activity android:name="com.bgs.dheket.SearchAllCategoryActivity"/>
+        <activity android:name="com.bgs.dheket.SearchView" />
 
     </application>
 
