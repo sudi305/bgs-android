@@ -49,6 +49,7 @@ public class CustomAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder listViewHolder;
+        isPromo = listStorage.get(position).getLoc_promo();
         if(convertView == null){
             listViewHolder = new ViewHolder();
             convertView = lInflater.inflate(R.layout.listview_modified, parent, false);
@@ -63,7 +64,6 @@ public class CustomAdapter extends BaseAdapter {
         }else{
             listViewHolder = (ViewHolder)convertView.getTag();
         }
-        isPromo = listStorage.get(position).getLoc_promo();
         if (isPromo==1)promo="Promo";
         else promo="-";
         listViewHolder.textView_loc_id.setText(""+listStorage.get(position).getId_loc());

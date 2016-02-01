@@ -85,10 +85,27 @@ public class TabFragmentList extends Fragment implements LocationListener {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // make Toast when click
                 int selectId = id_loc[position];
-                Intent i = new Intent(rootView.getContext(), DetailLocationActivity.class);
+                int selectPromo = loc_promo[position];
+                String selectNameLoc = loc_name[position];
+                String selectAddress = loc_address[position];
 
-                i.putExtra("id_loc", selectId);
+                Intent i = new Intent(rootView.getContext(), DetailLocationActivity.class);
+                Bundle paket = new Bundle();
+
+                paket.putInt("id_loc", selectId);
+                paket.putString("loc_name", selectNameLoc);
+                paket.putInt("loc_promo", selectPromo);
+                paket.putString("loc_address", selectAddress);
+                paket.putInt("cat_id", cat_id);
+                paket.putDouble("latitude",latitude);
+                paket.putDouble("longitude",longitude);
+                paket.putDouble("radius", radius);
+
                 Toast.makeText(rootView.getContext(), "Id Loc " + selectId, Toast.LENGTH_LONG).show();
+                i.putExtras(paket);
+                startActivity(i);
+                getActivity().finish();
+                //rootView.getContext().
             }
         });
         getServiceFromGPS();

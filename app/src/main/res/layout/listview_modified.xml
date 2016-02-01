@@ -128,12 +128,15 @@
                 android:background="#000000" />
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:id="@+id/imageView3"
                 android:src="@drawable/abc_ic_go_search_api_mtrl_alpha"
                 android:layout_below="@+id/textView_distance"
-                android:layout_toRightOf="@+id/textView_loc_id" />
+                android:layout_toRightOf="@+id/textView_loc_id"
+                android:background="@drawable/buble"
+                android:layout_marginTop="25dp"
+                android:layout_marginRight="5dp" />
         </LinearLayout>
     </LinearLayout>
 

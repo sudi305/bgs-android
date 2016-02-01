@@ -14,14 +14,16 @@ import com.bgs.extended.TabFragmentMap;
 public class PagerAdapter extends FragmentStatePagerAdapter {
     int mNumOfTabs,cat_id;
     double radius, latitude, longitude;
+    String kategori;
 
-    public PagerAdapter(FragmentManager fm, int NumOfTabs,int cat_id, double radius, double latitude, double longitude) {
+    public PagerAdapter(FragmentManager fm, int NumOfTabs,int cat_id, double radius, double latitude, double longitude, String kategori) {
         super(fm);
         this.mNumOfTabs = NumOfTabs;
         this.cat_id = cat_id;
         this.radius = radius;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.kategori = kategori;
     }
 
     @Override
@@ -35,6 +37,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
                 paket.putDouble("radius",radius);
                 paket.putDouble("latitude",latitude);
                 paket.putDouble("longitude",longitude);
+                paket.putString("kategori", kategori);
                 tab1.setArguments(paket);
                 return tab1;
             case 1:
