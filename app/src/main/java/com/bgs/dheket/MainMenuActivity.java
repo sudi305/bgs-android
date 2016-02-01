@@ -27,6 +27,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bgs.common.Utility;
 import com.bgs.networkAndSensor.ConfigInternetAndGPS;
 import com.bgs.networkAndSensor.HttpGetOrPost;
 import com.bgs.imageOrView.ProfilePictureView_viaFB;
@@ -79,7 +80,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     android.support.v7.app.ActionBar actionBar;
 
     Intent goToScreen;
-    NumberFormat formatter = new DecimalFormat("#0.000");
+    //NumberFormat formatter = new DecimalFormat("#0.000");
+    Utility formatNumber = new Utility();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,8 +94,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         //actionBar.setHomeAsUpIndicator(R.drawable.logo);
         actionBar.setHomeButtonEnabled(true);
         actionBar.setTitle("Dheket");
-        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
-
+//        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
+        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatNumber.changeFormatNumber(radius) + " Km</font>"));
 
         FacebookSdk.sdkInitialize(getApplicationContext());
 
@@ -199,6 +201,9 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 btn_search.setText("Internet "+checkInternetGPS.isConnectingToInternet()+" | GPS "+checkInternetGPS.isGPSActived());
                 if (tambah==true)tambah=false;
                 else tambah=true;
+                /*Intent toSearch = new Intent(MainMenuActivity.this,SearchAllCategoryActivity.class);
+                startActivity(toSearch);
+                finish();*/
             }
         });
     }
@@ -352,7 +357,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     }
 
     public void updateData(){
-        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius "+formatter.format(radius)+" Km</font>"));
+        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius "+formatNumber.changeFormatNumber(radius)+" Km</font>"));
         txt_tot_cat1.setText(""+lokasi[0]);
         String cat1 = "-";
         if (nama_katagori[0]!=null) cat1=nama_katagori[0];

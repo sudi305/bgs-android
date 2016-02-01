@@ -2,6 +2,7 @@ package com.bgs.extended;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -19,6 +20,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bgs.dheket.DetailLocationActivity;
 import com.bgs.dheket.ListAndMapAllLocActivity;
 import com.bgs.dheket.R;
 import com.bgs.imageOrView.CustomAdapter;
@@ -82,7 +84,11 @@ public class TabFragmentList extends Fragment implements LocationListener {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // make Toast when click
-                Toast.makeText(rootView.getContext(), "Position " + id, Toast.LENGTH_LONG).show();
+                int selectId = id_loc[position];
+                Intent i = new Intent(rootView.getContext(), DetailLocationActivity.class);
+
+                i.putExtra("id_loc", selectId);
+                Toast.makeText(rootView.getContext(), "Id Loc " + selectId, Toast.LENGTH_LONG).show();
             }
         });
         getServiceFromGPS();

@@ -12,6 +12,7 @@ import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.bgs.common.Utility;
 import com.bgs.imageOrView.PagerAdapter;
 import com.facebook.login.LoginManager;
 
@@ -24,7 +25,8 @@ import java.text.NumberFormat;
 public class ListAndMapAllLocActivity extends AppCompatActivity {
     android.support.v7.app.ActionBar actionBar;
     Bundle paket;
-    NumberFormat formatter = new DecimalFormat("#0.000");
+    //NumberFormat formatter = new DecimalFormat("#0.000");
+    Utility formatNumber = new Utility();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +40,10 @@ public class ListAndMapAllLocActivity extends AppCompatActivity {
         actionBar.setTitle("Nearby Locations");
 
         paket = getIntent().getExtras();
-        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Category "+paket.getString("kategori")+" in Radius "
-                + formatter.format(paket.getDouble("radius")) + " Km</font>"));
+        /*actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Category " + paket.getString("kategori") + " in Radius "
+                + formatter.format(paket.getDouble("radius")) + " Km</font>"));*/
+        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Category " + paket.getString("kategori") + " in Radius "
+                + formatNumber.changeFormatNumber(paket.getDouble("radius")) + " Km</font>"));
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText("List"));

@@ -11,6 +11,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bgs.common.Utility;
 import com.bgs.dheket.R;
 import com.bgs.model.ItemObjectCustomList;
 
@@ -24,7 +25,7 @@ import java.util.List;
 public class CustomAdapter extends BaseAdapter {
     private LayoutInflater lInflater;
     private List<ItemObjectCustomList> listStorage;
-    NumberFormat formatter = new DecimalFormat("#0.000");
+    //    NumberFormat formatter = new DecimalFormat("#0.000");
     int isPromo;
     String promo="-";
     RoundImage crop_image_circle, crop_image_circle_back;
@@ -69,7 +70,8 @@ public class CustomAdapter extends BaseAdapter {
         listViewHolder.textView_loc_name.setText(listStorage.get(position).getLoc_name());
         listViewHolder.textView_loc_address.setText(listStorage.get(position).getLoc_address());
         listViewHolder.textView_promo.setText(promo);
-        listViewHolder.textView_loc_distance.setText("" + formatter.format(listStorage.get(position).getLoc_distance()) + " Km");
+        Utility setNumber = new Utility();
+        listViewHolder.textView_loc_distance.setText("" + setNumber.changeFormatNumber(listStorage.get(position).getLoc_distance()) + " Km");
 
         final float scale = convertView.getResources().getDisplayMetrics().density;
         int wH_pic = (int)(60 * scale + 0.5f);
