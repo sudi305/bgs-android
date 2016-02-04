@@ -38,9 +38,9 @@ public class TabFragmentMap extends Fragment {
 
         //Retrieve the map and initial extent from XML layout
         mMapView = (MapView) rootView.findViewById(R.id.map);
-        mMapView.centerAndZoom(-9664114.480484284,3962469.970217699,10);
+        mMapView.centerAndZoom(-9664114.480484284, 3962469.970217699, 10);
 
-        mMapView.addLayer(new ArcGISTiledMapServiceLayer("http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer"));
+        mMapView.addLayer(new ArcGISTiledMapServiceLayer("http://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer"));
         Point p = new Point(-9664114.480484284,3962469.970217699); //Birmingham
         mMapView.setResolution(mMapView.getMinResolution());
 

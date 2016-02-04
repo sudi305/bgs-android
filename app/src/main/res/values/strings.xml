@@ -10,4 +10,5 @@
     <string name="category4">Category 4</string>
     <string name="category5">Category 5</string>
     <string name="search">Search</string>
+    <string name="user_instruction">Rotate the map using two fingers and a pinch gesture. Single tap to reset.</string>
 </resources>

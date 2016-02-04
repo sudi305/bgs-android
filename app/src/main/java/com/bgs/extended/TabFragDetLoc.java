@@ -15,14 +15,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bgs.common.Dialogs;
 import com.bgs.dheket.DetailLocationActivity;
 import com.bgs.dheket.R;
+import com.bgs.dheket.SingleMapLocationActivity;
 import com.bgs.imageOrView.CustomAdapter;
 import com.bgs.model.ItemObjectCustomList;
 import com.bgs.networkAndSensor.HttpGetOrPost;
@@ -43,12 +48,12 @@ public class TabFragDetLoc  extends Fragment implements LocationListener {
     private String jsonResult ="";
     View rootView;
     TextView textView_detLoc,textView_descLoc;
+    ImageButton imageButton_share, imageButton_map;
 
     int cat_id;
     double radius, latitude, longitude;
     String urls = "http://dheket.esy.es/getLocationByCategory.php";
     String parameters;
-    NumberFormat formatter = new DecimalFormat("#0.000");
 
     LocationManager myLocationManager;
     Criteria criteria;
@@ -62,6 +67,7 @@ public class TabFragDetLoc  extends Fragment implements LocationListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.tab_frag_detail_loc, container, false);
 
+        final Animation animButtonPress = AnimationUtils.loadAnimation(rootView.getContext(), R.anim.anim_scale_button_press);
         /*cat_id = getArguments().getInt("loc_id");
         radius = getArguments().getDouble("radius");
         latitude = getArguments().getDouble("latitude");
@@ -84,8 +90,25 @@ public class TabFragDetLoc  extends Fragment implements LocationListener {
                 "<sub>Distance From Current Location</sub><br>\n" +
                 "<br>\n" +
                 "</body>"));*/
-
+        imageButton_share = (ImageButton)rootView.findViewById(R.id.imageButton_share);
+        imageButton_map = (ImageButton)rootView.findViewById(R.id.imageButton_maps);
         getServiceFromGPS();
+
+        imageButton_share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imageButton_share.setAnimation(animButtonPress);
+                shareIt();
+            }
+        });
+
+        imageButton_map.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imageButton_map.setAnimation(animButtonPress);
+                gotoMap();
+            }
+        });
 
         return rootView;
     }
@@ -195,5 +218,20 @@ public class TabFragDetLoc  extends Fragment implements LocationListener {
 
     public void updateList() {
 
+    }
+
+    public void shareIt() {
+        //sharing implementation here
+        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+        sharingIntent.setType("text/plain");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Dheket");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, "Nearby location https://dheket.esy.es/ ");
+        startActivity(Intent.createChooser(sharingIntent, "Share via"));
+    }
+
+    public void gotoMap() {
+        Intent map = new Intent(rootView.getContext().getApplicationContext(), SingleMapLocationActivity.class);
+        startActivity(map);
+        getActivity().finish();
     }
 }
