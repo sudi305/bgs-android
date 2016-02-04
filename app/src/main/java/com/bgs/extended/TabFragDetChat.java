@@ -2,6 +2,7 @@ package com.bgs.extended;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -13,8 +14,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.Toast;
 
+import com.bgs.dheket.DetailLocationActivity;
 import com.bgs.dheket.R;
+import com.bgs.imageOrView.CustomAdapter;
+import com.bgs.imageOrView.CustomAdapterChat;
+import com.bgs.model.ItemObjectCustomList;
 import com.bgs.networkAndSensor.HttpGetOrPost;
 
 import org.json.JSONArray;
@@ -23,18 +32,30 @@ import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by SND on 01/02/2016.
  */
 public class TabFragDetChat extends Fragment implements LocationListener {
+    private ListView customListView;
+    List<ItemObjectCustomList> listViewItems;
     private JSONObject jObject;
     private String jsonResult ="";
     View rootView;
 
+    boolean isFirst = true;
+    boolean setUpdate = false;
+
+    String[] loc_name, loc_address,loc_pic;
+    int[] loc_promo,id_loc,temp_loc_promo,temp_id_loc;
+    double[] loc_distance, loc_lat, loc_lng, temp_loc_distance;
+    CallWebPageTask task;
+
     int cat_id;
-    double radius, latitude, longitude;
-    String urls = "http://dheket.esy.es/getLocationByCategory.php";
+    double radius,latitude,longitude;
+    String urls ="http://dheket.esy.es/getLocationByCategory.php";
     String parameters;
     NumberFormat formatter = new DecimalFormat("#0.000");
 
@@ -43,28 +64,60 @@ public class TabFragDetChat extends Fragment implements LocationListener {
     String provider;
     Location location;
 
-    CallWebPageTask task;
-    boolean isFirst=true;
+    CustomAdapter customAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.tab_frag_detail_chat, container, false);
 
-        /*cat_id = getArguments().getInt("loc_id");
+        cat_id = getArguments().getInt("cat_id");
         radius = getArguments().getDouble("radius");
         latitude = getArguments().getDouble("latitude");
-        longitude = getArguments().getDouble("longitude");*/
+        longitude = getArguments().getDouble("longitude");
+
+        customListView = (ListView)rootView.findViewById(R.id.listView_chat);
+        listViewItems = new ArrayList<ItemObjectCustomList>();
+        customAdapter = new CustomAdapter(rootView.getContext(),listViewItems);
+        customListView.setAdapter(new CustomAdapter(rootView.getContext(), listViewItems));
+        customListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // make Toast when click
+                int selectId = id_loc[position];
+                int selectPromo = loc_promo[position];
+                String selectNameLoc = loc_name[position];
+                String selectAddress = loc_address[position];
+
+                Intent i = new Intent(rootView.getContext(), DetailLocationActivity.class);
+                Bundle paket = new Bundle();
+
+                paket.putInt("id_loc", selectId);
+                paket.putString("loc_name", selectNameLoc);
+                paket.putInt("loc_promo", selectPromo);
+                paket.putString("loc_address", selectAddress);
+                paket.putInt("cat_id", cat_id);
+                paket.putDouble("latitude", latitude);
+                paket.putDouble("longitude", longitude);
+                paket.putDouble("radius", radius);
+
+                //Toast.makeText(rootView.getContext(), "Id Loc " + selectId, Toast.LENGTH_LONG).show();
+                i.putExtras(paket);
+                /*startActivity(i);
+                getActivity().finish();*/
+                //rootView.getContext().
+            }
+        });
 
         getServiceFromGPS();
 
         return rootView;
     }
 
-    public void getDataFromServer() {
-        Log.e("Sukses bro", "" + parameters);
+    public void getDataFromServer(){
+        Log.e("Sukses bro", ""+parameters);
         task = new CallWebPageTask();
         task.applicationContext = rootView.getContext();
-        parameters = urls + "?rad=" + radius + "&lat=" + latitude + "&lng=" + longitude + "&cat=" + cat_id;
+        parameters = urls+"?rad="+radius+"&lat="+latitude+"&lng="+longitude + "&cat=" + cat_id;
         //Log.e("Sukses", parameters);
         task.execute(new String[]{parameters});
     }
@@ -73,8 +126,8 @@ public class TabFragDetChat extends Fragment implements LocationListener {
     public void onLocationChanged(Location location) {
         latitude = location.getLatitude();
         longitude = location.getLongitude();
-        Log.e("ok 3", "sip " + isFirst);
-        if (isFirst == false) {
+        Log.e("ok 3","sip "+isFirst);
+        if (isFirst==false){
             getDataFromServer();
         }
     }
@@ -101,7 +154,7 @@ public class TabFragDetChat extends Fragment implements LocationListener {
 
         @Override
         protected void onPreExecute() {
-            if (isFirst == true) {
+            if (isFirst==true){
                 this.dialog = ProgressDialog.show(applicationContext, "Retrieving Data", "Please Wait...", true);
             }
         }
@@ -116,10 +169,26 @@ public class TabFragDetChat extends Fragment implements LocationListener {
                 JSONArray menuItemArray = null;
                 jObject = new JSONObject(response);
                 menuItemArray = jObject.getJSONArray("dheket_locByCat");
-                Log.e("cek 1", "" + menuItemArray);
+                id_loc = new int[menuItemArray.length()];
+                loc_name = new String[menuItemArray.length()];
+                loc_address = new String[menuItemArray.length()];
+                loc_promo = new int[menuItemArray.length()];
+                loc_distance = new double[menuItemArray.length()];
+                loc_pic = new String[menuItemArray.length()];
+                loc_lat = new double[menuItemArray.length()];
+                loc_lng = new double[menuItemArray.length()];
+                Log.e("cek 1",""+menuItemArray);
                 for (int i = 0; i < menuItemArray.length(); i++) {
                     //String id_loc, String loc_name, String loc_address, int loc_promo, double loc_distance, int loc_pic
                     //listViewItems.add(new ItemObjectCustomList(menuItemArray.getJSONObject(i).getInt("id_category")),menuItemArray.getJSONObject(i).getString("location_name").toString(),menuItemArray.getJSONObject(i).getString("location_address").toString(),menuItemArray.getJSONObject(i).getInt("isPromo"),menuItemArray.getJSONObject(i).getDouble("distance"),menuItemArray.getJSONObject(i).getString("photo").toString()));
+                    id_loc[i]=menuItemArray.getJSONObject(i).getInt("id_location");
+                    loc_name[i]=menuItemArray.getJSONObject(i).getString("location_name").toString();
+                    loc_address[i]=menuItemArray.getJSONObject(i).getString("location_address").toString();
+                    loc_promo[i]=menuItemArray.getJSONObject(i).getInt("isPromo");
+                    loc_distance[i]= Double.parseDouble(formatter.format(menuItemArray.getJSONObject(i).getDouble("distance")));
+                    loc_pic[i]=menuItemArray.getJSONObject(i).getString("photo").toString();
+                    loc_lat[i]=menuItemArray.getJSONObject(i).getDouble("latitude");
+                    loc_lng[i]=menuItemArray.getJSONObject(i).getDouble("longitude");
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -131,39 +200,69 @@ public class TabFragDetChat extends Fragment implements LocationListener {
 
         @Override
         protected void onPostExecute(String result) {
-            if (isFirst) {
+            if (isFirst){
                 this.dialog.cancel();
-                isFirst = false;
-                updateList();
-            } else {
-
+                isFirst=false;
             }
+            updateList();
         }
     }
 
-    public void getServiceFromGPS() {
-        myLocationManager = (LocationManager) rootView.getContext().getSystemService(Context.LOCATION_SERVICE);
+    public void getServiceFromGPS(){
+        myLocationManager = (LocationManager)rootView.getContext().getSystemService(Context.LOCATION_SERVICE);
         criteria = new Criteria();
         provider = myLocationManager.getBestProvider(criteria, true);
         location = myLocationManager.getLastKnownLocation(provider);
-        if (isFirst) {
-            //getDataFromServer();
-            Log.e("ok 1", "sip " + isFirst);
+        if (isFirst){
+            getDataFromServer();
+            Log.e("ok 1","sip "+isFirst);
         } else {
             if (location != null) {
-                //onLocationChanged(location);
+                onLocationChanged(location);
                 Log.e("ok 2", "sip " + isFirst);
             }
         }
         myLocationManager.requestLocationUpdates(provider, 20000, 0, this);
     }
 
-    public boolean isDataUpdate() {
+    public boolean isDataUpdate(){
         boolean isUpdate = false;
+        if (temp_id_loc.length!=id_loc.length){
+            isUpdate = true;
+        } else {
+            for (int i = 0; i < id_loc.length; i++) {
+                if (temp_id_loc[i]!=id_loc[i] || temp_loc_distance[i]!=loc_distance[i] || temp_loc_promo[i]!=loc_promo[i]){
+                    isUpdate = true;
+                    i=id_loc.length;
+                }
+            }
+        }
         return isUpdate;
     }
 
-    public void updateList() {
+    public void updateList(){
+        for (int i = 0; i <id_loc.length ; i++) {
+            if (i==0){
+                temp_id_loc = new int[id_loc.length];
+                temp_loc_distance = new double[id_loc.length];
+                temp_loc_promo = new int[id_loc.length];
+            }
+            temp_loc_promo[i] = loc_promo[i];
+            temp_loc_distance[i] = loc_distance[i];
+            temp_id_loc[i] = id_loc[i];
+            listViewItems.add(new ItemObjectCustomList(id_loc[i],loc_name[i],loc_address[i],loc_promo[i],loc_distance[i],loc_pic[i]));
+        }
+        customListView.setAdapter(new CustomAdapterChat(rootView.getContext(), listViewItems));
+        scrollMyListViewToBottom();
+    }
 
+    private void scrollMyListViewToBottom() {
+        customListView.post(new Runnable() {
+            @Override
+            public void run() {
+                // Select the last row so it will scroll into view...
+                customListView.setSelection(customAdapter.getCount() - 1);
+            }
+        });
     }
 }

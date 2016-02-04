@@ -66,6 +66,8 @@ public class TabFragmentList extends Fragment implements LocationListener {
     String provider;
     Location location;
 
+    CustomAdapter customAdapter;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.tab_fragment_list, container, false);
@@ -78,7 +80,7 @@ public class TabFragmentList extends Fragment implements LocationListener {
         btn_update = (Button)rootView.findViewById(R.id.btn_update_list);
         customListView = (ListView)rootView.findViewById(R.id.listView);
         listViewItems = new ArrayList<ItemObjectCustomList>();
-
+        customAdapter = new CustomAdapter(rootView.getContext(),listViewItems);
         customListView.setAdapter(new CustomAdapter(rootView.getContext(), listViewItems));
         customListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -97,8 +99,8 @@ public class TabFragmentList extends Fragment implements LocationListener {
                 paket.putInt("loc_promo", selectPromo);
                 paket.putString("loc_address", selectAddress);
                 paket.putInt("cat_id", cat_id);
-                paket.putDouble("latitude",latitude);
-                paket.putDouble("longitude",longitude);
+                paket.putDouble("latitude", latitude);
+                paket.putDouble("longitude", longitude);
                 paket.putDouble("radius", radius);
 
                 Toast.makeText(rootView.getContext(), "Id Loc " + selectId, Toast.LENGTH_LONG).show();
@@ -108,6 +110,7 @@ public class TabFragmentList extends Fragment implements LocationListener {
                 //rootView.getContext().
             }
         });
+
         getServiceFromGPS();
 
         btn_update.setOnClickListener(new View.OnClickListener() {
@@ -264,5 +267,16 @@ public class TabFragmentList extends Fragment implements LocationListener {
             listViewItems.add(new ItemObjectCustomList(id_loc[i],loc_name[i],loc_address[i],loc_promo[i],loc_distance[i],loc_pic[i]));
         }
         customListView.setAdapter(new CustomAdapter(rootView.getContext(), listViewItems));
+        //scrollMyListViewToBottom();
+    }
+
+    private void scrollMyListViewToBottom() {
+        customListView.post(new Runnable() {
+            @Override
+            public void run() {
+                // Select the last row so it will scroll into view...
+                customListView.setSelection(customAdapter.getCount() - 1);
+            }
+        });
     }
 }

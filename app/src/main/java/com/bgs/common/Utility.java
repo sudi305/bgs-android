@@ -20,8 +20,8 @@ public class Utility {
     public String changeFormatNumber(double originNumber){
         formatter = new DecimalFormat("#0.0");
         String doubleToString = String.valueOf(originNumber);
-        String numberMod = "";
-        String setNumber = "";
+        String numberMod = "", setNumber = "", replace = "";
+        double stringToDouble;
         String[] splitDouble = doubleToString.split("\\.");
         if (splitDouble.length!=0){
             numberMod = splitDouble[splitDouble.length-1];
@@ -41,7 +41,10 @@ public class Utility {
             }
         }
         setNumber = String.valueOf(formatter.format(originNumber));
-        return setNumber;
+        replace = setNumber.replace(",", ".");
+        stringToDouble = Double.parseDouble(replace);
+
+        return String.valueOf(stringToDouble);
     }
 
 }

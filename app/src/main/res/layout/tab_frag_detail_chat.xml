@@ -6,10 +6,11 @@
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:id="@+id/listView2"
+        android:id="@+id/listView_chat"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_above="@+id/linearLayout" />
+        android:layout_above="@+id/linearLayout"
+        android:divider="@null" />
 
     <LinearLayout
         android:orientation="horizontal"

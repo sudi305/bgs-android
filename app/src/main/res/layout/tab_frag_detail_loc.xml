@@ -43,7 +43,9 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:text="Detail"
-                        android:id="@+id/textView_title_detail_loc" />
+                        android:id="@+id/textView_title_detail_loc"
+                        android:textColor="#595d65"
+                        android:textStyle="bold" />
 
                     <View
                         android:layout_width="fill_parent"
@@ -54,10 +56,83 @@
                         />
 
                     <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Tes Nama Lokasi"
+                        android:id="@+id/textView_fdl_loc_name"
+                        android:textColor="#000000" />
+
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="New Text"
-                        android:id="@+id/textView_det_loc" />
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="Location Name"
+                        android:id="@+id/textView_"
+                        android:textSize="10dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Alamat Lokasi"
+                        android:id="@+id/textView_fdl_loc_address"
+                        android:layout_marginTop="10dp"
+                        android:textColor="#000000" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="Location Address"
+                        android:id="@+id/textView2"
+                        android:textSize="10dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="0792759040xxx"
+                        android:id="@+id/textView_fdl_loc_hp"
+                        android:layout_marginTop="10dp"
+                        android:textColor="#000000" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="Telp./HP Number"
+                        android:id="@+id/textView4"
+                        android:textSize="10dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="-"
+                        android:id="@+id/textView_fdl_loc_cat"
+                        android:layout_marginTop="10dp"
+                        android:textColor="#000000" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="Categorys"
+                        android:id="@+id/textView6"
+                        android:textSize="10dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="-"
+                        android:id="@+id/textView_fdl_loc_dist"
+                        android:layout_marginTop="10dp"
+                        android:textColor="#000000" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="Distance From Your Current Location"
+                        android:id="@+id/textView8"
+                        android:textSize="10dp" />
 
                 </LinearLayout>
 
@@ -76,7 +151,8 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:text="Description"
-                        android:id="@+id/textView_title_descr_loc" />
+                        android:id="@+id/textView_title_descr_loc"
+                        android:textColor="#595d65" />
 
                     <View
                         android:layout_width="fill_parent"
@@ -87,10 +163,19 @@
                         />
 
                     <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="-"
+                        android:id="@+id/textView_fdl_loc_desc"
+                        android:textColor="#000000" />
+
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="New Text"
-                        android:id="@+id/textView_descr_loc" />
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="About This Location"
+                        android:id="@+id/textView3"
+                        android:textSize="10dp" />
 
                 </LinearLayout>
 

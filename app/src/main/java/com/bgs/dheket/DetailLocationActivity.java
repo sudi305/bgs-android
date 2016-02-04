@@ -62,7 +62,8 @@ public class DetailLocationActivity extends AppCompatActivity {
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager_loc_detail);
-        final PagerAdapterDetailLoc adapter = new PagerAdapterDetailLoc(getSupportFragmentManager(), tabLayout.getTabCount());
+        final PagerAdapterDetailLoc adapter = new PagerAdapterDetailLoc(getSupportFragmentManager(), tabLayout.getTabCount(),
+                paket.getInt("cat_id"), paket.getDouble("radius"), paket.getDouble("latitude"), paket.getDouble("longitude"), paket.getString("kategori"));
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {

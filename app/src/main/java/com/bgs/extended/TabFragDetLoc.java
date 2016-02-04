@@ -10,6 +10,7 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bgs.dheket.DetailLocationActivity;
@@ -40,6 +42,7 @@ public class TabFragDetLoc  extends Fragment implements LocationListener {
     private JSONObject jObject;
     private String jsonResult ="";
     View rootView;
+    TextView textView_detLoc,textView_descLoc;
 
     int cat_id;
     double radius, latitude, longitude;
@@ -63,6 +66,24 @@ public class TabFragDetLoc  extends Fragment implements LocationListener {
         radius = getArguments().getDouble("radius");
         latitude = getArguments().getDouble("latitude");
         longitude = getArguments().getDouble("longitude");*/
+        textView_detLoc = (TextView)rootView.findViewById(R.id.textView_fdl_loc_name);
+        /*textView_detLoc.setText(Html.fromHtml("<body>\n" +
+                "<strong>Toko</strong><br>\n" +
+                "<sub>Location Name</sub><br>\n" +
+                "<br>\n" +
+                "Jl.<br>\n" +
+                "<sub>Location Address</sub><br>\n" +
+                "<br>\n" +
+                "08<br>\n" +
+                "<sub>Telp. Number/HP</sub><br>\n" +
+                "<br>\n" +
+                "Restoran<br>\n" +
+                "<sub>Category</sub><br>\n" +
+                "<br>\n" +
+                "10Km<br>\n" +
+                "<sub>Distance From Current Location</sub><br>\n" +
+                "<br>\n" +
+                "</body>"));*/
 
         getServiceFromGPS();
 
