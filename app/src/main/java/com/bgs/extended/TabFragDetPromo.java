@@ -32,7 +32,7 @@ public class TabFragDetPromo extends Fragment implements LocationListener {
     private String jsonResult ="";
     View rootView;
 
-    int cat_id;
+    int cat_id,loc_id;
     double radius, latitude, longitude;
     String urls = "http://dheket.esy.es/getLocationByCategory.php";
     String parameters;
@@ -54,6 +54,7 @@ public class TabFragDetPromo extends Fragment implements LocationListener {
         radius = getArguments().getDouble("radius");
         latitude = getArguments().getDouble("latitude");
         longitude = getArguments().getDouble("longitude");*/
+        loc_id = getArguments().getInt("loc_id");
 
         getServiceFromGPS();
 

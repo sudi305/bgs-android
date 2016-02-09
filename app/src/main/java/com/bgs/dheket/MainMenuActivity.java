@@ -203,6 +203,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                // if (tambah==true)tambah=false;
                // else tambah=true;
                 Intent toSearch = new Intent(MainMenuActivity.this,SearchAllCategoryActivity.class);
+//                Intent toSearch = new Intent(MainMenuActivity.this,TestingArcGisMapActivity.class);
                 startActivity(toSearch);
                 finish();
             }

@@ -20,6 +20,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bgs.common.Utility;
 import com.bgs.dheket.DetailLocationActivity;
 import com.bgs.dheket.ListAndMapAllLocActivity;
 import com.bgs.dheket.R;
@@ -58,8 +59,9 @@ public class TabFragmentList extends Fragment implements LocationListener {
     int cat_id;
     double radius,latitude,longitude;
     String urls ="http://dheket.esy.es/getLocationByCategory.php";
-    String parameters;
-    NumberFormat formatter = new DecimalFormat("#0.000");
+    String parameters,kategori;
+    //NumberFormat formatter = new DecimalFormat("#0.000");
+    Utility formatNumber = new Utility();
 
     LocationManager myLocationManager;
     Criteria criteria;
@@ -76,6 +78,7 @@ public class TabFragmentList extends Fragment implements LocationListener {
         radius = getArguments().getDouble("radius");
         latitude = getArguments().getDouble("latitude");
         longitude = getArguments().getDouble("longitude");
+        kategori = getArguments().getString("kategori");
 
         btn_update = (Button)rootView.findViewById(R.id.btn_update_list);
         customListView = (ListView)rootView.findViewById(R.id.listView);
@@ -102,8 +105,9 @@ public class TabFragmentList extends Fragment implements LocationListener {
                 paket.putDouble("latitude", latitude);
                 paket.putDouble("longitude", longitude);
                 paket.putDouble("radius", radius);
+                paket.putString("kategori",kategori);
 
-                Toast.makeText(rootView.getContext(), "Id Loc " + selectId, Toast.LENGTH_LONG).show();
+                //Toast.makeText(rootView.getContext(), "Id Loc " + selectId, Toast.LENGTH_LONG).show();
                 i.putExtras(paket);
                 startActivity(i);
                 getActivity().finish();
@@ -197,7 +201,7 @@ public class TabFragmentList extends Fragment implements LocationListener {
                     loc_name[i]=menuItemArray.getJSONObject(i).getString("location_name").toString();
                     loc_address[i]=menuItemArray.getJSONObject(i).getString("location_address").toString();
                     loc_promo[i]=menuItemArray.getJSONObject(i).getInt("isPromo");
-                    loc_distance[i]= Double.parseDouble(formatter.format(menuItemArray.getJSONObject(i).getDouble("distance")));
+                    loc_distance[i]= Double.parseDouble(formatNumber.changeFormatNumber(menuItemArray.getJSONObject(i).getDouble("distance")));
                     loc_pic[i]=menuItemArray.getJSONObject(i).getString("photo").toString();
                     loc_lat[i]=menuItemArray.getJSONObject(i).getDouble("latitude");
                     loc_lng[i]=menuItemArray.getJSONObject(i).getDouble("longitude");
@@ -241,13 +245,15 @@ public class TabFragmentList extends Fragment implements LocationListener {
 
     public boolean isDataUpdate(){
         boolean isUpdate = false;
-        if (temp_id_loc.length!=id_loc.length){
-            isUpdate = true;
-        } else {
-            for (int i = 0; i < id_loc.length; i++) {
-                if (temp_id_loc[i]!=id_loc[i] || temp_loc_distance[i]!=loc_distance[i] || temp_loc_promo[i]!=loc_promo[i]){
-                    isUpdate = true;
-                    i=id_loc.length;
+        if (temp_id_loc!=null){
+            if (temp_id_loc.length!=id_loc.length){
+                isUpdate = true;
+            } else {
+                for (int i = 0; i < id_loc.length; i++) {
+                    if (temp_id_loc[i]!=id_loc[i] || temp_loc_distance[i]!=loc_distance[i] || temp_loc_promo[i]!=loc_promo[i]){
+                        isUpdate = true;
+                        i=id_loc.length;
+                    }
                 }
             }
         }
