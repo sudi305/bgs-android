@@ -4,86 +4,208 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <com.esri.android.map.MapView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/map"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight=".45"
-        mapoptions.MapType="Streets" >
-    </com.esri.android.map.MapView>
+        android:layout_weight="1">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight=".55"
-        android:id="@+id/placeLayout"
-        android:orientation="vertical"
-        android:padding="@dimen/small_space">
-
-
-        <ProgressBar
-            style="?android:attr/progressBarStyleHorizontal"
+        <com.esri.android.map.MapView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/map_single"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/findProgress"
-            />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text=""
-            android:id="@+id/titleTextView"
-            android:padding="@dimen/small_space"
-            android:background="@color/ui_highlight" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text=""
-            android:id="@+id/addressTextView"
-            android:padding="@dimen/small_space"
-            android:textColor="@android:color/secondary_text_dark_nodisable" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text=""
-            android:id="@+id/distanceTextView"
-            android:padding="@dimen/small_space" />
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            mapoptions.MapType="Streets" >
+        </com.esri.android.map.MapView>
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:id="@+id/placeLayout_single"
+            android:orientation="vertical"
+            android:visibility="visible"
+            android:layout_alignParentBottom="true">
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/callImageView"
-                />
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text=""
-                android:id="@+id/phoneTextView"
-                android:padding="@dimen/small_space" />
+                android:visibility="visible">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageButton
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:id="@+id/imageButton_maximize_single"
+                        android:background="@drawable/buble"
+                        android:src="@drawable/com_facebook_tooltip_black_topnub"
+                        android:paddingBottom="5dp"
+                        android:visibility="gone"
+                        android:layout_centerHorizontal="true" />
+
+                    <ImageButton
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:id="@+id/imageButton_minimaze_single"
+                        android:src="@drawable/com_facebook_tooltip_black_bottomnub"
+                        android:background="@drawable/buble"
+                        android:paddingTop="5dp"
+                        android:visibility="gone"
+                        android:layout_alignTop="@+id/imageButton_maximize"
+                        android:layout_centerHorizontal="true" />
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#cde2ea"
+                android:id="@+id/detail_loc_single"
+                android:padding="@dimen/small_space"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:background="#eeeeee">
+
+                    <FrameLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" >
+
+                        <ImageView
+                            android:layout_width="70dp"
+                            android:layout_height="70dp"
+                            android:id="@+id/imageView_tfm_pic_back_single"
+                            android:layout_gravity="center"
+                            android:src="#5767be"
+                            android:layout_margin="3px" />
+
+                        <ImageView
+                            android:layout_width="70dp"
+                            android:layout_height="70dp"
+                            android:id="@+id/imageView_tfm_pic_single"
+                            android:src="@drawable/logo"
+                            android:scaleType="fitCenter"
+                            android:layout_margin="5px"
+                            android:layout_gravity="left" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_gravity="left"
+                        android:gravity="left|fill" >
+
+                        <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceLarge"
+                            android:text="Location Name"
+                            android:id="@+id/textView_tfm_loc_name_single"
+                            android:singleLine="true"
+                            android:layout_gravity="center"
+                            android:gravity="center_vertical|bottom"
+                            android:textStyle="bold"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true"
+                            android:layout_weight="0.5"
+                            android:layout_marginLeft="5px" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="Location Address"
+                            android:id="@+id/textView_tfm_loc_address_single"
+                            android:singleLine="true"
+                            android:layout_alignTop="@+id/imageView6"
+                            android:layout_toRightOf="@+id/textView15"
+                            android:layout_toEndOf="@+id/textView15"
+                            android:layout_weight="0.2"
+                            android:layout_marginLeft="5px"
+                            android:gravity="top|center_vertical" />
+
+                        <LinearLayout
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.3" >
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:textAppearance="?android:attr/textAppearanceMedium"
+                                android:text="Promo or Not"
+                                android:id="@+id/textView_tfm_promo_single"
+                                android:layout_weight="1"
+                                android:gravity="top|left"
+                                android:textStyle="bold"
+                                android:layout_below="@+id/imageView6"
+                                android:layout_alignLeft="@+id/textView17"
+                                android:layout_alignStart="@+id/textView17"
+                                android:singleLine="true"
+                                android:layout_marginLeft="5px" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:textAppearance="?android:attr/textAppearanceMedium"
+                                android:text="Distance in Km"
+                                android:id="@+id/textView_tfm_dist_single"
+                                android:layout_weight="1"
+                                android:singleLine="true"
+                                android:gravity="top|right"
+                                android:textStyle="bold"
+                                android:layout_below="@+id/textView17"
+                                android:layout_alignParentLeft="true"
+                                android:layout_alignParentStart="true" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent" >
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="-"
+                            android:id="@+id/textView_tmf_id_loc_single"
+                            android:visibility="gone"
+                            android:layout_below="@+id/textView12"
+                            android:background="#000000" />
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:id="@+id/imageView6"
+                            android:src="@drawable/abc_ic_go_search_api_mtrl_alpha"
+                            android:layout_below="@+id/textView15"
+                            android:layout_toRightOf="@+id/textView17"
+                            android:background="@drawable/buble"
+                            android:layout_marginTop="25dp"
+                            android:layout_marginRight="5dp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
 
         </LinearLayout>
 
-        <RatingBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/ratingBar"
-            android:progressTint="@color/ratings"
-            android:visibility="gone"/>
-
-    </LinearLayout>
+    </RelativeLayout>
 
 
 </LinearLayout>

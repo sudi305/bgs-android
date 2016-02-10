@@ -26,4 +26,10 @@
       app:showAsAction="always"
       android:title="@string/menu_locate"/>
 
+  <item
+      android:id="@+id/action_logout"
+      android:orderInCategory="100"
+      android:title="@string/logout"
+      app:showAsAction="never" />
+
 </menu>

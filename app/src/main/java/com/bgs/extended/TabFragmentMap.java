@@ -67,17 +67,7 @@ import java.util.Random;
 public class TabFragmentMap extends Fragment {
     View rootView;
 
-    private static final String TAG = TabFragmentMap.class.getSimpleName();
-
-    // Define types of search.
-    private enum SearchType {
-        BAR,
-        PIZZA,
-        COFFEE,
-    }
-    SearchType mCurrentSearchType;
     final static double ZOOM_BY = 15;
-    LinearUnit mMilesUnit = new LinearUnit(LinearUnit.Code.MILE_STATUTE);
 
     MapView mMapView = null;
     SpatialReference mMapSr = null;
@@ -110,9 +100,9 @@ public class TabFragmentMap extends Fragment {
     ViewGroup placeLayout;
 
     String[] loc_name, loc_address,loc_pic;
-    int[] loc_promo,id_loc,temp_loc_promo,temp_id_loc;
-    double[] loc_distance, loc_lat, loc_lng, temp_loc_distance;
-    boolean isFirst = true,maxView = true, minView = true,showDetail = true;
+    int[] loc_promo,id_loc;
+    double[] loc_distance, loc_lat, loc_lng;
+    boolean isFirst = true,maxView = true, minView = true;
     CallWebPageTask task;
 
     @Override
@@ -320,19 +310,6 @@ public class TabFragmentMap extends Fragment {
         }
     };
 
-    /**
-     * When user touches phone number, send this to the dialler using an intent.
-     */
-    /*final View.OnTouchListener callTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            String num = mPhoneTextView.getText().toString();
-            Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + num));
-            startActivity(intent);
-            return true;
-        }
-    };*/
-
     private void setupLocator() {
         // Parameterless constructor - uses the Esri world geocoding service.
         mLocator = Locator.createOnlineLocator();
@@ -360,9 +337,6 @@ public class TabFragmentMap extends Fragment {
                         Log.e("sukses location ", "lat " + loc.getLatitude() + " | lng " + loc.getLongitude() + " | point " + getAsPoint(loc));
                         location = loc;
                         locationTouch = location;
-//                        location.setLatitude(-6.246760);
-//                        location.setLongitude(106.762618);
-//                        Log.e("sukses location lat lng", "lat " + location.getLatitude() + " | lng " + location.getLongitude() + " | point " + getAsPoint(location));
                         // After zooming, turn on the Location pan mode to show the location
                         // symbol. This will disable as soon as you interact with the map.
                         if (!isFirst){
@@ -406,152 +380,6 @@ public class TabFragmentMap extends Fragment {
         mMapView.setExtent(zoomExtent);
     }
 
-    /**
-     * Performs a find using the Locator, for a specific type of business.
-     *
-     * @param searchFor A string containing the type of business to search for.
-     */
-    private void doFindNearbyAsync(String searchFor) {
-        final CallbackListener<List<LocatorGeocodeResult>> findCallback = new
-                CallbackListener<List<LocatorGeocodeResult>>() {
-
-                    @Override
-                    public void onError(Throwable e) {
-                        setProgressOnUIThread(false);
-
-                        // Log the error
-                        Log.e(TAG, "No Results Found");
-                        Log.e(TAG, e.getMessage());
-                        // Indicate to user we cannot show results in this area.
-                        showToastOnUiThread("Error searching for results");
-                    }
-
-                    @Override
-                    public void onCallback(List<LocatorGeocodeResult> results) {
-
-                        // remove any previous graphics
-                        mResultsLayer.removeAll();
-
-                        // Use a Multipoint as a simple way to set total extent.
-                        MultiPoint fullExtent = new MultiPoint();
-
-                        if (results.size() > 0) {
-                            // Set specific symbols and selection color for each type of search.
-                            Symbol symbol = null;
-                            if (mCurrentSearchType == SearchType.BAR) {
-                                mResultsLayer.setSelectionColor(getResources().getColor(
-                                        R.color.beer_selection));
-                                symbol = mCat1;//mBarMapIcon;
-                            } else if (mCurrentSearchType == SearchType.PIZZA) {
-                                mResultsLayer.setSelectionColor(getResources().getColor(
-                                        R.color.pizza_selection));
-                                symbol = mCat2;//mPizzaMapIcon;
-                            } else if (mCurrentSearchType == SearchType.COFFEE) {
-                                mResultsLayer.setSelectionColor(getResources().getColor(
-                                        R.color.coffee_selection));
-                                symbol = mCat3;//mCoffeeMapIcon;
-                            }
-
-                            // For each result, create a Graphic, using result attributes as
-                            // graphic attributes.
-                            for (LocatorGeocodeResult result : results) {
-                                Point resultPoint = result.getLocation();
-                                HashMap<String, Object> attrMap = new
-                                        HashMap<String, Object>(result.getAttributes());
-                                mResultsLayer.addGraphic(new Graphic(resultPoint, symbol, attrMap));
-                                Log.e("map point",""+resultPoint);
-                                fullExtent.add(resultPoint);
-                            }
-                            // Zoom to the full extent
-                            mMapView.setExtent(fullExtent, 100);
-                        }
-                        // Update the UI with the result information.
-                        setResultCount(results.size(), mCurrentSearchType);
-                    }
-                };
-
-        try {
-            setProgressOnUIThread(true);
-
-            // Get the current map extent.
-            Envelope currExt = new Envelope();
-            mMapView.getExtent().queryEnvelope(currExt);
-
-            // Set up locator parameters based on the extent, search type, and the
-            // outfields set previously.
-            LocatorFindParameters fParams = new LocatorFindParameters(searchFor);
-            fParams.setSearchExtent(currExt, mMapSr);
-            fParams.setOutSR(mMapSr);
-            fParams.setOutFields(mFindOutFields);
-
-            // If LocationDisplayManger has a current location, set this to increase
-            // priority and return a distance value in the results.
-            if ((mLDM != null) && (mLDM.getLocation() != null)) {
-                Point currentPoint = getAsPoint(mLDM.getLocation());
-                fParams.setLocation(currentPoint, mMapSr);
-            }
-
-            // Call find, passing in the callback above.
-            mLocator.find(fParams, findCallback);
-        } catch (Exception e) {
-            // Update UI and report any errors.
-            setProgressOnUIThread(false);
-
-            // Log the error
-            Log.e(TAG, "No Results Found");
-            Log.e(TAG, e.getMessage());
-
-            // Indicate to user we cannot show results in this area.
-            showToastOnUiThread("Error searching for results");
-        }
-    }
-
-    private static String getRating() {
-        // Randomized ratings could be replaced by a ratings service from a third
-        // party.
-        Random r = new Random();
-        return String.valueOf(1 + (r.nextFloat() * 4));
-    }
-
-    /**
-     * Update user interface with result set information. Ensure this can be
-     * called from either background or UI thread by performing any actions on
-     * Views within a runnable on the UI thread.
-     *
-     * @param resultCount  number of results in the result set
-     * @param searchType  type of business searched for
-     */
-    private void setResultCount(int resultCount, SearchType searchType) {
-        String searchTypeMessage = "";
-
-        switch (searchType) {
-            case COFFEE:
-                searchTypeMessage = getResources().getString(R.string.results_coffee);
-                break;
-            case PIZZA:
-                searchTypeMessage = getResources().getString(R.string.results_pizza);
-                break;
-            case BAR:
-                searchTypeMessage = getResources().getString(R.string.results_bar);
-                break;
-        }
-
-        final String message = String.format("Found %d %s", resultCount,
-                searchTypeMessage);
-
-        getActivity().runOnUiThread(new Runnable() {
-            public void run() {
-                /*mProgress.setIndeterminate(false);
-                mTitleTextView.setText(message);
-                mAddressTextView.setText("");
-                mPhoneTextView.setText("");
-                mPhoneImageView.setImageDrawable(null);
-                mDistanceTextView.setText("");
-                mRatingBar.setVisibility(View.GONE);*/
-            }
-        });
-    }
-
     public void onCreateOptionsMenu(Menu menu,MenuInflater inflater ) {
         inflater.inflate(R.menu.menu_layout, menu);
         super.onCreateOptionsMenu(menu,inflater);
@@ -560,44 +388,6 @@ public class TabFragmentMap extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            /*case R.id.bar:
-                if (mMapView.isLoaded()) {
-                    clearCurrentResults();
-                    mCurrentSearchType = SearchType.BAR;
-                    try {
-                        doFindNearbyAsync(getResources().getString(R.string.bar_query));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                }
-                return true;
-
-            case R.id.pizza:
-                if (mMapView.isLoaded()) {
-                    mCurrentSearchType = SearchType.PIZZA;
-                    try {
-                        doFindNearbyAsync(getResources().getString(R.string.pizza_query));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                return true;
-
-            case R.id.coffee:
-                if (mMapView.isLoaded()) {
-                    mCurrentSearchType = SearchType.COFFEE;
-                    try {
-                        doFindNearbyAsync(getResources().getString(R.string.coffee_query));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                }
-
-                return true;
-*/
             case R.id.locate:
                 if (mMapView.isLoaded()) {
                     // If LocationDisplayManager has a fix, pan to that location. If no
@@ -623,7 +413,7 @@ public class TabFragmentMap extends Fragment {
         textView_id_loc.setText("");
         textView_loc_name.setText("");
         textView_loc_address.setText("");
-        imageView_pic.setImageDrawable(null);
+        imageView_pic.setImageResource(R.drawable.logo);
         textView_loc_promo.setText("");
         textView_loc_idstance.setText("");
     }
@@ -658,32 +448,6 @@ public class TabFragmentMap extends Fragment {
         int promo = (int) attributes.get("loc_promo");
         if (promo == 1) textView_loc_promo.setText("Promo");
         else textView_loc_promo.setText("-");
-
-
-/*        String phone = attributes.get(getResources().getString(
-                R.string.result_phone)).toString();
-        mPhoneTextView.setText(phone);
-        mPhoneImageView.setImageDrawable(ContextCompat.getDrawable(rootView.getContext().getApplicationContext(), R.drawable.ic_action_call));
-
-        Float rating = Float.parseFloat(getRating());
-        mRatingBar.setRating(rating);
-        mRatingBar.setVisibility(View.VISIBLE);*/
-    }
-
-    public void showToastOnUiThread(final String message) {
-        getActivity().runOnUiThread(new Runnable() {
-            public void run() {
-                //Toast.makeText(rootView.getContext().getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    public void setProgressOnUIThread(final boolean isIndeterminate) {
-        getActivity().runOnUiThread(new Runnable() {
-            public void run() {
-                //mProgress.setIndeterminate(isIndeterminate);
-            }
-        });
     }
 
     @Override
@@ -766,56 +530,52 @@ public class TabFragmentMap extends Fragment {
         @Override
         protected void onPostExecute(String result) {
             updateData();
-            /*if (isFirst){
-                this.dialog.cancel();
-                isFirst=false;
-                updateData();
-            } else {
-                updateData();
-            }*/
         }
     }
 
     public void updateData(){
         MultiPoint fullExtent = new MultiPoint();
-        mResultsLayer.removeAll();
         Symbol symbol = null;
         //-6.21267000, 106.61778566
         Map<String, Object> attr = new HashMap<String, Object>();
-        for (int i = 0; i <id_loc.length ; i++) {
-            Location locationPin = location;
-            locationPin.setLatitude(loc_lat[i]);
-            locationPin.setLongitude(loc_lng[i]);
-            Point point = getAsPoint(locationPin);
-            attr.put("id_loc", id_loc[i]);
-            attr.put("loc_name", loc_name[i]);
-            attr.put("loc_address", loc_address[i]);
-            attr.put("loc_promo", loc_promo[i]);
-            attr.put("loc_distance", loc_distance[i]);
-            attr.put("loc_pic", loc_pic[i]);
-            attr.put("loc_lat", loc_lat[i]);
-            attr.put("loc_lng", loc_lng[i]);
+        if (id_loc!=null){
+            mResultsLayer.removeAll();
+            clearCurrentResults();
+            for (int i = 0; i <id_loc.length ; i++) {
+                Location locationPin = location;
+                locationPin.setLatitude(loc_lat[i]);
+                locationPin.setLongitude(loc_lng[i]);
+                Point point = getAsPoint(locationPin);
+                attr.put("id_loc", id_loc[i]);
+                attr.put("loc_name", loc_name[i]);
+                attr.put("loc_address", loc_address[i]);
+                attr.put("loc_promo", loc_promo[i]);
+                attr.put("loc_distance", loc_distance[i]);
+                attr.put("loc_pic", loc_pic[i]);
+                attr.put("loc_lat", loc_lat[i]);
+                attr.put("loc_lng", loc_lng[i]);
 
-            Log.e("Ok sip", "this location at lat= " + loc_lat[i] + " and lng= " + loc_lng[i] + " | point on getAsPoint" + point + "");
-            if (cat_id==1) symbol = mCat1;
-            else if (cat_id==2) symbol = mCat2;
-            else if (cat_id==3) symbol = mCat3;
-            else if (cat_id==4) symbol = mCat4;
-            else symbol = mCat5;
+                Log.e("Ok sip", "this location at lat= " + loc_lat[i] + " and lng= " + loc_lng[i] + " | point on getAsPoint" + point + "");
+                if (cat_id==1) symbol = mCat1;
+                else if (cat_id==2) symbol = mCat2;
+                else if (cat_id==3) symbol = mCat3;
+                else if (cat_id==4) symbol = mCat4;
+                else symbol = mCat5;
 
-            mResultsLayer.addGraphic(new Graphic(point, symbol,attr));
-            fullExtent.add(point);
-        }
-        mMapView.setExtent(fullExtent, 100);
-        if (id_loc.length<2){
-            if ((mLDM != null) && (mLDM.getLocation() != null)) {
-                // Keep current scale and go to current location, if there is one.
-                zoomToLocation(location);
-                mLDM.setAutoPanMode(LocationDisplayManager.AutoPanMode.LOCATION);
+                mResultsLayer.addGraphic(new Graphic(point, symbol,attr));
+                fullExtent.add(point);
             }
+            mMapView.setExtent(fullExtent, 100);
+            if (id_loc.length<2){
+                if ((mLDM != null) && (mLDM.getLocation() != null)) {
+                    // Keep current scale and go to current location, if there is one.
+                    zoomToLocation(location);
+                    mLDM.setAutoPanMode(LocationDisplayManager.AutoPanMode.LOCATION);
+                }
+            }
+            placeLayout.setVisibility(View.GONE);
+            imageButton_maximaze.setVisibility(View.GONE);
+            imageButton_minimaze.setVisibility(View.GONE);
         }
-        placeLayout.setVisibility(View.GONE);
-        imageButton_maximaze.setVisibility(View.GONE);
-        imageButton_minimaze.setVisibility(View.GONE);
     }
 }

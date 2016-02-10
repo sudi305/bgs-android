@@ -74,9 +74,7 @@ public class SearchView extends AppCompatActivity {
         int id = item.getItemId();
 
         if (item.getItemId() == android.R.id.home) {
-            Intent intent = new Intent(SearchView.this,SearchAllCategoryActivity.class);
-            startActivity(intent);
-            finish();
+            back_to_previous_screen();
             return super.onOptionsItemSelected(item);
         }
 
@@ -107,6 +105,18 @@ public class SearchView extends AppCompatActivity {
                 .setNegativeButton(cancel, null);
         builder.create().show();
     }
+
+    @Override
+    public void onBackPressed() {
+        back_to_previous_screen();
+    }
+
+    public void back_to_previous_screen(){
+        Intent intent = new Intent(SearchView.this,SearchAllCategoryActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
 }
 
 

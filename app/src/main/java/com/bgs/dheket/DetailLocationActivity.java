@@ -99,15 +99,7 @@ public class DetailLocationActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (item.getItemId() == android.R.id.home) {
-            Intent intent = new Intent(DetailLocationActivity.this,ListAndMapAllLocActivity.class);
-            paket.putString("kategori",kategori);
-            paket.putInt("cat_id",cat_id);
-            paket.putDouble("radius",radius);
-            paket.putDouble("latitude",latitude);
-            paket.putDouble("longitude",longitude);
-            intent.putExtras(paket);
-            startActivity(intent);
-            finish();
+            back_to_previous_screen();
             return super.onOptionsItemSelected(item);
         }
 
@@ -137,5 +129,22 @@ public class DetailLocationActivity extends AppCompatActivity {
                 })
                 .setNegativeButton(cancel, null);
         builder.create().show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        back_to_previous_screen();
+    }
+
+    public void back_to_previous_screen(){
+        Intent intent = new Intent(DetailLocationActivity.this,ListAndMapAllLocActivity.class);
+        paket.putString("kategori",kategori);
+        paket.putInt("cat_id",cat_id);
+        paket.putDouble("radius",radius);
+        paket.putDouble("latitude",latitude);
+        paket.putDouble("longitude",longitude);
+        intent.putExtras(paket);
+        startActivity(intent);
+        finish();
     }
 }

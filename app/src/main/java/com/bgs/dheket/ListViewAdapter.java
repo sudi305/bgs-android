@@ -47,7 +47,7 @@ public class ListViewAdapter extends BaseAdapter {
         return 0;
     }
 
-    public View getView(final int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, final View convertView, ViewGroup parent) {
         // Declare Variables
         TextView id_category; //rank
         TextView category_name; //country
@@ -57,7 +57,7 @@ public class ListViewAdapter extends BaseAdapter {
         inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        View itemView = inflater.inflate(R.layout.searchview, parent, false);
+        final View itemView = inflater.inflate(R.layout.searchview, parent, false);
         // Get the position
         resultp = data.get(position);
 
@@ -86,7 +86,7 @@ public class ListViewAdapter extends BaseAdapter {
                 intent.putExtra("", resultp.get(SearchAllCategoryActivity.category_id)); //POPULATION
                 // Start SingleItemView Class
                 context.startActivity(intent);
-
+                //context.finish();
             }
         });
         return itemView;

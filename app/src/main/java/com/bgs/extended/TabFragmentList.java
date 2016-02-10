@@ -96,7 +96,6 @@ public class TabFragmentList extends Fragment implements LocationListener {
 
                 Intent i = new Intent(rootView.getContext(), DetailLocationActivity.class);
                 Bundle paket = new Bundle();
-
                 paket.putInt("id_loc", selectId);
                 paket.putString("loc_name", selectNameLoc);
                 paket.putInt("loc_promo", selectPromo);
@@ -261,18 +260,20 @@ public class TabFragmentList extends Fragment implements LocationListener {
     }
 
     public void updateList(){
-        for (int i = 0; i <id_loc.length ; i++) {
-            if (i==0){
-                temp_id_loc = new int[id_loc.length];
-                temp_loc_distance = new double[id_loc.length];
-                temp_loc_promo = new int[id_loc.length];
+        if (id_loc!=null){
+            for (int i = 0; i <id_loc.length ; i++) {
+                if (i==0){
+                    temp_id_loc = new int[id_loc.length];
+                    temp_loc_distance = new double[id_loc.length];
+                    temp_loc_promo = new int[id_loc.length];
+                }
+                temp_loc_promo[i] = loc_promo[i];
+                temp_loc_distance[i] = loc_distance[i];
+                temp_id_loc[i] = id_loc[i];
+                listViewItems.add(new ItemObjectCustomList(id_loc[i],loc_name[i],loc_address[i],loc_promo[i],loc_distance[i],loc_pic[i]));
             }
-            temp_loc_promo[i] = loc_promo[i];
-            temp_loc_distance[i] = loc_distance[i];
-            temp_id_loc[i] = id_loc[i];
-            listViewItems.add(new ItemObjectCustomList(id_loc[i],loc_name[i],loc_address[i],loc_promo[i],loc_distance[i],loc_pic[i]));
+            customListView.setAdapter(new CustomAdapter(rootView.getContext(), listViewItems));
         }
-        customListView.setAdapter(new CustomAdapter(rootView.getContext(), listViewItems));
         //scrollMyListViewToBottom();
     }
 

@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Html;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -38,12 +40,21 @@ public class FormLoginActivity extends AppCompatActivity {
     CallbackManager callbackManager;
     LoginButton login;
     Button signup;
+    android.support.v7.app.ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_form_login);
+
+        actionBar = getSupportActionBar();
+
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        //actionBar.setHomeAsUpIndicator(R.drawable.logo);
+        actionBar.setHomeButtonEnabled(true);
+        actionBar.setTitle("Login to Dheket");
 
         callbackManager = CallbackManager.Factory.create();
         login = (LoginButton)findViewById(R.id.login_button);
@@ -93,4 +104,37 @@ public class FormLoginActivity extends AppCompatActivity {
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main_login, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return super.onOptionsItemSelected(item);
+        }
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_about) {
+            //logout_user();
+            Toast.makeText(getApplicationContext(),"About this app",Toast.LENGTH_SHORT).show();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
 }

@@ -203,7 +203,6 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                // if (tambah==true)tambah=false;
                // else tambah=true;
                 Intent toSearch = new Intent(MainMenuActivity.this,SearchAllCategoryActivity.class);
-//                Intent toSearch = new Intent(MainMenuActivity.this,TestingArcGisMapActivity.class);
                 startActivity(toSearch);
                 finish();
             }
@@ -275,6 +274,11 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 
     public void logout_user(){
@@ -360,6 +364,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
     public void updateData(){
         actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius "+formatNumber.changeFormatNumber(radius)+" Km</font>"));
+
         txt_tot_cat1.setText(""+lokasi[0]);
         String cat1 = "-";
         if (nama_katagori[0]!=null) cat1=nama_katagori[0];
