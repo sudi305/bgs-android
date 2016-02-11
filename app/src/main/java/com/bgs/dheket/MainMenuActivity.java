@@ -276,6 +276,11 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
+
     public void logout_user(){
         String logout = getResources().getString(com.facebook.R.string.com_facebook_loginview_log_out_action);
         String cancel = getResources().getString(com.facebook.R.string.com_facebook_loginview_cancel_action);
@@ -359,6 +364,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
     public void updateData(){
         actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius "+formatNumber.changeFormatNumber(radius)+" Km</font>"));
+
         txt_tot_cat1.setText(""+lokasi[0]);
         String cat1 = "-";
         if (nama_katagori[0]!=null) cat1=nama_katagori[0];

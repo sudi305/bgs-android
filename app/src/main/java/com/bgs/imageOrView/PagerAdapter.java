@@ -42,6 +42,13 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
                 return tab1;
             case 1:
                 TabFragmentMap tab2 = new TabFragmentMap();
+                Bundle pack = new Bundle();
+                pack.putInt("cat_id",cat_id);
+                pack.putDouble("radius",radius);
+                pack.putDouble("latitude",latitude);
+                pack.putDouble("longitude",longitude);
+                pack.putString("kategori", kategori);
+                tab2.setArguments(pack);
                 return tab2;
             default:
                 return null;

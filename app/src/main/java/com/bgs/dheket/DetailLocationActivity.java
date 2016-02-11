@@ -62,8 +62,8 @@ public class DetailLocationActivity extends AppCompatActivity {
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager_loc_detail);
-        final PagerAdapterDetailLoc adapter = new PagerAdapterDetailLoc(getSupportFragmentManager(), tabLayout.getTabCount(),
-                paket.getInt("cat_id"), paket.getDouble("radius"), paket.getDouble("latitude"), paket.getDouble("longitude"), paket.getString("kategori"));
+        final PagerAdapterDetailLoc adapter = new PagerAdapterDetailLoc(getSupportFragmentManager(), tabLayout.getTabCount(),id_loc,
+                cat_id, radius, latitude, longitude, kategori);
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -99,15 +99,7 @@ public class DetailLocationActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (item.getItemId() == android.R.id.home) {
-            Intent intent = new Intent(DetailLocationActivity.this,ListAndMapAllLocActivity.class);
-            paket.putString("kategori",kategori);
-            paket.putInt("cat_id",cat_id);
-            paket.putDouble("radius",radius);
-            paket.putDouble("latitude",latitude);
-            paket.putDouble("longitude",longitude);
-            intent.putExtras(paket);
-            startActivity(intent);
-            finish();
+            back_to_previous_screen();
             return super.onOptionsItemSelected(item);
         }
 
@@ -137,5 +129,22 @@ public class DetailLocationActivity extends AppCompatActivity {
                 })
                 .setNegativeButton(cancel, null);
         builder.create().show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        back_to_previous_screen();
+    }
+
+    public void back_to_previous_screen(){
+        Intent intent = new Intent(DetailLocationActivity.this,ListAndMapAllLocActivity.class);
+        paket.putString("kategori",kategori);
+        paket.putInt("cat_id",cat_id);
+        paket.putDouble("radius",radius);
+        paket.putDouble("latitude",latitude);
+        paket.putDouble("longitude",longitude);
+        intent.putExtras(paket);
+        startActivity(intent);
+        finish();
     }
 }

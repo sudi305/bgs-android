@@ -129,9 +129,7 @@ public class SearchAllCategoryActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (item.getItemId() == android.R.id.home) {
-            Intent intent = new Intent(SearchAllCategoryActivity.this,MainMenuActivity.class);
-            startActivity(intent);
-            finish();
+            back_to_previous_screen();
             return super.onOptionsItemSelected(item);
         }
 
@@ -163,12 +161,14 @@ public class SearchAllCategoryActivity extends AppCompatActivity {
         builder.create().show();
     }
 
-    //hhuhjknjhkjh
+    @Override
+    public void onBackPressed() {
+        back_to_previous_screen();
+    }
 
-
-
-
-   // public void updateData(){
-
-   // }
+    public void back_to_previous_screen(){
+        Intent intent = new Intent(SearchAllCategoryActivity.this,MainMenuActivity.class);
+        startActivity(intent);
+        finish();
+    }
 }

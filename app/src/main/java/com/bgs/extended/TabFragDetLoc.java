@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bgs.common.Dialogs;
+import com.bgs.common.Utility;
 import com.bgs.dheket.DetailLocationActivity;
 import com.bgs.dheket.R;
 import com.bgs.dheket.SingleMapLocationActivity;
@@ -46,14 +47,18 @@ import java.util.ArrayList;
 public class TabFragDetLoc  extends Fragment implements LocationListener {
     private JSONObject jObject;
     private String jsonResult ="";
+    String temp_loc_name, temp_loc_address,temp_loc_pic;
+    int temp_loc_promo,temp_id_loc,temp_loc_cat_id;
+    double temp_loc_distance, temp_loc_lat, temp_loc_lng;
+
     View rootView;
     TextView textView_detLoc,textView_descLoc;
     ImageButton imageButton_share, imageButton_map;
 
-    int cat_id;
+    int cat_id,loc_id;
     double radius, latitude, longitude;
-    String urls = "http://dheket.esy.es/getLocationByCategory.php";
-    String parameters;
+    String urls = "http://dheket.esy.es/getSingleLocationById.php";
+    String parameters, kategori;
 
     LocationManager myLocationManager;
     Criteria criteria;
@@ -61,6 +66,7 @@ public class TabFragDetLoc  extends Fragment implements LocationListener {
     Location location;
 
     CallWebPageTask task;
+    Utility formatNumber = new Utility();
     boolean isFirst=true;
 
     @Override
@@ -68,28 +74,16 @@ public class TabFragDetLoc  extends Fragment implements LocationListener {
         rootView = inflater.inflate(R.layout.tab_frag_detail_loc, container, false);
 
         final Animation animButtonPress = AnimationUtils.loadAnimation(rootView.getContext(), R.anim.anim_scale_button_press);
-        /*cat_id = getArguments().getInt("loc_id");
+
+        loc_id = getArguments().getInt("loc_id");
+        cat_id = getArguments().getInt("cat_id");
         radius = getArguments().getDouble("radius");
         latitude = getArguments().getDouble("latitude");
-        longitude = getArguments().getDouble("longitude");*/
-        textView_detLoc = (TextView)rootView.findViewById(R.id.textView_fdl_loc_name);
-        /*textView_detLoc.setText(Html.fromHtml("<body>\n" +
-                "<strong>Toko</strong><br>\n" +
-                "<sub>Location Name</sub><br>\n" +
-                "<br>\n" +
-                "Jl.<br>\n" +
-                "<sub>Location Address</sub><br>\n" +
-                "<br>\n" +
-                "08<br>\n" +
-                "<sub>Telp. Number/HP</sub><br>\n" +
-                "<br>\n" +
-                "Restoran<br>\n" +
-                "<sub>Category</sub><br>\n" +
-                "<br>\n" +
-                "10Km<br>\n" +
-                "<sub>Distance From Current Location</sub><br>\n" +
-                "<br>\n" +
-                "</body>"));*/
+        longitude = getArguments().getDouble("longitude");
+        kategori = getArguments().getString("kategori");
+
+//        Log.e("data yang dikirim","loc_id "+loc_id+" | cat_id "+cat_id+" | radius "+radius+" | lat "+latitude+" | lng "+longitude+" | kat "+kategori);
+
         imageButton_share = (ImageButton)rootView.findViewById(R.id.imageButton_share);
         imageButton_map = (ImageButton)rootView.findViewById(R.id.imageButton_maps);
         getServiceFromGPS();
@@ -117,7 +111,7 @@ public class TabFragDetLoc  extends Fragment implements LocationListener {
         Log.e("Sukses bro", "" + parameters);
         task = new CallWebPageTask();
         task.applicationContext = rootView.getContext();
-        parameters = urls + "?rad=" + radius + "&lat=" + latitude + "&lng=" + longitude + "&cat=" + cat_id;
+        parameters = urls + "?lat=" + latitude + "&lng=" + longitude + "&loc_id=" + loc_id;
         //Log.e("Sukses", parameters);
         task.execute(new String[]{parameters});
     }
@@ -168,11 +162,20 @@ public class TabFragDetLoc  extends Fragment implements LocationListener {
                 //simpan data dari web ke dalam array
                 JSONArray menuItemArray = null;
                 jObject = new JSONObject(response);
-                menuItemArray = jObject.getJSONArray("dheket_locByCat");
+                menuItemArray = jObject.getJSONArray("dheket_singleLoc");
                 Log.e("cek 1", "" + menuItemArray);
                 for (int i = 0; i < menuItemArray.length(); i++) {
                     //String id_loc, String loc_name, String loc_address, int loc_promo, double loc_distance, int loc_pic
                     //listViewItems.add(new ItemObjectCustomList(menuItemArray.getJSONObject(i).getInt("id_category")),menuItemArray.getJSONObject(i).getString("location_name").toString(),menuItemArray.getJSONObject(i).getString("location_address").toString(),menuItemArray.getJSONObject(i).getInt("isPromo"),menuItemArray.getJSONObject(i).getDouble("distance"),menuItemArray.getJSONObject(i).getString("photo").toString()));
+                    temp_id_loc=menuItemArray.getJSONObject(i).getInt("id_location");
+                    temp_loc_name=menuItemArray.getJSONObject(i).getString("location_name").toString();
+                    temp_loc_address=menuItemArray.getJSONObject(i).getString("location_address").toString();
+                    temp_loc_promo=menuItemArray.getJSONObject(i).getInt("isPromo");
+                    temp_loc_distance= Double.parseDouble(formatNumber.changeFormatNumber(menuItemArray.getJSONObject(i).getDouble("distance")));
+                    temp_loc_pic=menuItemArray.getJSONObject(i).getString("photo").toString();
+                    temp_loc_lat=menuItemArray.getJSONObject(i).getDouble("latitude");
+                    temp_loc_lng=menuItemArray.getJSONObject(i).getDouble("longitude");
+                    temp_loc_cat_id=menuItemArray.getJSONObject(i).getInt("category_id");
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -231,6 +234,14 @@ public class TabFragDetLoc  extends Fragment implements LocationListener {
 
     public void gotoMap() {
         Intent map = new Intent(rootView.getContext().getApplicationContext(), SingleMapLocationActivity.class);
+        Bundle paket = new Bundle();
+        paket.putInt("loc_id",loc_id);
+        paket.putInt("cat_id",cat_id);
+        paket.putDouble("radius",radius);
+        paket.putDouble("latitude",latitude);
+        paket.putDouble("longitude",longitude);
+        paket.putString("kategori",kategori);
+        map.putExtras(paket);
         startActivity(map);
         getActivity().finish();
     }
