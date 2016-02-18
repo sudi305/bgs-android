@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.bgs.common.Utility;
 import com.bgs.dheket.DetailLocationActivity;
 import com.bgs.dheket.R;
 import com.bgs.imageOrView.CustomAdapter;
@@ -57,7 +58,7 @@ public class TabFragDetChat extends Fragment implements LocationListener {
     double radius,latitude,longitude;
     String urls ="http://dheket.esy.es/getLocationByCategory.php";
     String parameters;
-    NumberFormat formatter = new DecimalFormat("#0.000");
+    Utility format = new Utility();
 
     LocationManager myLocationManager;
     Criteria criteria;
@@ -185,7 +186,7 @@ public class TabFragDetChat extends Fragment implements LocationListener {
                     loc_name[i]=menuItemArray.getJSONObject(i).getString("location_name").toString();
                     loc_address[i]=menuItemArray.getJSONObject(i).getString("location_address").toString();
                     loc_promo[i]=menuItemArray.getJSONObject(i).getInt("isPromo");
-                    loc_distance[i]= Double.parseDouble(formatter.format(menuItemArray.getJSONObject(i).getDouble("distance")));
+                    loc_distance[i]= Double.parseDouble(format.changeFormatNumber(menuItemArray.getJSONObject(i).getDouble("distance")));
                     loc_pic[i]=menuItemArray.getJSONObject(i).getString("photo").toString();
                     loc_lat[i]=menuItemArray.getJSONObject(i).getDouble("latitude");
                     loc_lng[i]=menuItemArray.getJSONObject(i).getDouble("longitude");
