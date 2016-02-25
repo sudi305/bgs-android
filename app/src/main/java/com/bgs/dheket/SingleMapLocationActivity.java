@@ -121,7 +121,7 @@ public class SingleMapLocationActivity extends AppCompatActivity {
         actionBar.setHomeButtonEnabled(true);
         actionBar.setTitle("Dheket");
 //        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
-        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatNumber.changeFormatNumber(radius) + " Km</font>"));
+        actionBar.setSubtitle(Html.fromHtml("<font color='#ff9800'>Location in Radius " + formatNumber.changeFormatNumber(radius) + " Km</font>"));
 
         FacebookSdk.sdkInitialize(getApplicationContext());
 

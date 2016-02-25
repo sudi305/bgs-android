@@ -4,19 +4,31 @@
     <item android:state_pressed="false">
         <layer-list >
             <item>
-                <shape android:shape="rectangle">
-                    <gradient
-                        android:startColor="#ba7eff77"
-                        android:endColor="#ce36f525"
-                        android:angle="-90"
-                        android:type="linear"
-                        />
-                    <corners android:radius="5dp" />
-                </shape>
-            </item>
-            <item android:top="1dp" android:bottom="15dp" >
-                <shape android:shape="rectangle">
-                    <solid android:color="#20ffffff"/>
+                <shape
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:shape="rectangle">
+
+                    <!-- view background color -->
+                    <solid
+                        android:color="#3b51b4">
+                    </solid>
+
+                    <!-- view border color and width -->
+                    <stroke
+                        android:width="2dp"
+                        android:color="#ffffff" >
+                    </stroke>
+
+                    <!-- If you want to add some padding -->
+
+                    <!-- Here is the corner radius -->
+                    <corners
+                        android:topRightRadius="5dp"
+                        android:topLeftRadius="5dp"
+                        android:bottomRightRadius="5dp"
+                        android:bottomLeftRadius="5dp">
+                    </corners>
+
                 </shape>
             </item>
         </layer-list>
@@ -24,19 +36,31 @@
     <item android:state_pressed="true">
         <layer-list >
             <item>
-                <shape android:shape="rectangle">
-                    <gradient
-                        android:startColor="#e525e61a"
-                        android:endColor="#d8138f08"
-                        android:angle="-90"
-                        android:type="linear"
-                        />
-                    <corners android:radius="5dp" />
-                </shape>
-            </item>
-            <item android:top="1dp" android:bottom="15dp" >
-                <shape android:shape="rectangle">
-                    <solid android:color="#20ffffff"/>
+                <shape
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:shape="rectangle">
+
+                    <!-- view background color -->
+                    <solid
+                        android:color="#6075d2">
+                    </solid>
+
+                    <!-- view border color and width -->
+                    <stroke
+                        android:width="2dp"
+                        android:color="#cccbcb" >
+                    </stroke>
+
+                    <!-- If you want to add some padding -->
+
+                    <!-- Here is the corner radius -->
+                    <corners
+                        android:topRightRadius="10dp"
+                        android:topLeftRadius="10dp"
+                        android:bottomRightRadius="10dp"
+                        android:bottomLeftRadius="10dp">
+                    </corners>
+
                 </shape>
             </item>
         </layer-list>

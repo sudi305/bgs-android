@@ -2,6 +2,7 @@ package com.bgs.extended;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -11,6 +12,9 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -58,7 +62,34 @@ public class TabFragDetPromo extends Fragment implements LocationListener {
 
         getServiceFromGPS();
 
+        setHasOptionsMenu(true);
         return rootView;
+    }
+
+    public void onCreateOptionsMenu(Menu menu,MenuInflater inflater ) {
+        inflater.inflate(R.menu.menu_detail_promo, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.goto_share:
+                shareIt();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
+
+    public void shareIt() {
+        //sharing implementation here
+        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+        sharingIntent.setType("text/plain");
+        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Dheket");
+        sharingIntent.putExtra(Intent.EXTRA_TEXT, "Nearby location https://dheket.esy.es/ ");
+        startActivity(Intent.createChooser(sharingIntent, "Share Promo on This Location Via"));
     }
 
     public void getDataFromServer() {

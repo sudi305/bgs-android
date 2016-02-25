@@ -3,6 +3,7 @@ package com.bgs.dheket;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -53,7 +54,7 @@ public class DetailLocationActivity extends AppCompatActivity {
 
         /*actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Category " + paket.getString("kategori") + " in Radius "
                 + formatter.format(paket.getDouble("radius")) + " Km</font>"));*/
-        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'> "+loc_address+" </font>"));
+        actionBar.setSubtitle(Html.fromHtml("<font color='#ff9800'> "+loc_address+" </font>"));
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout_loc_detail);
         tabLayout.addTab(tabLayout.newTab().setText("Detail"));

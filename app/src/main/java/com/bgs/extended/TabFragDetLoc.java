@@ -13,6 +13,9 @@ import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -104,7 +107,28 @@ public class TabFragDetLoc  extends Fragment implements LocationListener {
             }
         });
 
+        setHasOptionsMenu(true);
         return rootView;
+    }
+
+    public void onCreateOptionsMenu(Menu menu,MenuInflater inflater ) {
+        inflater.inflate(R.menu.menu_detail_loc, menu);
+        super.onCreateOptionsMenu(menu,inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.goto_map:
+                gotoMap();
+                return true;
+            case R.id.goto_share:
+                shareIt();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
     }
 
     public void getDataFromServer() {

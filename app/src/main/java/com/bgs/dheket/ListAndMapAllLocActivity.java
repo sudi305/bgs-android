@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -42,7 +43,7 @@ public class ListAndMapAllLocActivity extends AppCompatActivity {
         paket = getIntent().getExtras();
         /*actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Category " + paket.getString("kategori") + " in Radius "
                 + formatter.format(paket.getDouble("radius")) + " Km</font>"));*/
-        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Category " + paket.getString("kategori") + " in Radius "
+        actionBar.setSubtitle(Html.fromHtml("<font color='#ff9800'>Category " + paket.getString("kategori") + " in Radius "
                 + formatNumber.changeFormatNumber(paket.getDouble("radius")) + " Km</font>"));
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);

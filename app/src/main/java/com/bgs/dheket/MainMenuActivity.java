@@ -15,13 +15,16 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -42,9 +45,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-
 /**
  * Created by SND on 20/01/2016.
  */
@@ -58,8 +58,9 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     ImageView imVi_usrPro;
     ProfilePictureView_viaFB view_usrPro;
     CallbackManager callbackManager;
-    Dialog details_dialog;
+    //Dialog details_dialog;
     TextView details_txt,textView_usrNm;
+    ImageButton imageButton_close;
     ConfigInternetAndGPS checkInternetGPS;
     HttpGetOrPost httpGetOrPost;
 
@@ -75,18 +76,17 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     double radius = 0.0;
     double latitude, longitude;
     String url = "http://dheket.esy.es/getLocationPromo.php";
-
+    String detailUser;
     boolean tambah = true;
     android.support.v7.app.ActionBar actionBar;
 
     Intent goToScreen;
-    //NumberFormat formatter = new DecimalFormat("#0.000");
     Utility formatNumber = new Utility();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_menu);
+        setContentView(R.layout.activity_main_menu_new);
         actionBar = getSupportActionBar();
 
         actionBar.setDisplayShowHomeEnabled(true);
@@ -95,7 +95,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         actionBar.setHomeButtonEnabled(true);
         actionBar.setTitle("Dheket");
 //        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
-        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatNumber.changeFormatNumber(radius) + " Km</font>"));
+        actionBar.setSubtitle(Html.fromHtml("<font color='#ff9800'>Location in Radius " + formatNumber.changeFormatNumber(radius) + " Km</font>"));
 
         FacebookSdk.sdkInitialize(getApplicationContext());
 
@@ -124,10 +124,6 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         txt_tot_cat4 = (TextView)findViewById(R.id.textView_total_cat4);
         txt_tot_cat5 = (TextView)findViewById(R.id.textView_total_cat5);
         view_usrPro = (ProfilePictureView_viaFB)findViewById(R.id.view_userProfile);
-        details_dialog = new Dialog(this);
-        details_dialog.setContentView(R.layout.dialog_details);
-        details_dialog.setTitle("Details");
-        details_txt = (TextView)details_dialog.findViewById(R.id.details);
         textView_usrNm = (TextView)findViewById(R.id.textView_usrNm);
 
         updateData();
@@ -155,7 +151,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         view_usrPro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                details_dialog.show();
+                showDialogDetail();
             }
         });
 
@@ -209,14 +205,34 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         });
     }
 
+    public void showDialogDetail(){
+        LayoutInflater mInflater = LayoutInflater.from(this);
+        View v = mInflater.inflate(R.layout.dialog_details, null);
+
+        final AlertDialog dialog = new AlertDialog.Builder(this).create();
+        dialog.setView(v);
+        dialog.setCancelable(true);
+
+        details_txt = (TextView)v.findViewById(R.id.details);
+        details_txt.setText(Html.fromHtml(detailUser));
+        imageButton_close = (ImageButton)v.findViewById(R.id.imageButton_close_dialog);
+        imageButton_close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+    }
+
     public void toListAndMapScreen(int cat_id,double radius,String kategori){
         goToScreen = new Intent(MainMenuActivity.this,ListAndMapAllLocActivity.class);
         Bundle paket = new Bundle();
         paket.putInt("cat_id",cat_id);
-        paket.putString("kategori",kategori);
+        paket.putString("kategori", kategori);
         paket.putDouble("radius", radius);
         paket.putDouble("latitude", latitude);
-        paket.putDouble("longitude",longitude);
+        paket.putDouble("longitude", longitude);
         goToScreen.putExtras(paket);
         startActivity(goToScreen);
         finish();
@@ -231,7 +247,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 try {
                     if(json != null){
                         String text = "<b>Name :</b> "+json.getString("name")+"<br><br><b>Email :</b> "+json.getString("email")+"<br><br><b>Profile link :</b> "+json.getString("link");
-                        details_txt.setText(Html.fromHtml(text));
+                        detailUser = text;
                         view_usrPro.setProfileId(json.getString("id"));
                         view_usrPro.setCropped(true);
                         textView_usrNm.setText(json.getString("name"));
@@ -251,7 +267,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_main_setting, menu);
         return true;
     }
 
@@ -265,6 +281,12 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         if (item.getItemId() == android.R.id.home) {
             finish();
             return super.onOptionsItemSelected(item);
+        }
+
+        if (item.getItemId() == R.id.goto_setting) {
+            Intent gotoSetting = new Intent(MainMenuActivity.this,SettingCategoryBubleActivity.class);
+            startActivity(gotoSetting);
+            finish();
         }
 
         //noinspection SimplifiableIfStatement
@@ -302,13 +324,28 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
     public void resizeBuble(Button button, int lokasi){
         final float scale = getResources().getDisplayMetrics().density;
-        if (lokasi<=5)lokasi=(int)(50 * scale + 0.5f);
-        else if (lokasi>5 && lokasi<11) lokasi=(int)((lokasi*10) * scale + 0.5f);
-        else if (lokasi>10)lokasi=(int)(100 * scale + 0.5f);
+        if (lokasi<=5)lokasi=(int)(40 * scale + 0.5f);
+        else if (lokasi>5 && lokasi<11) lokasi=(int)(((lokasi-1)*10) * scale + 0.5f);
+        else if (lokasi>10)lokasi=(int)(90 * scale + 0.5f);
         ViewGroup.LayoutParams params = button.getLayoutParams();
-        params.width=lokasi;
-        params.height=lokasi;
+        Log.e("data params",""+params.height+" | "+params.width);
+        int parwid = params.width;
+        int parhei = params.height;
         button.setLayoutParams(params);
+        if (parwid<lokasi){
+            for (int i = parwid; i <= lokasi ; i++) {
+                params.width=i;
+                params.height=i;
+                button.setLayoutParams(params);
+            }
+        } else if (parwid>lokasi){
+            for (int i = parwid; i >= lokasi ; i--) {
+                params.width=i;
+                params.height=i;
+                button.setLayoutParams(params);
+            }
+        }
+
     }
 
     /**

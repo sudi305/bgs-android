@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import com.bgs.imageOrView.RoundImage;
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
+import com.splunk.mint.Mint;
 
 /**
  * Created by SND on 18/01/2016.
@@ -28,6 +29,7 @@ public class SplashScreenActivity extends Activity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        Mint.initAndStartSession(SplashScreenActivity.this, "609d861e");
         FacebookSdk.sdkInitialize(getApplicationContext());
         imgLogo = (ImageView)findViewById(R.id.imgLogo);
         final Animation animAlpha = AnimationUtils.loadAnimation(this, R.anim.anim_alpha);
@@ -35,10 +37,10 @@ public class SplashScreenActivity extends Activity{
         final float scale = getResources().getDisplayMetrics().density;
         wH_logo = (int)(200 * scale + 0.5f);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.logo);
-        crop_image_circle = new RoundImage(bitmap,wH_logo);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.dheket);
+        /*crop_image_circle = new RoundImage(bitmap,wH_logo);
         imgLogo.setImageDrawable(crop_image_circle);
-        imgLogo.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        imgLogo.setScaleType(ImageView.ScaleType.CENTER_CROP);*/
         imgLogo.setAnimation(animAlpha);
 
 

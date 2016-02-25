@@ -1,19 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:layout_width="320dp"
+    android:layout_width="fill_parent"
     android:layout_gravity="center"
-    android:layout_height="match_parent"
-    android:padding="10dp">
+    android:layout_height="fill_parent"
+    android:background="@drawable/corner_round_all"
+    android:paddingBottom="10dp">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/corner_round_blue">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Detail User"
+            android:id="@+id/textView13"
+            android:gravity="center_vertical|center_horizontal"
+            android:textColor="#ffffff"
+            android:textSize="20dp"
+            android:textIsSelectable="false"
+            android:textStyle="bold"
+            android:layout_weight="1" />
+
+        <View
+            android:layout_width="2dp"
+            android:layout_height="fill_parent"
+            android:background="#ffffff"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp" />
+
+        <ImageButton
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/imageButton_close_dialog"
+            android:src="@drawable/ic_action_cancel"
+            android:background="@drawable/roundedbutton_square1" />
+
+    </LinearLayout>
+
     <View
         android:layout_width="fill_parent"
         android:layout_height="1dp"
         android:background="#5a69bf"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="1dp"
         android:layout_marginBottom="10dp"
-        />
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp" />
     <TextView
-        android:layout_width="300dp"
+        android:layout_width="fill_parent"
         android:textSize="15sp"
         android:layout_height="wrap_content"
         android:id="@+id/details"
@@ -22,4 +60,5 @@
         android:layout_margin="10dp"
         android:paddingLeft="15dp"
         android:paddingRight="15dp" />
+
 </LinearLayout>

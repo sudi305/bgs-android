@@ -28,111 +28,266 @@
                     android:id="@+id/imageView_loc_photos"
                     android:src="@drawable/logo"
                     android:layout_gravity="center_horizontal"
-                    android:background="#aa94aab2" />
+                    android:background="#3c52b4" />
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="3dp"
+                    android:background="#ffffff" />
 
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#ffffff"
-                    android:padding="10dp"
+                    android:background="@drawable/corner_round_all"
                     android:layout_margin="10dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:text="Detail"
-                        android:id="@+id/textView_title_detail_loc"
-                        android:textColor="#595d65"
-                        android:textStyle="bold" />
-
-                    <View
-                        android:layout_width="fill_parent"
-                        android:layout_height="1dp"
-                        android:background="#5a69bf"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginBottom="10dp"
-                        />
-
-                    <TextView
+                    <LinearLayout
+                        android:orientation="vertical"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Tes Nama Lokasi"
-                        android:id="@+id/textView_fdl_loc_name"
-                        android:textColor="#000000" />
+                        android:background="@drawable/corner_round_top">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="Location Name"
-                        android:id="@+id/textView_"
-                        android:textSize="10dp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:text="Detail"
+                            android:id="@+id/textView25"
+                            android:layout_margin="10dp"
+                            android:textStyle="bold"
+                            android:textColor="#ffffff" />
+                    </LinearLayout>
 
-                    <TextView
+                    <LinearLayout
+                        android:orientation="vertical"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Alamat Lokasi"
-                        android:id="@+id/textView_fdl_loc_address"
-                        android:layout_marginTop="10dp"
-                        android:textColor="#000000" />
+                        android:padding="10dp"
+                        android:background="@drawable/corner_round_all">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="Location Address"
-                        android:id="@+id/textView2"
-                        android:textSize="10dp" />
+                        <LinearLayout
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="0792759040xxx"
-                        android:id="@+id/textView_fdl_loc_hp"
-                        android:layout_marginTop="10dp"
-                        android:textColor="#000000" />
+                            <ImageView
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:id="@+id/imageView2"
+                                android:background="@drawable/ic_action_home"
+                                android:layout_gravity="center_vertical"
+                                android:scaleType="fitCenter"
+                                android:layout_marginRight="5dp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="Telp./HP Number"
-                        android:id="@+id/textView4"
-                        android:textSize="10dp" />
+                            <LinearLayout
+                                android:orientation="vertical"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="-"
-                        android:id="@+id/textView_fdl_loc_cat"
-                        android:layout_marginTop="10dp"
-                        android:textColor="#000000" />
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Tes Nama Lokasi"
+                                    android:id="@+id/textView_fdl_loc_name"
+                                    android:textColor="#000000" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="Categorys"
-                        android:id="@+id/textView6"
-                        android:textSize="10dp" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="?android:attr/textAppearanceSmall"
+                                    android:text="Location Name"
+                                    android:id="@+id/textView_"
+                                    android:textSize="10dp" />
+                            </LinearLayout>
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="-"
-                        android:id="@+id/textView_fdl_loc_dist"
-                        android:layout_marginTop="10dp"
-                        android:textColor="#000000" />
+                        </LinearLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="Distance From Your Current Location"
-                        android:id="@+id/textView8"
-                        android:textSize="10dp" />
+                        <LinearLayout
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp">
+
+                            <ImageView
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:id="@+id/imageView13"
+                                android:background="@drawable/ic_action_compass"
+                                android:layout_gravity="center_vertical"
+                                android:scaleType="fitCenter"
+                                android:layout_marginRight="5dp" />
+
+                            <LinearLayout
+                                android:orientation="vertical"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Alamat Lokasi"
+                                    android:id="@+id/textView_fdl_loc_address"
+                                    android:textColor="#000000" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="?android:attr/textAppearanceSmall"
+                                    android:text="Location Address"
+                                    android:id="@+id/textView2"
+                                    android:textSize="10dp" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp" >
+
+                            <ImageView
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:id="@+id/imageView15"
+                                android:background="@drawable/ic_action_phone_start"
+                                android:layout_gravity="center_vertical"
+                                android:scaleType="fitCenter"
+                                android:layout_marginRight="5dp" />
+
+                            <LinearLayout
+                                android:orientation="vertical"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="0792759040xxx"
+                                    android:id="@+id/textView_fdl_loc_hp"
+                                    android:textColor="#000000" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="?android:attr/textAppearanceSmall"
+                                    android:text="Telp./HP Number"
+                                    android:id="@+id/textView4"
+                                    android:textSize="10dp" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp" >
+
+                            <ImageView
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:id="@+id/imageView16"
+                                android:background="@drawable/ic_action_database"
+                                android:layout_gravity="center_vertical"
+                                android:scaleType="fitCenter"
+                                android:layout_marginRight="5dp" />
+
+                            <LinearLayout
+                                android:orientation="vertical"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="-"
+                                    android:id="@+id/textView_fdl_loc_cat"
+                                    android:textColor="#000000" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="?android:attr/textAppearanceSmall"
+                                    android:text="Category"
+                                    android:id="@+id/textView6"
+                                    android:textSize="10dp" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp" >
+
+                            <ImageView
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:id="@+id/imageView18"
+                                android:background="@drawable/ic_action_tags"
+                                android:layout_gravity="center_vertical"
+                                android:scaleType="fitCenter"
+                                android:layout_marginRight="5dp" />
+
+                            <LinearLayout
+                                android:orientation="vertical"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="-"
+                                    android:id="@+id/textView_fdl_loc_subCat"
+                                    android:textColor="#000000" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="?android:attr/textAppearanceSmall"
+                                    android:text="Sub Category / Tags"
+                                    android:id="@+id/textView29"
+                                    android:textSize="10dp" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp" >
+
+                            <ImageView
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:id="@+id/imageView17"
+                                android:background="@drawable/ic_action_wheel"
+                                android:layout_gravity="center_vertical"
+                                android:scaleType="fitCenter"
+                                android:layout_marginRight="5dp" />
+
+                            <LinearLayout
+                                android:orientation="vertical"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="-"
+                                    android:id="@+id/textView_fdl_loc_dist"
+                                    android:textColor="#000000" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="?android:attr/textAppearanceSmall"
+                                    android:text="Distance From Your Current Location"
+                                    android:id="@+id/textView8"
+                                    android:textSize="10dp" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
@@ -140,42 +295,71 @@
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#ffffff"
-                    android:padding="10dp"
+                    android:background="@drawable/corner_round_all"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:layout_marginBottom="10dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:text="Description"
-                        android:id="@+id/textView_title_descr_loc"
-                        android:textColor="#595d65" />
-
-                    <View
-                        android:layout_width="fill_parent"
-                        android:layout_height="1dp"
-                        android:background="#5a69bf"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginBottom="10dp"
-                        />
-
-                    <TextView
+                    <LinearLayout
+                        android:orientation="vertical"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="-"
-                        android:id="@+id/textView_fdl_loc_desc"
-                        android:textColor="#000000" />
+                        android:background="@drawable/corner_round_top" >
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:text="Description"
+                            android:id="@+id/textView26"
+                            android:layout_margin="10dp"
+                            android:textStyle="bold"
+                            android:textColor="#ffffff" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="About This Location"
-                        android:id="@+id/textView3"
-                        android:textSize="10dp" />
+                        android:padding="10dp">
+
+                        <LinearLayout
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <ImageView
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:id="@+id/imageView19"
+                                android:background="@drawable/ic_action_list"
+                                android:layout_gravity="center_vertical"
+                                android:scaleType="fitCenter"
+                                android:layout_marginRight="5dp" />
+
+                            <LinearLayout
+                                android:orientation="vertical"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="-"
+                                    android:id="@+id/textView_fdl_loc_desc"
+                                    android:textColor="#000000" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="?android:attr/textAppearanceSmall"
+                                    android:text="About This Location"
+                                    android:id="@+id/textView3"
+                                    android:textSize="10dp" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
@@ -195,7 +379,8 @@
         android:layout_alignParentLeft="false"
         android:layout_alignParentStart="false"
         android:layout_alignParentRight="true"
-        android:layout_margin="10dp" />
+        android:layout_margin="10dp"
+        android:visibility="gone" />
 
     <ImageButton
         android:layout_width="60dp"
@@ -209,7 +394,8 @@
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
         android:layout_marginRight="80dp"
-        android:layout_marginBottom="10dp" />
+        android:layout_marginBottom="10dp"
+        android:visibility="gone" />
 
 
 </RelativeLayout>

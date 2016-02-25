@@ -4,268 +4,294 @@
     android:layout_height="match_parent">
 
     <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/scrollView"
-        android:layout_gravity="center_horizontal"
-        android:layout_weight="1">
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/scrollView3" >
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
 
             <LinearLayout
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="1"
-                android:layout_marginTop="10dp">
+                android:layout_height="500dp"
+                android:layout_weight="1">
 
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_gravity="center_vertical"
-                    android:id="@+id/buble_cat1">
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    style="1">
 
-                    <TextView
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:id="@+id/imageView14"
+                        android:src="@drawable/pin_add"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="200dp" />
+
+                    <RelativeLayout
+                        android:layout_width="140dp"
+                        android:layout_height="140dp"
+                        android:id="@+id/relativeLayout"
+                        android:layout_alignBottom="@+id/imageView14"
+                        android:layout_alignRight="@+id/imageView14"
+                        android:layout_marginBottom="-65dp"
+                        android:layout_marginRight="-60dp">
+
+                        <ImageView
+                            android:layout_width="125dp"
+                            android:layout_height="125dp"
+                            android:id="@+id/imageView_userProfile"
+                            android:background="@drawable/ring_bb"
+                            android:layout_weight="1"
+                            android:layout_centerVertical="true"
+                            android:layout_centerHorizontal="true" />
+
+                        <com.bgs.imageOrView.ProfilePictureView_viaFB
+                            android:layout_width="120dp"
+                            android:layout_height="120dp"
+                            android:id="@+id/view_userProfile"
+                            android:layout_gravity="center"
+                            android:layout_centerInParent="true" />
+
+                        <TextView
+                            android:layout_width="130dp"
+                            android:layout_height="35dp"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:text="..."
+                            android:id="@+id/textView_usrNm"
+                            android:layout_gravity="center"
+                            android:textAlignment="center"
+                            android:textStyle="bold"
+                            android:singleLine="true"
+                            android:background="@drawable/roundedbutton_square"
+                            android:textColor="#ffffff"
+                            android:layout_alignBottom="@+id/imageView_userProfile"
+                            android:layout_centerHorizontal="true"
+                            android:gravity="bottom"
+                            android:paddingBottom="5dp"
+                            android:paddingLeft="2dp"
+                            android:paddingRight="2dp" />
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="90dp"
+                        android:layout_height="130dp"
+                        android:layout_weight="1"
+                        android:id="@+id/buble_cat1"
+                        android:layout_toLeftOf="@+id/imageView14"
+                        android:layout_alignBottom="@+id/imageView14"
+                        android:layout_marginRight="50dp"
+                        android:layout_marginBottom="50dp"
+                        android:gravity="center_vertical|center_horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="10"
+                            android:id="@+id/textView_total_cat1"
+                            android:layout_gravity="center_horizontal"
+                            android:textStyle="bold" />
+
+                        <Button
+                            android:layout_width="90dp"
+                            android:layout_height="90dp"
+                            android:textAllCaps="false"
+                            android:text="@string/category1"
+                            android:id="@+id/btn_buble_cat1"
+                            android:background="@drawable/buble"
+                            android:layout_gravity="center_horizontal"
+                            android:singleLine="true" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="Promo: 0"
+                            android:id="@+id/textView_promo_cat1"
+                            android:layout_gravity="center_horizontal"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="90dp"
+                        android:layout_height="130dp"
+                        android:id="@+id/buble_cat2"
+                        android:layout_marginBottom="90dp"
+                        android:layout_alignBottom="@+id/imageView14"
+                        android:layout_toLeftOf="@+id/imageView14"
+                        android:layout_marginRight="-100dp"
+                        android:gravity="center_vertical|center_horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="7"
+                            android:id="@+id/textView_total_cat2"
+                            android:layout_gravity="center_horizontal|top"
+                            android:textStyle="bold" />
+
+                        <Button
+                            android:layout_width="90dp"
+                            android:layout_height="90dp"
+                            android:textAllCaps="false"
+                            android:text="@string/category2"
+                            android:id="@+id/btn_buble_cat2"
+                            android:background="@drawable/buble"
+                            android:layout_gravity="center"
+                            android:singleLine="true" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="Promo: 2"
+                            android:id="@+id/textView_promo_cat2"
+                            android:layout_gravity="center_horizontal|bottom"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="90dp"
+                        android:layout_height="130dp"
+                        android:id="@+id/buble_cat3"
+                        android:layout_marginLeft="60dp"
+                        android:layout_below="@+id/imageView14"
+                        android:layout_toRightOf="@+id/imageView14"
+                        android:layout_marginTop="-60dp"
+                        android:gravity="center_vertical|center_horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="15"
+                            android:id="@+id/textView_total_cat3"
+                            android:layout_gravity="center_horizontal"
+                            android:textStyle="bold" />
+
+                        <Button
+                            android:layout_width="90dp"
+                            android:layout_height="90dp"
+                            android:textAllCaps="false"
+                            android:text="@string/category3"
+                            android:id="@+id/btn_buble_cat3"
+                            android:background="@drawable/buble"
+                            android:layout_gravity="center_horizontal"
+                            android:singleLine="true" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="Promo: 0"
+                            android:id="@+id/textView_promo_cat3"
+                            android:layout_gravity="center_horizontal"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="90dp"
+                        android:layout_height="130dp"
+                        android:id="@+id/buble_cat4"
+                        android:layout_toRightOf="@+id/imageView14"
+                        android:layout_below="@+id/imageView14"
+                        android:layout_marginTop="60dp"
+                        android:gravity="center_vertical|center_horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="8"
+                            android:id="@+id/textView_total_cat4"
+                            android:layout_gravity="center_horizontal"
+                            android:textStyle="bold" />
+
+                        <Button
+                            android:layout_width="90dp"
+                            android:layout_height="90dp"
+                            android:textAllCaps="false"
+                            android:text="@string/category4"
+                            android:id="@+id/btn_buble_cat4"
+                            android:background="@drawable/buble"
+                            android:layout_gravity="center_horizontal"
+                            android:singleLine="true" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="Promo: 0"
+                            android:id="@+id/textView_promo_cat4"
+                            android:layout_gravity="center_horizontal"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="vertical"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="10"
-                        android:id="@+id/textView_total_cat1"
-                        android:layout_gravity="center_horizontal"
-                        android:textStyle="bold" />
+                        android:layout_weight="1"
+                        android:id="@+id/buble_cat5"
+                        android:layout_below="@+id/imageView14"
+                        android:layout_toLeftOf="@+id/imageView14"
+                        android:layout_marginTop="80dp"
+                        android:layout_marginRight="20dp"
+                        android:gravity="center_vertical|center_horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="5"
+                            android:id="@+id/textView_total_cat5"
+                            android:layout_gravity="center_horizontal"
+                            android:textStyle="bold" />
+
+                        <Button
+                            android:layout_width="90dp"
+                            android:layout_height="90dp"
+                            android:textAllCaps="false"
+                            android:text="@string/category5"
+                            android:id="@+id/btn_buble_cat5"
+                            android:background="@drawable/buble"
+                            android:layout_gravity="center_horizontal"
+                            android:singleLine="true" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="Promo: 4"
+                            android:id="@+id/textView_promo_cat5"
+                            android:layout_gravity="center_horizontal"
+                            android:textStyle="bold" />
+                    </LinearLayout>
 
                     <Button
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
+                        android:layout_width="120dp"
+                        android:layout_height="40dp"
                         android:textAllCaps="false"
-                        android:text="@string/category1"
-                        android:id="@+id/btn_buble_cat1"
-                        android:background="@drawable/buble"
-                        android:layout_gravity="center_horizontal"
-                        android:singleLine="true" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="Promo: 0"
-                        android:id="@+id/textView_promo_cat1"
-                        android:layout_gravity="center_horizontal"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_gravity="center_vertical"
-                    android:id="@+id/buble_cat2">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="7"
-                        android:id="@+id/textView_total_cat2"
-                        android:layout_gravity="center_horizontal"
-                        android:textStyle="bold" />
-
-                    <Button
-                        android:layout_width="70dp"
-                        android:layout_height="70dp"
-                        android:textAllCaps="false"
-                        android:text="@string/category2"
-                        android:id="@+id/btn_buble_cat2"
-                        android:background="@drawable/buble"
-                        android:layout_gravity="center_horizontal"
-                        android:singleLine="true" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="Promo: 2"
-                        android:id="@+id/textView_promo_cat2"
-                        android:layout_gravity="center_horizontal"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_gravity="center_vertical"
-                    android:id="@+id/buble_cat3">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="15"
-                        android:id="@+id/textView_total_cat3"
-                        android:layout_gravity="center_horizontal"
-                        android:textStyle="bold" />
-
-                    <Button
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:textAllCaps="false"
-                        android:text="@string/category3"
-                        android:id="@+id/btn_buble_cat3"
-                        android:background="@drawable/buble"
-                        android:layout_gravity="center_horizontal"
-                        android:singleLine="true" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="Promo: 0"
-                        android:id="@+id/textView_promo_cat3"
-                        android:layout_gravity="center_horizontal"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
+                        android:text="@string/search"
+                        android:id="@+id/btn_search"
+                        android:background="@drawable/roundedbutton_square1"
+                        android:textStyle="bold"
+                        android:textColor="#ffffff"
+                        android:layout_centerHorizontal="true"
+                        android:layout_below="@+id/imageView14"
+                        android:layout_marginTop="230dp" />
+                </RelativeLayout>
             </LinearLayout>
-
-            <FrameLayout
-                android:layout_width="220dp"
-                android:layout_height="220dp"
-                android:layout_gravity="center_horizontal">
-
-                <ImageView
-                    android:layout_width="200dp"
-                    android:layout_height="200dp"
-                    android:id="@+id/imageView_userProfile"
-                    android:layout_gravity="center"
-                    android:background="@drawable/ring"
-                    android:layout_weight="1" />
-
-                <com.bgs.imageOrView.ProfilePictureView_viaFB
-                    android:layout_width="195dp"
-                    android:layout_height="195dp"
-                    android:id="@+id/view_userProfile"
-                    android:layout_gravity="center" />
-
-                <TextView
-                    android:layout_width="200dp"
-                    android:layout_height="30dp"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="..."
-                    android:id="@+id/textView_usrNm"
-                    android:layout_gravity="center_horizontal|bottom"
-                    android:textAlignment="center"
-                    android:textStyle="bold"
-                    android:singleLine="true"
-                    android:background="@drawable/roundedbutton_square"
-                    android:textColor="#ffffff" />
-
-            </FrameLayout>
-
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="1"
-                android:layout_marginBottom="10dp">
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:id="@+id/buble_cat4"
-                    android:layout_gravity="center_vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="8"
-                        android:id="@+id/textView_total_cat4"
-                        android:layout_gravity="center_horizontal"
-                        android:textStyle="bold" />
-
-                    <Button
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:textAllCaps="false"
-                        android:text="@string/category4"
-                        android:id="@+id/btn_buble_cat4"
-                        android:background="@drawable/buble"
-                        android:layout_gravity="center_horizontal"
-                        android:singleLine="true" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="Promo: 0"
-                        android:id="@+id/textView_promo_cat4"
-                        android:layout_gravity="center_horizontal"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
-                    android:id="@+id/buble_cat5">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="5"
-                        android:id="@+id/textView_total_cat5"
-                        android:layout_gravity="center_horizontal"
-                        android:textStyle="bold" />
-
-                    <Button
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:textAllCaps="false"
-                        android:text="@string/category5"
-                        android:id="@+id/btn_buble_cat5"
-                        android:background="@drawable/buble"
-                        android:layout_gravity="center_horizontal"
-                        android:singleLine="true" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="Promo: 4"
-                        android:id="@+id/textView_promo_cat5"
-                        android:layout_gravity="center_horizontal"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="34dp"
-                android:textAllCaps="false"
-                android:text="@string/search"
-                android:id="@+id/btn_search"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/roundedbutton_square1"
-                android:textStyle="bold"
-                android:textColor="#5e5b5b" />
-
-
         </LinearLayout>
     </ScrollView>
 

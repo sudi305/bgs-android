@@ -11,7 +11,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:background="@drawable/corner_round_all"
+        android:layout_marginLeft="4dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="2dp">
 
         <FrameLayout
             android:layout_width="wrap_content"
