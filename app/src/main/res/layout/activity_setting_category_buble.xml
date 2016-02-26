@@ -1,0 +1,614 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:layout_marginTop="10dp">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_gravity="top"
+                    android:id="@+id/buble_cat1">
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@drawable/corner_round_all"
+                        android:gravity="top">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="30dp"
+                                android:textAppearance="?android:attr/textAppearanceMedium"
+                                android:text="Category 1"
+                                android:id="@+id/textView14"
+                                android:textSize="14dp"
+                                android:background="@drawable/corner_round_top"
+                                android:layout_marginBottom="5dp"
+                                android:gravity="center"
+                                android:textColor="#ffffff" />
+
+                        </RelativeLayout>
+
+                        <FrameLayout
+                            android:layout_width="150dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal">
+
+                            <ImageView
+                                android:layout_width="100dp"
+                                android:layout_height="100dp"
+                                android:id="@+id/imageView5"
+                                android:background="@drawable/buble"
+                                android:layout_gravity="center" />
+
+                            <RelativeLayout
+                                android:orientation="horizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_gravity="center">
+
+                                <EditText
+                                    android:layout_width="100dp"
+                                    android:layout_height="wrap_content"
+                                    android:id="@+id/editText_set_cat1"
+                                    android:layout_centerVertical="true"
+                                    android:layout_centerHorizontal="true"
+                                    android:background="@android:drawable/editbox_background"
+                                    android:hint="................."
+                                    android:focusableInTouchMode="false"
+                                    android:singleLine="true"
+                                    android:gravity="center_vertical|center_horizontal" />
+
+                                <ImageView
+                                    android:layout_width="10dp"
+                                    android:layout_height="10dp"
+                                    android:id="@+id/imageView20"
+                                    android:background="@drawable/com_facebook_tooltip_black_bottomnub"
+                                    android:layout_alignParentTop="true"
+                                    android:layout_alignRight="@+id/editText_set_cat1"
+                                    android:layout_alignEnd="@+id/editText_set_cat1" />
+                            </RelativeLayout>
+
+                        </FrameLayout>
+
+                        <RelativeLayout
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" >
+
+                            <EditText
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:inputType="textMultiLine"
+                                android:ems="10"
+                                android:id="@+id/editText_set_subcat1"
+                                android:focusableInTouchMode="false"
+                                android:hint="touch to change"
+                                android:layout_weight="1" />
+
+                            <ImageView
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:id="@+id/imageView12"
+                                android:background="@drawable/com_facebook_tooltip_black_bottomnub"
+                                android:layout_centerVertical="true"
+                                android:layout_alignParentRight="true"
+                                android:layout_alignParentEnd="true" />
+
+                        </RelativeLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="Sub Category/Tags 1"
+                            android:id="@+id/textView22"
+                            android:layout_gravity="center_horizontal"
+                            android:textSize="10dp"
+                            android:layout_marginBottom="5dp" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_gravity="top"
+                    android:id="@+id/buble_cat2">
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@drawable/corner_round_all"
+                        android:gravity="top" >
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:text="Category 2"
+                            android:id="@+id/textView31"
+                            android:layout_gravity="center_horizontal"
+                            android:textSize="14dp"
+                            android:background="@drawable/corner_round_top"
+                            android:layout_marginBottom="5dp"
+                            android:gravity="center"
+                            android:textColor="#ffffff" />
+
+                        <FrameLayout
+                            android:layout_width="150dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal" >
+
+                            <ImageView
+                                android:layout_width="100dp"
+                                android:layout_height="100dp"
+                                android:id="@+id/imageView8"
+                                android:background="@drawable/buble"
+                                android:layout_gravity="center" />
+
+                            <RelativeLayout
+                                android:orientation="horizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_gravity="center" >
+
+                                <EditText
+                                    android:layout_width="100dp"
+                                    android:layout_height="wrap_content"
+                                    android:id="@+id/editText_set_cat2"
+                                    android:layout_centerVertical="true"
+                                    android:layout_centerHorizontal="true"
+                                    android:background="@android:drawable/editbox_background"
+                                    android:hint="................."
+                                    android:focusableInTouchMode="false"
+                                    android:singleLine="true"
+                                    android:gravity="center_vertical|center_horizontal" />
+
+                                <ImageView
+                                    android:layout_width="10dp"
+                                    android:layout_height="10dp"
+                                    android:id="@+id/imageView21"
+                                    android:background="@drawable/com_facebook_tooltip_black_bottomnub"
+                                    android:layout_alignParentTop="true"
+                                    android:layout_alignRight="@+id/editText_set_cat2"
+                                    android:layout_alignEnd="@+id/editText_set_cat2" />
+                            </RelativeLayout>
+
+                        </FrameLayout>
+
+                        <RelativeLayout
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:layout_gravity="center_horizontal">
+
+                            <EditText
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:inputType="textMultiLine"
+                                android:ems="10"
+                                android:id="@+id/editText_set_subcat2"
+                                android:focusableInTouchMode="false"
+                                android:hint="touch to change"
+                                android:layout_weight="1" />
+
+                            <ImageView
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:id="@+id/imageView25"
+                                android:background="@drawable/com_facebook_tooltip_black_bottomnub"
+                                android:layout_centerVertical="true"
+                                android:layout_alignParentRight="true"
+                                android:layout_alignParentEnd="true" />
+                        </RelativeLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="Sub Category/Tags 2"
+                            android:id="@+id/textView32"
+                            android:layout_gravity="center_horizontal"
+                            android:textSize="10dp"
+                            android:layout_marginBottom="5dp" />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/buble_cat3"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/corner_round_all"
+                    android:gravity="top" >
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:text="Category 3"
+                        android:id="@+id/textView18"
+                        android:layout_gravity="center_horizontal"
+                        android:textSize="14dp"
+                        android:background="@drawable/corner_round_top"
+                        android:layout_marginBottom="5dp"
+                        android:gravity="center"
+                        android:textColor="#ffffff" />
+
+                    <FrameLayout
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal" >
+
+                        <ImageView
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:id="@+id/imageView7"
+                            android:background="@drawable/buble"
+                            android:layout_gravity="center" />
+
+                        <RelativeLayout
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_gravity="center" >
+
+                            <EditText
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/editText_set_cat3"
+                                android:layout_centerVertical="true"
+                                android:layout_centerHorizontal="true"
+                                android:background="@android:drawable/editbox_background"
+                                android:hint="................."
+                                android:focusableInTouchMode="false"
+                                android:singleLine="true"
+                                android:gravity="center_vertical|center_horizontal" />
+
+                            <ImageView
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:id="@+id/imageView22"
+                                android:background="@drawable/com_facebook_tooltip_black_bottomnub"
+                                android:layout_alignParentTop="true"
+                                android:layout_alignRight="@+id/editText_set_cat3"
+                                android:layout_alignEnd="@+id/editText_set_cat3" />
+                        </RelativeLayout>
+
+                    </FrameLayout>
+
+                    <RelativeLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_gravity="center_horizontal">
+
+                        <EditText
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:inputType="textMultiLine"
+                            android:ems="10"
+                            android:id="@+id/editText_set_subcat3"
+                            android:focusableInTouchMode="false"
+                            android:hint="touch to change"
+                            android:layout_weight="1" />
+
+                        <ImageView
+                            android:layout_width="10dp"
+                            android:layout_height="10dp"
+                            android:id="@+id/imageView26"
+                            android:background="@drawable/com_facebook_tooltip_black_bottomnub"
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentEnd="true" />
+                    </RelativeLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="Sub Category/Tags 3"
+                        android:id="@+id/textView23"
+                        android:layout_gravity="center_horizontal"
+                        android:textSize="10dp"
+                        android:layout_marginBottom="5dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:layout_marginBottom="10dp">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:id="@+id/buble_cat4"
+                    android:layout_gravity="top">
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@drawable/corner_round_all"
+                        android:gravity="top" >
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:text="Category 4"
+                            android:id="@+id/textView19"
+                            android:layout_gravity="center_horizontal"
+                            android:textSize="14dp"
+                            android:background="@drawable/corner_round_top"
+                            android:layout_marginBottom="5dp"
+                            android:gravity="center"
+                            android:textColor="#ffffff" />
+
+                        <FrameLayout
+                            android:layout_width="150dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal" >
+
+                            <ImageView
+                                android:layout_width="100dp"
+                                android:layout_height="100dp"
+                                android:id="@+id/imageView9"
+                                android:background="@drawable/buble"
+                                android:layout_gravity="center" />
+
+                            <RelativeLayout
+                                android:orientation="horizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_gravity="center" >
+
+                                <EditText
+                                    android:layout_width="100dp"
+                                    android:layout_height="wrap_content"
+                                    android:id="@+id/editText_set_cat4"
+                                    android:layout_centerVertical="true"
+                                    android:layout_centerHorizontal="true"
+                                    android:background="@android:drawable/editbox_background"
+                                    android:hint="................."
+                                    android:focusableInTouchMode="false"
+                                    android:singleLine="true"
+                                    android:gravity="center_vertical|center_horizontal" />
+
+                                <ImageView
+                                    android:layout_width="10dp"
+                                    android:layout_height="10dp"
+                                    android:id="@+id/imageView23"
+                                    android:background="@drawable/com_facebook_tooltip_black_bottomnub"
+                                    android:layout_alignParentTop="true"
+                                    android:layout_alignRight="@+id/editText_set_cat4"
+                                    android:layout_alignEnd="@+id/editText_set_cat4" />
+                            </RelativeLayout>
+
+                        </FrameLayout>
+
+                        <RelativeLayout
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:layout_gravity="center_horizontal">
+
+                            <EditText
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:inputType="textMultiLine"
+                                android:ems="10"
+                                android:id="@+id/editText_set_subcat4"
+                                android:focusableInTouchMode="false"
+                                android:hint="touch to change"
+                                android:layout_weight="1" />
+
+                            <ImageView
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:id="@+id/imageView27"
+                                android:background="@drawable/com_facebook_tooltip_black_bottomnub"
+                                android:layout_centerVertical="true"
+                                android:layout_alignParentRight="true"
+                                android:layout_alignParentEnd="true" />
+                        </RelativeLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="Sub Category/Tags 4"
+                            android:id="@+id/textView27"
+                            android:layout_gravity="center_horizontal"
+                            android:textSize="10dp"
+                            android:layout_marginBottom="5dp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top"
+                    android:layout_weight="1"
+                    android:id="@+id/buble_cat5">
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@drawable/corner_round_all"
+                        android:gravity="top" >
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:text="Category 5"
+                            android:id="@+id/textView20"
+                            android:layout_gravity="center_horizontal"
+                            android:textSize="14dp"
+                            android:background="@drawable/corner_round_top"
+                            android:layout_marginBottom="5dp"
+                            android:gravity="center"
+                            android:textColor="#ffffff" />
+
+                        <FrameLayout
+                            android:layout_width="150dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal" >
+
+                            <ImageView
+                                android:layout_width="100dp"
+                                android:layout_height="100dp"
+                                android:id="@+id/imageView10"
+                                android:background="@drawable/buble"
+                                android:layout_gravity="center" />
+
+                            <RelativeLayout
+                                android:orientation="horizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_gravity="center" >
+
+                                <EditText
+                                    android:layout_width="100dp"
+                                    android:layout_height="wrap_content"
+                                    android:id="@+id/editText_set_cat5"
+                                    android:layout_centerVertical="true"
+                                    android:layout_centerHorizontal="true"
+                                    android:background="@android:drawable/editbox_background"
+                                    android:hint="................."
+                                    android:focusableInTouchMode="false"
+                                    android:singleLine="true"
+                                    android:gravity="center_vertical|center_horizontal" />
+
+                                <ImageView
+                                    android:layout_width="10dp"
+                                    android:layout_height="10dp"
+                                    android:id="@+id/imageView24"
+                                    android:background="@drawable/com_facebook_tooltip_black_bottomnub"
+                                    android:layout_alignParentTop="true"
+                                    android:layout_alignRight="@+id/editText_set_cat5"
+                                    android:layout_alignEnd="@+id/editText_set_cat5" />
+                            </RelativeLayout>
+
+                        </FrameLayout>
+
+                        <RelativeLayout
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:layout_gravity="center_horizontal">
+
+                            <EditText
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:inputType="textMultiLine"
+                                android:ems="10"
+                                android:id="@+id/editText_set_subcat5"
+                                android:focusableInTouchMode="false"
+                                android:hint="touch to change"
+                                android:layout_weight="1" />
+
+                            <ImageView
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:id="@+id/imageView28"
+                                android:background="@drawable/com_facebook_tooltip_black_bottomnub"
+                                android:layout_centerVertical="true"
+                                android:layout_alignParentRight="true"
+                                android:layout_alignParentEnd="true" />
+                        </RelativeLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="Sub Category/Tags 5"
+                            android:id="@+id/textView28"
+                            android:layout_gravity="center_horizontal"
+                            android:textSize="10dp"
+                            android:layout_marginBottom="5dp" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <Button
+                android:layout_width="120dp"
+                android:layout_height="40dp"
+                android:textAllCaps="false"
+                android:text="Save"
+                android:id="@+id/btn_set_save"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/roundedbutton_square1"
+                android:textStyle="bold"
+                android:textColor="#ffffff"
+                android:layout_marginTop="10dp" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</ScrollView>
