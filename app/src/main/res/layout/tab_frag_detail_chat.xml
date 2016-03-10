@@ -20,7 +20,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:id="@+id/linearLayout"
-        android:background="#d8eaf0">
+        android:background="@color/colorPrimary">
 
         <LinearLayout
             android:orientation="vertical"
@@ -42,13 +42,26 @@
                 android:hint="Your message here!" />
         </LinearLayout>
 
-        <ImageButton
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:id="@+id/imageButton"
-            android:src="@drawable/send"
-            android:background="@drawable/buble"
-            android:layout_gravity="center"
-            android:layout_margin="5dp" />
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:id="@+id/imageView_chat_send"
+                android:layout_centerInParent="true"
+                android:src="@drawable/ic_send_24dp" />
+
+            <ImageButton
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:id="@+id/imageButton_chat_send"
+                android:background="@drawable/roundedbutton_square2"
+                android:layout_gravity="center"
+                android:layout_margin="5dp" />
+
+        </RelativeLayout>
+
     </LinearLayout>
 </RelativeLayout>

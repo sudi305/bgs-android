@@ -381,7 +381,7 @@ public class TabFragmentMap extends Fragment {
     }
 
     public void onCreateOptionsMenu(Menu menu,MenuInflater inflater ) {
-        inflater.inflate(R.menu.menu_layout, menu);
+        inflater.inflate(R.menu.menu_layout_frag_map, menu);
         super.onCreateOptionsMenu(menu,inflater);
     }
 

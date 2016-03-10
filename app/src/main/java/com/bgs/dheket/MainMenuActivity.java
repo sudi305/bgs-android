@@ -1,17 +1,20 @@
 package com.bgs.dheket;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.Log;
@@ -49,17 +52,18 @@ import org.json.JSONObject;
  * Created by SND on 20/01/2016.
  */
 
-public class MainMenuActivity extends AppCompatActivity implements LocationListener{
+public class MainMenuActivity extends AppCompatActivity implements LocationListener {
 
-    LinearLayout buble_cat1,buble_cat2,buble_cat3,buble_cat4,buble_cat5;
-    Button btn_buble_cat1,btn_buble_cat2,btn_buble_cat3,btn_buble_cat4,btn_buble_cat5,btn_search;
-    TextView txt_tot_cat1,txt_tot_cat2,txt_tot_cat3,txt_tot_cat4,txt_tot_cat5;
-    TextView txt_promo_cat1,txt_promo_cat2,txt_promo_cat3,txt_promo_cat4,txt_promo_cat5;
+    LinearLayout buble_cat1, buble_cat2, buble_cat3, buble_cat4, buble_cat5;
+    Button btn_buble_cat1, btn_buble_cat2, btn_buble_cat3, btn_buble_cat4, btn_buble_cat5, btn_search;
+    TextView txt_tot_cat1, txt_tot_cat2, txt_tot_cat3, txt_tot_cat4, txt_tot_cat5;
+    TextView txt_promo_cat1, txt_promo_cat2, txt_promo_cat3, txt_promo_cat4, txt_promo_cat5;
     ImageView imVi_usrPro;
     ProfilePictureView_viaFB view_usrPro;
+    Menu menu;
     CallbackManager callbackManager;
     //Dialog details_dialog;
-    TextView details_txt,textView_usrNm;
+    TextView details_txt, textView_usrNm;
     ImageButton imageButton_close;
     ConfigInternetAndGPS checkInternetGPS;
     HttpGetOrPost httpGetOrPost;
@@ -70,9 +74,9 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     Location location;
 
     private JSONObject jObject;
-    private String jsonResult ="";
-    int[] promo=new int[5], lokasi =new int[5], id_kategori=new int[5];
-    String[] nama_katagori=new String[5];
+    private String jsonResult = "";
+    int[] promo = new int[5], lokasi = new int[5], id_kategori = new int[5];
+    String[] nama_katagori = new String[5];
     double radius = 0.0;
     double latitude, longitude;
     String url = "http://dheket.esy.es/getLocationPromo.php";
@@ -95,36 +99,36 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         actionBar.setHomeButtonEnabled(true);
         actionBar.setTitle("Dheket");
 //        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
-        actionBar.setSubtitle(Html.fromHtml("<font color='#ff9800'>Location in Radius " + formatNumber.changeFormatNumber(radius) + " Km</font>"));
+        actionBar.setSubtitle(Html.fromHtml("<font color='#ff9800' size='10'>Radius " + formatNumber.changeFormatNumber(radius) + " Km</font>"));
 
         FacebookSdk.sdkInitialize(getApplicationContext());
 
         checkInternetGPS = new ConfigInternetAndGPS(getApplicationContext());
 
-        buble_cat1 = (LinearLayout)findViewById(R.id.buble_cat1);
-        buble_cat2 = (LinearLayout)findViewById(R.id.buble_cat2);
-        buble_cat3 = (LinearLayout)findViewById(R.id.buble_cat3);
-        buble_cat4 = (LinearLayout)findViewById(R.id.buble_cat4);
-        buble_cat5 = (LinearLayout)findViewById(R.id.buble_cat5);
-        btn_buble_cat1 = (Button)findViewById(R.id.btn_buble_cat1);
-        btn_buble_cat2 = (Button)findViewById(R.id.btn_buble_cat2);
-        btn_buble_cat3 = (Button)findViewById(R.id.btn_buble_cat3);
-        btn_buble_cat4 = (Button)findViewById(R.id.btn_buble_cat4);
-        btn_buble_cat5 = (Button)findViewById(R.id.btn_buble_cat5);
-        btn_search = (Button)findViewById(R.id.btn_search);
-        imVi_usrPro = (ImageView)findViewById(R.id.imageView_userProfile);
-        txt_promo_cat1 = (TextView)findViewById(R.id.textView_promo_cat1);
-        txt_promo_cat2 = (TextView)findViewById(R.id.textView_promo_cat2);
-        txt_promo_cat3 = (TextView)findViewById(R.id.textView_promo_cat3);
-        txt_promo_cat4 = (TextView)findViewById(R.id.textView_promo_cat4);
-        txt_promo_cat5 = (TextView)findViewById(R.id.textView_promo_cat5);
-        txt_tot_cat1 = (TextView)findViewById(R.id.textView_total_cat1);
-        txt_tot_cat2 = (TextView)findViewById(R.id.textView_total_cat2);
-        txt_tot_cat3 = (TextView)findViewById(R.id.textView_total_cat3);
-        txt_tot_cat4 = (TextView)findViewById(R.id.textView_total_cat4);
-        txt_tot_cat5 = (TextView)findViewById(R.id.textView_total_cat5);
-        view_usrPro = (ProfilePictureView_viaFB)findViewById(R.id.view_userProfile);
-        textView_usrNm = (TextView)findViewById(R.id.textView_usrNm);
+        buble_cat1 = (LinearLayout) findViewById(R.id.buble_cat1);
+        buble_cat2 = (LinearLayout) findViewById(R.id.buble_cat2);
+        buble_cat3 = (LinearLayout) findViewById(R.id.buble_cat3);
+        buble_cat4 = (LinearLayout) findViewById(R.id.buble_cat4);
+        buble_cat5 = (LinearLayout) findViewById(R.id.buble_cat5);
+        btn_buble_cat1 = (Button) findViewById(R.id.btn_buble_cat1);
+        btn_buble_cat2 = (Button) findViewById(R.id.btn_buble_cat2);
+        btn_buble_cat3 = (Button) findViewById(R.id.btn_buble_cat3);
+        btn_buble_cat4 = (Button) findViewById(R.id.btn_buble_cat4);
+        btn_buble_cat5 = (Button) findViewById(R.id.btn_buble_cat5);
+        btn_search = (Button) findViewById(R.id.btn_search);
+        imVi_usrPro = (ImageView) findViewById(R.id.imageView_userProfile);
+        txt_promo_cat1 = (TextView) findViewById(R.id.textView_promo_cat1);
+        txt_promo_cat2 = (TextView) findViewById(R.id.textView_promo_cat2);
+        txt_promo_cat3 = (TextView) findViewById(R.id.textView_promo_cat3);
+        txt_promo_cat4 = (TextView) findViewById(R.id.textView_promo_cat4);
+        txt_promo_cat5 = (TextView) findViewById(R.id.textView_promo_cat5);
+        txt_tot_cat1 = (TextView) findViewById(R.id.textView_total_cat1);
+        txt_tot_cat2 = (TextView) findViewById(R.id.textView_total_cat2);
+        txt_tot_cat3 = (TextView) findViewById(R.id.textView_total_cat3);
+        txt_tot_cat4 = (TextView) findViewById(R.id.textView_total_cat4);
+        txt_tot_cat5 = (TextView) findViewById(R.id.textView_total_cat5);
+        view_usrPro = (ProfilePictureView_viaFB) findViewById(R.id.view_userProfile);
+        textView_usrNm = (TextView) findViewById(R.id.textView_usrNm);
 
         updateData();
         getServiceFromGPS();
@@ -144,13 +148,16 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 //        DialogFragment Dialog = Dialogs.newInstance(1);
 //        Dialog.show(getFragmentManager(), "tag");
 
-        if(AccessToken.getCurrentAccessToken() != null){
+        if (AccessToken.getCurrentAccessToken() != null) {
             RequestDataFromFB();
         }
 
         view_usrPro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                /*menu.getItem(0).setIcon(getResources().getDrawable(R.drawable.ic_error_red_24dp));
+                Log.e("menu size",""+menu.size());
+                menu.getItem(2).setVisible(false);*/
                 showDialogDetail();
             }
         });
@@ -158,35 +165,35 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         btn_buble_cat1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toListAndMapScreen(id_kategori[0],radius,nama_katagori[0]);
+                toListAndMapScreen(id_kategori[0], radius, nama_katagori[0]);
             }
         });
 
         btn_buble_cat2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toListAndMapScreen(id_kategori[1],radius,nama_katagori[1]);
+                toListAndMapScreen(id_kategori[1], radius, nama_katagori[1]);
             }
         });
 
         btn_buble_cat3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toListAndMapScreen(id_kategori[2],radius,nama_katagori[2]);
+                toListAndMapScreen(id_kategori[2], radius, nama_katagori[2]);
             }
         });
 
         btn_buble_cat4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toListAndMapScreen(id_kategori[3],radius,nama_katagori[3]);
+                toListAndMapScreen(id_kategori[3], radius, nama_katagori[3]);
             }
         });
 
         btn_buble_cat5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toListAndMapScreen(id_kategori[4],radius,nama_katagori[4]);
+                toListAndMapScreen(id_kategori[4], radius, nama_katagori[4]);
             }
         });
 
@@ -194,18 +201,18 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             @Override
             public void onClick(View v) {
                 btn_search.setAnimation(animButtonPress);
-                
-               // btn_search.setText("Internet "+checkInternetGPS.isConnectingToInternet()+" | GPS "+checkInternetGPS.isGPSActived());
-               // if (tambah==true)tambah=false;
-               // else tambah=true;
-                Intent toSearch = new Intent(MainMenuActivity.this,SearchAllCategoryActivity.class);
+
+                // btn_search.setText("Internet "+checkInternetGPS.isConnectingToInternet()+" | GPS "+checkInternetGPS.isGPSActived());
+                // if (tambah==true)tambah=false;
+                // else tambah=true;
+                Intent toSearch = new Intent(MainMenuActivity.this, SearchAllCategoryActivity.class);
                 startActivity(toSearch);
                 finish();
             }
         });
     }
 
-    public void showDialogDetail(){
+    public void showDialogDetail() {
         LayoutInflater mInflater = LayoutInflater.from(this);
         View v = mInflater.inflate(R.layout.dialog_details, null);
 
@@ -213,9 +220,9 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         dialog.setView(v);
         dialog.setCancelable(true);
 
-        details_txt = (TextView)v.findViewById(R.id.details);
+        details_txt = (TextView) v.findViewById(R.id.details);
         details_txt.setText(Html.fromHtml(detailUser));
-        imageButton_close = (ImageButton)v.findViewById(R.id.imageButton_close_dialog);
+        imageButton_close = (ImageButton) v.findViewById(R.id.imageButton_close_dialog);
         imageButton_close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -225,10 +232,10 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         dialog.show();
     }
 
-    public void toListAndMapScreen(int cat_id,double radius,String kategori){
-        goToScreen = new Intent(MainMenuActivity.this,ListAndMapAllLocActivity.class);
+    public void toListAndMapScreen(int cat_id, double radius, String kategori) {
+        goToScreen = new Intent(MainMenuActivity.this, ListAndMapAllLocActivity.class);
         Bundle paket = new Bundle();
-        paket.putInt("cat_id",cat_id);
+        paket.putInt("cat_id", cat_id);
         paket.putString("kategori", kategori);
         paket.putDouble("radius", radius);
         paket.putDouble("latitude", latitude);
@@ -238,15 +245,15 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         finish();
     }
 
-    public void RequestDataFromFB(){
+    public void RequestDataFromFB() {
         GraphRequest request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
             @Override
-            public void onCompleted(JSONObject object,GraphResponse response) {
+            public void onCompleted(JSONObject object, GraphResponse response) {
 
                 JSONObject json = response.getJSONObject();
                 try {
-                    if(json != null){
-                        String text = "<b>Name :</b> "+json.getString("name")+"<br><br><b>Email :</b> "+json.getString("email")+"<br><br><b>Profile link :</b> "+json.getString("link");
+                    if (json != null) {
+                        String text = "<b>Name :</b> " + json.getString("name") + "<br><br><b>Email :</b> " + json.getString("email") + "<br><br><b>Profile link :</b> " + json.getString("link");
                         detailUser = text;
                         view_usrPro.setProfileId(json.getString("id"));
                         view_usrPro.setCropped(true);
@@ -267,6 +274,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
+        this.menu = menu;
         getMenuInflater().inflate(R.menu.menu_main_setting, menu);
         return true;
     }
@@ -284,9 +292,10 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         }
 
         if (item.getItemId() == R.id.goto_setting) {
-            Intent gotoSetting = new Intent(MainMenuActivity.this,SettingCategoryBubleActivity.class);
+            Intent gotoSetting = new Intent(MainMenuActivity.this, SettingCategoryBubleActivity.class);
             startActivity(gotoSetting);
             finish();
+            return super.onOptionsItemSelected(item);
         }
 
         //noinspection SimplifiableIfStatement
@@ -303,10 +312,10 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         finish();
     }
 
-    public void logout_user(){
+    public void logout_user() {
         String logout = getResources().getString(com.facebook.R.string.com_facebook_loginview_log_out_action);
         String cancel = getResources().getString(com.facebook.R.string.com_facebook_loginview_cancel_action);
-        String message= "Are you sure?";
+        String message = "Are you sure?";
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(message)
                 .setCancelable(true)
@@ -322,26 +331,26 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         builder.create().show();
     }
 
-    public void resizeBuble(Button button, int lokasi){
+    public void resizeBuble(Button button, int lokasi) {
         final float scale = getResources().getDisplayMetrics().density;
-        if (lokasi<=5)lokasi=(int)(40 * scale + 0.5f);
-        else if (lokasi>5 && lokasi<11) lokasi=(int)(((lokasi-1)*10) * scale + 0.5f);
-        else if (lokasi>10)lokasi=(int)(90 * scale + 0.5f);
+        if (lokasi <= 5) lokasi = (int) (40 * scale + 0.5f);
+        else if (lokasi > 5 && lokasi < 11) lokasi = (int) (((lokasi - 1) * 10) * scale + 0.5f);
+        else if (lokasi > 10) lokasi = (int) (90 * scale + 0.5f);
         ViewGroup.LayoutParams params = button.getLayoutParams();
-        Log.e("data params",""+params.height+" | "+params.width);
+        //Log.e("data params",""+params.height+" | "+params.width);
         int parwid = params.width;
         int parhei = params.height;
         button.setLayoutParams(params);
-        if (parwid<lokasi){
-            for (int i = parwid; i <= lokasi ; i++) {
-                params.width=i;
-                params.height=i;
+        if (parwid < lokasi) {
+            for (int i = parwid; i <= lokasi; i++) {
+                params.width = i;
+                params.height = i;
                 button.setLayoutParams(params);
             }
-        } else if (parwid>lokasi){
-            for (int i = parwid; i >= lokasi ; i--) {
-                params.width=i;
-                params.height=i;
+        } else if (parwid > lokasi) {
+            for (int i = parwid; i >= lokasi; i--) {
+                params.width = i;
+                params.height = i;
                 button.setLayoutParams(params);
             }
         }
@@ -391,51 +400,51 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         }
     }
 
-    public void getDataCategory(double rad,double lat, double lng) {
+    public void getDataCategory(double rad, double lat, double lng) {
         CallWebPageTask task = new CallWebPageTask();
         task.applicationContext = MainMenuActivity.this;
-        String urls =url+"?rad="+rad+"&lat="+lat+"&lng="+lng;
-        Log.e("Sukses",urls);
+        String urls = url + "?rad=" + rad + "&lat=" + lat + "&lng=" + lng;
+        Log.e("Sukses", urls);
         task.execute(new String[]{urls});
     }
 
-    public void updateData(){
-        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius "+formatNumber.changeFormatNumber(radius)+" Km</font>"));
+    public void updateData() {
+        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatNumber.changeFormatNumber(radius) + " Km</font>"));
 
-        txt_tot_cat1.setText(""+lokasi[0]);
+        txt_tot_cat1.setText("" + lokasi[0]);
         String cat1 = "-";
-        if (nama_katagori[0]!=null) cat1=nama_katagori[0];
-        btn_buble_cat1.setText(""+cat1);
-        txt_promo_cat1.setText("Promo: "+promo[0]);
+        if (nama_katagori[0] != null) cat1 = nama_katagori[0];
+        btn_buble_cat1.setText("" + cat1);
+        txt_promo_cat1.setText("Promo: " + promo[0]);
         resizeBuble(btn_buble_cat1, lokasi[0]);
 
         txt_tot_cat2.setText("" + lokasi[1]);
         String cat2 = "-";
-        if (nama_katagori[1]!=null) cat2=nama_katagori[1];
-        btn_buble_cat2.setText(""+cat2);
-        txt_promo_cat2.setText("Promo: "+promo[1]);
+        if (nama_katagori[1] != null) cat2 = nama_katagori[1];
+        btn_buble_cat2.setText("" + cat2);
+        txt_promo_cat2.setText("Promo: " + promo[1]);
         resizeBuble(btn_buble_cat2, lokasi[1]);
 
         txt_tot_cat3.setText("" + lokasi[2]);
         String cat3 = "-";
-        if (nama_katagori[2]!=null) cat3=nama_katagori[2];
-        btn_buble_cat3.setText(""+cat3);
-        txt_promo_cat3.setText("Promo: "+promo[2]);
+        if (nama_katagori[2] != null) cat3 = nama_katagori[2];
+        btn_buble_cat3.setText("" + cat3);
+        txt_promo_cat3.setText("Promo: " + promo[2]);
         resizeBuble(btn_buble_cat3, lokasi[2]);
 
         txt_tot_cat4.setText("" + lokasi[3]);
         String cat4 = "-";
-        if (nama_katagori[3]!=null) cat4=nama_katagori[3];
-        btn_buble_cat4.setText(""+cat4);
-        txt_promo_cat4.setText("Promo: "+promo[3]);
+        if (nama_katagori[3] != null) cat4 = nama_katagori[3];
+        btn_buble_cat4.setText("" + cat4);
+        txt_promo_cat4.setText("Promo: " + promo[3]);
         resizeBuble(btn_buble_cat4, lokasi[3]);
 
         txt_tot_cat5.setText("" + lokasi[4]);
         String cat5 = "-";
-        if (nama_katagori[4]!=null) cat5=nama_katagori[4];
-        btn_buble_cat5.setText(""+cat5);
-        txt_promo_cat5.setText("Promo: "+promo[4]);
-        resizeBuble(btn_buble_cat5,lokasi[4]);
+        if (nama_katagori[4] != null) cat5 = nama_katagori[4];
+        btn_buble_cat5.setText("" + cat5);
+        txt_promo_cat5.setText("Promo: " + promo[4]);
+        resizeBuble(btn_buble_cat5, lokasi[4]);
     }
 
     @Override
@@ -443,8 +452,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         latitude = location.getLatitude();
         longitude = location.getLongitude();
         //Toast.makeText(getApplicationContext(),"lat "+latitude+" | lgt "+longitude, Toast.LENGTH_LONG).show();
-        if (tambah==true)radius=radius+0.4;
-        else radius=radius-0.4;
+        if (tambah == true) radius = radius + 0.4;
+        else radius = radius - 0.4;
         getDataCategory(radius, latitude, longitude);
     }
 
@@ -456,7 +465,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     @Override
     public void onProviderEnabled(String provider) {
         String message = "GPS enabled";
-        Toast.makeText(getApplicationContext(),message, Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -465,10 +474,20 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
     }
 
-    public void getServiceFromGPS(){
-        myLocationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+    public void getServiceFromGPS() {
+        myLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         criteria = new Criteria();
         provider = myLocationManager.getBestProvider(criteria, true);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         location = myLocationManager.getLastKnownLocation(provider);
         if (location != null) {
             onLocationChanged(location);

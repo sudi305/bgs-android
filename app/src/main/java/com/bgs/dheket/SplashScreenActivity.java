@@ -29,7 +29,7 @@ public class SplashScreenActivity extends Activity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        Mint.initAndStartSession(SplashScreenActivity.this, "609d861e");
+        //Mint.initAndStartSession(SplashScreenActivity.this, "609d861e");
         FacebookSdk.sdkInitialize(getApplicationContext());
         imgLogo = (ImageView)findViewById(R.id.imgLogo);
         final Animation animAlpha = AnimationUtils.loadAnimation(this, R.anim.anim_alpha);

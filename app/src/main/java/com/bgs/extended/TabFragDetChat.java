@@ -14,8 +14,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -66,6 +70,8 @@ public class TabFragDetChat extends Fragment implements LocationListener {
     Location location;
 
     CustomAdapter customAdapter;
+    ImageButton imageButton_send;
+    ImageView imageView_send;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -76,11 +82,22 @@ public class TabFragDetChat extends Fragment implements LocationListener {
         latitude = getArguments().getDouble("latitude");
         longitude = getArguments().getDouble("longitude");
 
+        final Animation animScale = AnimationUtils.loadAnimation(rootView.getContext(), R.anim.anim_scale_button_press);
+
+        imageView_send = (ImageView)rootView.findViewById(R.id.imageView_chat_send);
+        imageButton_send = (ImageButton)rootView.findViewById(R.id.imageButton_chat_send);
+        imageButton_send.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imageView_send.setAnimation(animScale);
+            }
+        });
+
         customListView = (ListView)rootView.findViewById(R.id.listView_chat);
         listViewItems = new ArrayList<ItemObjectCustomList>();
         customAdapter = new CustomAdapter(rootView.getContext(),listViewItems);
         customListView.setAdapter(new CustomAdapter(rootView.getContext(), listViewItems));
-        customListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        /*customListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // make Toast when click
@@ -103,11 +120,11 @@ public class TabFragDetChat extends Fragment implements LocationListener {
 
                 //Toast.makeText(rootView.getContext(), "Id Loc " + selectId, Toast.LENGTH_LONG).show();
                 i.putExtras(paket);
-                /*startActivity(i);
-                getActivity().finish();*/
+                *//*startActivity(i);
+                getActivity().finish();*//*
                 //rootView.getContext().
             }
-        });
+        });*/
 
         getServiceFromGPS();
 
