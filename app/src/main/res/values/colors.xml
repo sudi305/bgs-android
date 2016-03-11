@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3B51B4</color>
+    <!--<color name="colorPrimary">#3B51B4</color>
     <color name="colorPrimaryDark">#283d9c</color>
-    <color name="colorAccent">#ff9800</color>
+    <color name="colorAccent">#ff9800</color>-->
+    <color name="colorPrimary">#109790</color>
+    <color name="colorPrimaryDark">#0c716c</color>
+    <color name="colorAccent">#414042</color>
+
+    <color name="colorTextWhite">#ffffff</color>
+
+    <color name="colorWhiteFdFd">#fdfdfd</color>
     <!--<color name="colorPrimary">#5991ff</color>
     <color name="colorPrimaryDark">#3b77ec</color>
     <color name="colorAccent">#4c83f1</color>-->
@@ -11,4 +18,14 @@
     <color name="beer_selection">#FF5722</color>
     <color name="ui_highlight">#263238</color>
     <color name="ratings">#FF9800</color>
+
+    <color name="paper">#fafafa</color>
+
+    <color name="blue">#4a90e2</color>
+    <color name="mediumBlue">#3978c1</color>
+
+    <color name="color_error">#FFCB0017</color>
+
+    <color name="base10">#eaeaea</color>
+    <color name="base30">#c1c1c1</color>
 </resources>

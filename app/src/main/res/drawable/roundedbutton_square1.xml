@@ -10,7 +10,7 @@
 
                     <!-- view background color -->
                     <solid
-                        android:color="#3b51b4">
+                        android:color="@color/colorPrimary">
                     </solid>
 
                     <!-- view border color and width -->
@@ -42,7 +42,7 @@
 
                     <!-- view background color -->
                     <solid
-                        android:color="#6075d2">
+                        android:color="@color/colorPrimaryDark">
                     </solid>
 
                     <!-- view border color and width -->

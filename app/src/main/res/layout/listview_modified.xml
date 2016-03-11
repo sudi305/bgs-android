@@ -27,7 +27,7 @@
                 android:layout_height="70dp"
                 android:id="@+id/imageView_backPic"
                 android:layout_gravity="center"
-                android:src="#5767be"
+                android:src="@color/colorAccent"
                 android:layout_margin="3px" />
 
             <ImageView
@@ -136,12 +136,14 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:id="@+id/imageView3"
-                android:src="@drawable/abc_ic_go_search_api_mtrl_alpha"
+                android:src="@drawable/ic_play_arrow_24dp"
                 android:layout_below="@+id/textView_distance"
                 android:layout_toRightOf="@+id/textView_loc_id"
                 android:background="@drawable/buble"
                 android:layout_marginTop="25dp"
-                android:layout_marginRight="5dp" />
+                android:layout_marginRight="5dp"
+                android:tint="@color/colorAccent"
+                android:padding="2dp" />
         </LinearLayout>
     </LinearLayout>
 
