@@ -76,7 +76,7 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#cde2ea"
+                android:background="@color/colorPrimary"
                 android:id="@+id/detail_loc"
                 android:padding="@dimen/small_space"
                 android:visibility="gone">
@@ -97,7 +97,7 @@
                             android:layout_height="70dp"
                             android:id="@+id/imageView_tfm_pic_back"
                             android:layout_gravity="center"
-                            android:src="#5767be"
+                            android:src="@color/colorAccent"
                             android:layout_margin="3px" />
 
                         <ImageView

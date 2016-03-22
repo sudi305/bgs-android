@@ -78,7 +78,7 @@ public class SearchAllCategoryActivity extends AppCompatActivity {
             arraylist = new ArrayList<HashMap<String, String>>();
             // Retrieve JSON Objects from the given URL address
             jsonobject = JSONfunctions
-                    .getJSONfromURL("http://dheket.esy.es/getAllCategory.php");
+                    .getJSONfromURL(String.format(getResources().getString(R.string.link_getAllCategory)));
 
             try {
                 // Locate the array name in JSON

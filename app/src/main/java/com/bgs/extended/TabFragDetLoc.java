@@ -50,18 +50,19 @@ import java.util.ArrayList;
 public class TabFragDetLoc  extends Fragment implements LocationListener {
     private JSONObject jObject;
     private String jsonResult ="";
-    String temp_loc_name, temp_loc_address,temp_loc_pic;
+    String temp_loc_name, temp_loc_address,temp_loc_pic,temp_loc_description,temp_loc_tag,temp_loc_phone;
     int temp_loc_promo,temp_id_loc,temp_loc_cat_id;
     double temp_loc_distance, temp_loc_lat, temp_loc_lng;
 
     View rootView;
-    TextView textView_detLoc,textView_descLoc;
+    TextView textView_detLoc,textView_descLoc,textView_loc_name,textView_loc_add,textView_loc_phone,
+                textView_loc_cat,textView_loc_tag,textView_loc_distance,textView_loc_desc;
     ImageButton imageButton_share, imageButton_map;
 
     int cat_id,loc_id;
     double radius, latitude, longitude;
-    String urls = "http://dheket.esy.es/getSingleLocationById.php";
-    String parameters, kategori;
+    String urls = "";
+    String parameters, kategori,icon;
 
     LocationManager myLocationManager;
     Criteria criteria;
@@ -84,28 +85,21 @@ public class TabFragDetLoc  extends Fragment implements LocationListener {
         latitude = getArguments().getDouble("latitude");
         longitude = getArguments().getDouble("longitude");
         kategori = getArguments().getString("kategori");
+        icon = getArguments().getString("icon");
+
+        urls = String.format(getResources().getString(R.string.link_getSingleLocationById));//"http://dheket.esy.es/getSingleLocationById.php";
 
 //        Log.e("data yang dikirim","loc_id "+loc_id+" | cat_id "+cat_id+" | radius "+radius+" | lat "+latitude+" | lng "+longitude+" | kat "+kategori);
+        textView_loc_name = (TextView)rootView.findViewById(R.id.textView_fdl_loc_name);
+        textView_loc_add = (TextView)rootView.findViewById(R.id.textView_fdl_loc_address);
+        textView_loc_phone = (TextView)rootView.findViewById(R.id.textView_fdl_loc_hp);
+        textView_loc_cat = (TextView)rootView.findViewById(R.id.textView_fdl_loc_cat);
+        textView_loc_tag = (TextView)rootView.findViewById(R.id.textView_fdl_loc_subCat);
+        textView_loc_distance = (TextView)rootView.findViewById(R.id.textView_fdl_loc_dist);
+        textView_loc_desc = (TextView)rootView.findViewById(R.id.textView_fdl_loc_desc);
 
-        imageButton_share = (ImageButton)rootView.findViewById(R.id.imageButton_share);
-        imageButton_map = (ImageButton)rootView.findViewById(R.id.imageButton_maps);
         getServiceFromGPS();
-
-        imageButton_share.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                imageButton_share.setAnimation(animButtonPress);
-                shareIt();
-            }
-        });
-
-        imageButton_map.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                imageButton_map.setAnimation(animButtonPress);
-                gotoMap();
-            }
-        });
+        getDataFromServer();
 
         setHasOptionsMenu(true);
         return rootView;
@@ -135,7 +129,7 @@ public class TabFragDetLoc  extends Fragment implements LocationListener {
         Log.e("Sukses bro", "" + parameters);
         task = new CallWebPageTask();
         task.applicationContext = rootView.getContext();
-        parameters = urls + "?lat=" + latitude + "&lng=" + longitude + "&loc_id=" + loc_id;
+        parameters = urls + "/" + latitude + "/" + longitude + "/" + loc_id;
         //Log.e("Sukses", parameters);
         task.execute(new String[]{parameters});
     }
@@ -194,12 +188,15 @@ public class TabFragDetLoc  extends Fragment implements LocationListener {
                     temp_id_loc=menuItemArray.getJSONObject(i).getInt("id_location");
                     temp_loc_name=menuItemArray.getJSONObject(i).getString("location_name").toString();
                     temp_loc_address=menuItemArray.getJSONObject(i).getString("location_address").toString();
+                    temp_loc_phone=menuItemArray.getJSONObject(i).getString("phone").toString();
                     temp_loc_promo=menuItemArray.getJSONObject(i).getInt("isPromo");
-                    temp_loc_distance= Double.parseDouble(formatNumber.changeFormatNumber(menuItemArray.getJSONObject(i).getDouble("distance")));
                     temp_loc_pic=menuItemArray.getJSONObject(i).getString("photo").toString();
                     temp_loc_lat=menuItemArray.getJSONObject(i).getDouble("latitude");
                     temp_loc_lng=menuItemArray.getJSONObject(i).getDouble("longitude");
                     temp_loc_cat_id=menuItemArray.getJSONObject(i).getInt("category_id");
+                    temp_loc_description=menuItemArray.getJSONObject(i).getString("description").toString();
+                    temp_loc_tag=menuItemArray.getJSONObject(i).getString("location_tag").toString();
+                    temp_loc_distance= Double.parseDouble(formatNumber.changeFormatNumber(menuItemArray.getJSONObject(i).getDouble("distance")));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -216,7 +213,7 @@ public class TabFragDetLoc  extends Fragment implements LocationListener {
                 isFirst = false;
                 updateList();
             } else {
-
+                updateList();
             }
         }
     }
@@ -244,7 +241,13 @@ public class TabFragDetLoc  extends Fragment implements LocationListener {
     }
 
     public void updateList() {
-
+        textView_loc_name.setText(""+temp_loc_name);
+        textView_loc_add.setText(""+temp_loc_address);
+        textView_loc_phone.setText(""+temp_loc_phone);
+        textView_loc_cat.setText(""+kategori);
+        textView_loc_tag.setText(""+temp_loc_tag);
+        textView_loc_distance.setText(""+formatNumber.changeFormatNumber(temp_loc_distance)+" Km");
+        textView_loc_desc.setText(""+temp_loc_description);
     }
 
     public void shareIt() {
@@ -252,19 +255,20 @@ public class TabFragDetLoc  extends Fragment implements LocationListener {
         Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
         sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Dheket");
-        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, "Nearby location https://dheket.esy.es/ ");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, "Nearby location https://dheket.co.id/ ");
         startActivity(Intent.createChooser(sharingIntent, "Share via"));
     }
 
     public void gotoMap() {
         Intent map = new Intent(rootView.getContext().getApplicationContext(), SingleMapLocationActivity.class);
         Bundle paket = new Bundle();
-        paket.putInt("loc_id",loc_id);
+        paket.putInt("loc_id",temp_id_loc);
         paket.putInt("cat_id",cat_id);
         paket.putDouble("radius",radius);
         paket.putDouble("latitude",latitude);
         paket.putDouble("longitude",longitude);
         paket.putString("kategori",kategori);
+        paket.putString("icon",icon);
         map.putExtras(paket);
         startActivity(map);
         getActivity().finish();

@@ -76,10 +76,11 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     private JSONObject jObject;
     private String jsonResult = "";
     int[] promo = new int[5], lokasi = new int[5], id_kategori = new int[5];
-    String[] nama_katagori = new String[5];
+    String[] nama_katagori = new String[5], icon_kategori = new String[5];
+    double real_radius = 0.0;
     double radius = 0.0;
     double latitude, longitude;
-    String url = "http://dheket.esy.es/getLocationPromo.php";
+    String url = "";
     String detailUser;
     boolean tambah = true;
     android.support.v7.app.ActionBar actionBar;
@@ -102,6 +103,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         actionBar.setSubtitle(Html.fromHtml("<font color='#ff9800' size='10'>Radius " + formatNumber.changeFormatNumber(radius) + " Km</font>"));
 
         FacebookSdk.sdkInitialize(getApplicationContext());
+
+        url = String.format(getResources().getString(R.string.link_getDataUser));
 
         checkInternetGPS = new ConfigInternetAndGPS(getApplicationContext());
 
@@ -165,35 +168,35 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         btn_buble_cat1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toListAndMapScreen(id_kategori[0], radius, nama_katagori[0]);
+                toListAndMapScreen(id_kategori[0], real_radius, nama_katagori[0], icon_kategori[0]);
             }
         });
 
         btn_buble_cat2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toListAndMapScreen(id_kategori[1], radius, nama_katagori[1]);
+                toListAndMapScreen(id_kategori[1], real_radius, nama_katagori[1],icon_kategori[1]);
             }
         });
 
         btn_buble_cat3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toListAndMapScreen(id_kategori[2], radius, nama_katagori[2]);
+                toListAndMapScreen(id_kategori[2], real_radius, nama_katagori[2],icon_kategori[2]);
             }
         });
 
         btn_buble_cat4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toListAndMapScreen(id_kategori[3], radius, nama_katagori[3]);
+                toListAndMapScreen(id_kategori[3], real_radius, nama_katagori[3],icon_kategori[3]);
             }
         });
 
         btn_buble_cat5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toListAndMapScreen(id_kategori[4], radius, nama_katagori[4]);
+                toListAndMapScreen(id_kategori[4], real_radius, nama_katagori[4],icon_kategori[4]);
             }
         });
 
@@ -205,7 +208,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 // btn_search.setText("Internet "+checkInternetGPS.isConnectingToInternet()+" | GPS "+checkInternetGPS.isGPSActived());
                 // if (tambah==true)tambah=false;
                 // else tambah=true;
-                Intent toSearch = new Intent(MainMenuActivity.this, SearchAllCategoryActivity.class);
+                Intent toSearch = new Intent(getApplicationContext(), SearchAllCategoryActivity.class);
                 startActivity(toSearch);
                 finish();
             }
@@ -232,14 +235,15 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         dialog.show();
     }
 
-    public void toListAndMapScreen(int cat_id, double radius, String kategori) {
-        goToScreen = new Intent(MainMenuActivity.this, ListAndMapAllLocActivity.class);
+    public void toListAndMapScreen(int cat_id, double radius, String kategori, String icon) {
+        goToScreen = new Intent(getApplicationContext(), ListAndMapAllLocActivity.class);
         Bundle paket = new Bundle();
         paket.putInt("cat_id", cat_id);
         paket.putString("kategori", kategori);
         paket.putDouble("radius", radius);
         paket.putDouble("latitude", latitude);
         paket.putDouble("longitude", longitude);
+        paket.putString("icon",icon);
         goToScreen.putExtras(paket);
         startActivity(goToScreen);
         finish();
@@ -292,7 +296,10 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         }
 
         if (item.getItemId() == R.id.goto_setting) {
-            Intent gotoSetting = new Intent(MainMenuActivity.this, SettingCategoryBubleActivity.class);
+            Intent gotoSetting = new Intent(getApplicationContext(), SettingCategoryBubleActivity.class);
+            Bundle paket = new Bundle();
+            paket.putStringArray("kategori",nama_katagori);
+            paket.putDouble("radius",radius);
             startActivity(gotoSetting);
             finish();
             return super.onOptionsItemSelected(item);
@@ -322,7 +329,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 .setPositiveButton(logout, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         LoginManager.getInstance().logOut();
-                        Intent logout_user_fb = new Intent(MainMenuActivity.this, FormLoginActivity.class);
+                        Intent logout_user_fb = new Intent(getApplicationContext(), FormLoginActivity.class);
                         startActivity(logout_user_fb);
                         finish();
                     }
@@ -379,12 +386,16 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 //simpan data dari web ke dalam array
                 JSONArray menuItemArray = null;
                 jObject = new JSONObject(response);
-                menuItemArray = jObject.getJSONArray("dheket_totLocation");
+                menuItemArray = jObject.getJSONArray("tag_cat");
+                real_radius = Double.parseDouble(jObject.getString("rad"));
+                radius = (real_radius/1000);
+
                 for (int i = 0; i < menuItemArray.length(); i++) {
                     id_kategori[i] = menuItemArray.getJSONObject(i).getInt("id_category");
                     nama_katagori[i] = menuItemArray.getJSONObject(i).getString("category_name").toString();
                     lokasi[i] = menuItemArray.getJSONObject(i).getInt("total_location");
                     promo[i] = menuItemArray.getJSONObject(i).getInt("total_promo");
+                    icon_kategori[i] = menuItemArray.getJSONObject(i).getString("icon").toString();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -400,10 +411,10 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         }
     }
 
-    public void getDataCategory(double rad, double lat, double lng) {
+    public void getDataCategory(String email, double lat, double lng) {
         CallWebPageTask task = new CallWebPageTask();
-        task.applicationContext = MainMenuActivity.this;
-        String urls = url + "?rad=" + rad + "&lat=" + lat + "&lng=" + lng;
+        task.applicationContext = getApplicationContext();
+        String urls = url + "/" + email + "/" + lat + "/" + lng;
         Log.e("Sukses", urls);
         task.execute(new String[]{urls});
     }
@@ -452,9 +463,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         latitude = location.getLatitude();
         longitude = location.getLongitude();
         //Toast.makeText(getApplicationContext(),"lat "+latitude+" | lgt "+longitude, Toast.LENGTH_LONG).show();
-        if (tambah == true) radius = radius + 0.4;
-        else radius = radius - 0.4;
-        getDataCategory(radius, latitude, longitude);
+        getDataCategory("yangkutahu@gmail.com", latitude, longitude);
     }
 
     @Override

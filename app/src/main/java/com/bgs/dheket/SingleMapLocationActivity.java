@@ -100,8 +100,8 @@ public class SingleMapLocationActivity extends AppCompatActivity {
 
     double radius = 0.0;
     double latitude, longitude;
-    String urls ="http://dheket.esy.es/getSingleLocationById.php";
-    String parameters,kategori;
+    String urls = "";
+    String parameters,kategori,icon;
     int cat_id,loc_id;
     ViewGroup placeLayout;
     Bundle paket;
@@ -119,9 +119,9 @@ public class SingleMapLocationActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         //actionBar.setHomeAsUpIndicator(R.drawable.logo);
         actionBar.setHomeButtonEnabled(true);
-        actionBar.setTitle("Dheket");
 //        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
-        actionBar.setSubtitle(Html.fromHtml("<font color='#ff9800'>Location in Radius " + formatNumber.changeFormatNumber(radius) + " Km</font>"));
+
+        urls = String.format(getResources().getString(R.string.link_getSingleLocationById));
 
         FacebookSdk.sdkInitialize(getApplicationContext());
 
@@ -131,12 +131,13 @@ public class SingleMapLocationActivity extends AppCompatActivity {
         mMapView.setOnSingleTapListener(mapTapCallback);
         //mMapView.setOnLongPressListener(mapLongPress);
         paket = getIntent().getExtras();
-        loc_id = paket.getInt("id_loc");
+        loc_id = paket.getInt("loc_id");
         cat_id = paket.getInt("cat_id");
         radius = paket.getDouble("radius");
         latitude = paket.getDouble("latitude");
         longitude = paket.getDouble("longitude");
         kategori = paket.getString("kategori");
+        icon = paket.getString("icon");
 
         imageView_pic = (ImageView)findViewById(R.id.imageView_tfm_pic_single);
         imageView_pic_back = (ImageView)findViewById(R.id.imageView_tfm_pic_back_single);
@@ -167,6 +168,7 @@ public class SingleMapLocationActivity extends AppCompatActivity {
                 paket.putDouble("longitude", longitude);
                 paket.putDouble("radius", radius);
                 paket.putString("kategori",kategori);
+                paket.putString("icon",icon);
                 //Toast.makeText(rootView.getContext(), "Id Loc " + selectId, Toast.LENGTH_LONG).show();
                 i.putExtras(paket);
                 startActivity(i);
@@ -213,7 +215,14 @@ public class SingleMapLocationActivity extends AppCompatActivity {
         mCat3 = new PictureMarkerSymbol(getApplicationContext(), ContextCompat.getDrawable(getApplicationContext(), R.drawable.pin_blue));
         mCat4 = new PictureMarkerSymbol(getApplicationContext(), ContextCompat.getDrawable(getApplicationContext(), R.drawable.pin_orange));
         mCat5 = new PictureMarkerSymbol(getApplicationContext(), ContextCompat.getDrawable(getApplicationContext(), R.drawable.pin_yellow));
-        mAdd = new PictureMarkerSymbol(getApplicationContext(), ContextCompat.getDrawable(getApplicationContext(), R.drawable.pin_add));
+
+        if (!icon.isEmpty() && (!icon.equalsIgnoreCase("null") || !icon.equalsIgnoreCase(""))){
+            mAdd= new PictureMarkerSymbol();
+            mAdd.setUrl(icon);
+        } else {
+            mAdd= new PictureMarkerSymbol(getApplicationContext(), ContextCompat.getDrawable(getApplicationContext(), R.drawable.pin_blue));
+            Log.e("icon kosong","["+icon+"]");
+        }
 
         setupLocator();
         setupLocationListener();
@@ -222,7 +231,7 @@ public class SingleMapLocationActivity extends AppCompatActivity {
     public void getDataFromServer() {
         task = new CallWebPageTask();
         task.applicationContext = SingleMapLocationActivity.this;
-        parameters = urls + "?lat=" + latitude + "&lng=" + longitude + "&loc_id=" + loc_id;
+        parameters = urls + "/" + latitude + "/" + longitude + "/" + loc_id;
         Log.e("OK Connecting Sukses", "" + parameters);
         //Log.e("Sukses", parameters);
         task.execute(new String[]{parameters});
@@ -571,6 +580,9 @@ public class SingleMapLocationActivity extends AppCompatActivity {
     }
 
     public void updateData(){
+        actionBar.setTitle(""+temp_loc_name);
+        actionBar.setSubtitle(Html.fromHtml("<font color='#ff9800'> "+temp_loc_address+" </font>"));
+
         MultiPoint fullExtent = new MultiPoint();
         Symbol symbol = null;
         //-6.21267000, 106.61778566
@@ -592,11 +604,7 @@ public class SingleMapLocationActivity extends AppCompatActivity {
         attr.put("loc_lng", temp_loc_lng);
 
         Log.e("Ok sip", "this location at lat= " + temp_loc_lat + " and lng= " + temp_loc_lng + " | point on getAsPoint" + point + "");
-        if (cat_id==1) symbol = mCat1;
-        else if (cat_id==2) symbol = mCat2;
-        else if (cat_id==3) symbol = mCat3;
-        else if (cat_id==4) symbol = mCat4;
-        else symbol = mCat5;
+        symbol = mAdd;
 
         mResultsLayer.addGraphic(new Graphic(point, symbol, attr));
         fullExtent.add(point);
@@ -628,7 +636,8 @@ public class SingleMapLocationActivity extends AppCompatActivity {
         paket.putDouble("latitude", temp_loc_lat);
         paket.putDouble("longitude", temp_loc_lng);
         paket.putDouble("radius", radius);
-        paket.putString("kategori",kategori);
+        paket.putString("kategori", kategori);
+        paket.putString("icon",icon);
         //Toast.makeText(rootView.getContext(), "Id Loc " + selectId, Toast.LENGTH_LONG).show();
         intent.putExtras(paket);
         startActivity(intent);

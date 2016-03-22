@@ -22,7 +22,7 @@
         android:textAllCaps="false"
         android:layout_marginTop="10dp"
         android:background="@drawable/roundedbutton_square1"
-        android:visibility="visible"
+        android:visibility="gone"
         android:textColor="#ffffff"
         android:alpha="0.9" />
 </RelativeLayout>

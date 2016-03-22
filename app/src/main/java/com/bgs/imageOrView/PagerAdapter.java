@@ -14,9 +14,10 @@ import com.bgs.extended.TabFragmentMap;
 public class PagerAdapter extends FragmentStatePagerAdapter {
     int mNumOfTabs,cat_id;
     double radius, latitude, longitude;
-    String kategori;
+    String kategori, icon;
 
-    public PagerAdapter(FragmentManager fm, int NumOfTabs,int cat_id, double radius, double latitude, double longitude, String kategori) {
+    public PagerAdapter(FragmentManager fm, int NumOfTabs,int cat_id, double radius, double latitude,
+                        double longitude, String kategori, String icon) {
         super(fm);
         this.mNumOfTabs = NumOfTabs;
         this.cat_id = cat_id;
@@ -24,6 +25,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         this.latitude = latitude;
         this.longitude = longitude;
         this.kategori = kategori;
+        this.icon = icon;
     }
 
     @Override
@@ -34,20 +36,22 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
                 TabFragmentList tab1 = new TabFragmentList();
                 Bundle paket = new Bundle();
                 paket.putInt("cat_id",cat_id);
-                paket.putDouble("radius",radius);
+                paket.putDouble("radius", radius);
                 paket.putDouble("latitude",latitude);
                 paket.putDouble("longitude",longitude);
                 paket.putString("kategori", kategori);
+                paket.putString("icon",icon);
                 tab1.setArguments(paket);
                 return tab1;
             case 1:
                 TabFragmentMap tab2 = new TabFragmentMap();
                 Bundle pack = new Bundle();
                 pack.putInt("cat_id",cat_id);
-                pack.putDouble("radius",radius);
+                pack.putDouble("radius", radius);
                 pack.putDouble("latitude",latitude);
                 pack.putDouble("longitude",longitude);
                 pack.putString("kategori", kategori);
+                pack.putString("icon",icon);
                 tab2.setArguments(pack);
                 return tab2;
             default:

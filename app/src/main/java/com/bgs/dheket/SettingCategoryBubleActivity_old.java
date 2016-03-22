@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -18,7 +17,6 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,6 +27,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -37,7 +36,6 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bgs.hashTag.HashTag;
 import com.bgs.hashTag.TagsView;
@@ -56,10 +54,8 @@ import java.util.List;
 /**
  * Created by SND on 23/02/2016.
  */
-public class SettingCategoryBubleActivity extends AppCompatActivity {
+public class SettingCategoryBubleActivity_old extends AppCompatActivity {
     android.support.v7.app.ActionBar actionBar;
-
-    private int GET_INDEX_OF_HASHTAG_POSITION = 0;
 
     EditText editText_cat1, editText_cat2, editText_cat3, editText_cat4, editText_cat5, editText_radius;
     TagsView editText_subcat1, editText_subcat2, editText_subcat3, editText_subcat4, editText_subcat5;
@@ -67,12 +63,9 @@ public class SettingCategoryBubleActivity extends AppCompatActivity {
     ImageView imageView_set_radius,imageView_expand_rad,imageView_expand_cat1,imageView_expand_cat2,imageView_expand_cat3,
             imageView_expand_cat4,imageView_expand_cat5;
     TextView textView_sb_ct1,textView_sb_ct2,textView_sb_ct3,textView_sb_ct4,textView_sb_ct5,textView_warning,
-            textView_sb_cc1,textView_sb_cc2,textView_sb_cc3,textView_sb_cc4,textView_sb_cc5,
-            textView_hashtag_noresult1,textView_hashtag_noresult2,textView_hashtag_noresult3,textView_hashtag_noresult4,
-            textView_hashtag_noresult5;
+            textView_sb_cc1,textView_sb_cc2,textView_sb_cc3,textView_sb_cc4,textView_sb_cc5;
     ViewGroup title_rad,title_cat1,title_cat2,title_cat3,title_cat4,title_cat5,con_rad,con_cat1,con_cat2,con_cat3,
-            con_cat4,con_cat5,list_hashtag1,list_hashtag2,list_hashtag3,list_hashtag4,list_hashtag5,
-            ll_sbt_ht1,ll_sbt_ht2,ll_sbt_ht3,ll_sbt_ht4,ll_sbt_ht5;
+            con_cat4,con_cat5,list_hashtag1,list_hashtag2,list_hashtag3,list_hashtag4,list_hashtag5;
     RadioGroup rgCat1,rgCat2,rgCat3,rgCat4,rgCat5;
     RadioButton rbCat_1,rbCat_2,rbCat_3,rbCat_4,rbCat_5,rbBrand_1,rbBrand_2,rbBrand_3,rbBrand_4,rbBrand_5;
 
@@ -87,24 +80,14 @@ public class SettingCategoryBubleActivity extends AppCompatActivity {
     int lastPosition;
     double radius;
 
-    private RecyclerView mRecyclerView,mRecyclerView2,mRecyclerView3,mRecyclerView4,mRecyclerView5;
-    private MyAdapter mMyAdapter,mMyAdapter2,mMyAdapter3,mMyAdapter4,mMyAdapter5;
+    private RecyclerView mRecyclerView;
+    private MyAdapter mMyAdapter;
 
     boolean []showHideContent = {true,false,false,false,false,false};
-    boolean []hasValid = {true,true,true,true,true,true,true,true,true,true,true,true};
+    boolean []hasValid = {true,true,true,true,true,true};
     int []tipeCategory = {2,1,2,1,2};
-
-    String [] dataHashtagName,dataHashtagId,
-            dataHashtagName2,dataHashtagId2,
-            dataHashtagName3,dataHashtagId3,
-            dataHashtagName4,dataHashtagId4,
-            dataHashtagName5,dataHashtagId5;
-
-    private String[] newDataAfterRemove,newDataAfterRemove2,newDataAfterRemove3,
-            newDataAfterRemove4,newDataAfterRemove5;
-    private List<String> filteredList = new ArrayList<>(),filteredList2 = new ArrayList<>(),
-            filteredList3 = new ArrayList<>(),filteredList4 = new ArrayList<>(),
-            filteredList5 = new ArrayList<>();
+    String []dataHashtagName;
+    String []dataHashtagId;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,11 +128,6 @@ public class SettingCategoryBubleActivity extends AppCompatActivity {
         list_hashtag3 = (ViewGroup)findViewById(R.id.linearLayout_sb_listhashtag3);
         list_hashtag4 = (ViewGroup)findViewById(R.id.linearLayout_sb_listhashtag4);
         list_hashtag5 = (ViewGroup)findViewById(R.id.linearLayout_sb_listhashtag5);
-        ll_sbt_ht1 = (ViewGroup)findViewById(R.id.ll_sbt_ht1);
-        ll_sbt_ht2 = (ViewGroup)findViewById(R.id.ll_sbt_ht2);
-        ll_sbt_ht3 = (ViewGroup)findViewById(R.id.ll_sbt_ht3);
-        ll_sbt_ht4 = (ViewGroup)findViewById(R.id.ll_sbt_ht4);
-        ll_sbt_ht5 = (ViewGroup)findViewById(R.id.ll_sbt_ht5);
 
         imageView_expand_rad = (ImageView)findViewById(R.id.imageView_sbt_rad);
         imageView_expand_cat1 = (ImageView)findViewById(R.id.imageView_sbt_cat1);
@@ -183,7 +161,6 @@ public class SettingCategoryBubleActivity extends AppCompatActivity {
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) showHideListHashtag(1, true);
                 else showHideListHashtag(1, false);
-                GET_INDEX_OF_HASHTAG_POSITION=1;
             }
         });
         editText_subcat1.findViewById(R.id.editText_hashtagEditText).setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -191,7 +168,6 @@ public class SettingCategoryBubleActivity extends AppCompatActivity {
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) showHideListHashtag(1, true);
                 else showHideListHashtag(1, false);
-                GET_INDEX_OF_HASHTAG_POSITION=1;
             }
         });
 
@@ -209,21 +185,47 @@ public class SettingCategoryBubleActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence text) {
                 String teks = text.toString().toLowerCase();
-                if (newDataAfterRemove != null){
-                    mMyAdapter.filterItems(teks);
-                    if (mMyAdapter.getItemCount() < 1) textView_hashtag_noresult1.setVisibility(View.VISIBLE);
-                    else textView_hashtag_noresult1.setVisibility(View.GONE);
-                    Log.e("disini awal", "removeTagListSize" + editText_subcat1.removeTagsList.size());
-                    if (editText_subcat1.removeTagsList.size() != 0) {
-                        editText_subcat1.removeTagsList.get(0);
-                        filteredList.add(editText_subcat1.removeTagsList.get(0).getHashTag().getHashTagName());
-                        newDataAfterRemove = new String[filteredList.size()];
-                        for (int i = 0; i < filteredList.size(); i++) {
-                            newDataAfterRemove[i] = filteredList.get(i).toString();
-                        }
-                        editText_subcat1.removeTagsList.clear();
-                        Log.e("disini akhir", "removeTagListSize" + editText_subcat1.removeTagsList.size());
+                if (mMyAdapter.data != null) mMyAdapter.filterItems(teks);
+                /*if (mMyAdapter.getItemCount()<1) textView01.setVisibility(View.VISIBLE);
+                else textView01.setVisibility(View.GONE);*/
+                Log.e("disini awal", "removeTagListSize" + editText_subcat1.removeTagsList.size());
+                if (editText_subcat1.removeTagsList.size() != 0) {
+                    Log.e("proses hapus 1", "removeTagListSize" + editText_subcat1.removeTagsList.size());
+                    editText_subcat1.removeTagsList.get(0);
+                    Log.e("proses hapus ketemu", "data data yang mau dihapus "+editText_subcat1.removeTagsList.get(0).getHashTag().
+                            getHashTagName().toString().toLowerCase());
+                    if (mMyAdapter.data != null) {
+                        mMyAdapter.filterItems(editText_subcat1.removeTagsList.get(0).getHashTag().
+                                getHashTagName().toString().toLowerCase());
+                        //mRecyclerView.getAdapter().getItemCount();
+                        Log.e("proses hapus ketemu", "data ditemukan "+mRecyclerView.getAdapter().getItemCount()+
+                        " -- "+((TextView)mRecyclerView.findViewById(R.id.text_view_recyclerView)).getText().toString());
+                        Log.e("proses hapus ketemu", "data ditemukan 1"+mRecyclerView.getAdapter().getItemCount()+
+                                " -- "+mRecyclerView.findViewHolderForLayoutPosition(1));
+                        Log.e("proses hapus ketemu", "data ditemukan 4 " + ((TextView) mRecyclerView.findViewHolderForLayoutPosition(0).itemView.findViewById(R.id.text_view_recyclerView)).getText().toString());
+
                     }
+                    /*if (mMyAdapter.getItemCount()!=0){
+                        if (((CheckBox) mRecyclerView.findViewHolderForLayoutPosition(0).itemView.findViewById(R.id.checkBox)).isChecked()) {
+                            Log.e("proses hapus ketemu", "data dihapus");
+                            ((CheckBox) mRecyclerView.findViewHolderForLayoutPosition(0).itemView.findViewById(R.id.checkBox)).setChecked(false);
+                        }
+                    }*/
+                    Log.e("proses hapus 2", "removeTagListSize" + editText_subcat1.removeTagsList.size());
+                    /*for (int i = 0; i < mMyAdapter.data.length; i++) {
+                        if (mMyAdapter.data[i].equalsIgnoreCase(editText_subcat1.removeTagsList.get(0).getHashTag().getHashTagName())) {
+                            Log.e("proses hapus 3", "removeTagListSize" + editText_subcat1.removeTagsList.size()+" recycler "+mRecyclerView.getAdapter().getItemCount());
+                            Log.e("proses hapus 4", "data ke " + mMyAdapter.getItemViewType(i) +"==");
+
+                            if (((CheckBox) mRecyclerView.findViewHolderForLayoutPosition(i).itemView.findViewById(R.id.checkBox)).isChecked()) {
+                                ((CheckBox) mRecyclerView.findViewHolderForLayoutPosition(i).itemView.findViewById(R.id.checkBox)).setChecked(false);
+                                i=mMyAdapter.data.length;
+                            }
+                        }
+
+                    }*/
+                    editText_subcat1.removeTagsList.clear();
+                    Log.e("disini akhir", "removeTagListSize" + editText_subcat1.removeTagsList.size());
                 }
             }
         });
@@ -277,11 +279,6 @@ public class SettingCategoryBubleActivity extends AppCompatActivity {
         textView_sb_cc4 = (TextView)findViewById(R.id.textView_sb_cc4);
         textView_sb_cc5 = (TextView)findViewById(R.id.textView_sb_cc5);
         textView_warning = (TextView)findViewById(R.id.textView_sb_warning);
-        textView_hashtag_noresult1 = (TextView)findViewById(R.id.textView_hashtag_noresult1);
-        textView_hashtag_noresult2 = (TextView)findViewById(R.id.textView_hashtag_noresult2);
-        textView_hashtag_noresult3 = (TextView)findViewById(R.id.textView_hashtag_noresult3);
-        textView_hashtag_noresult4 = (TextView)findViewById(R.id.textView_hashtag_noresult4);
-        textView_hashtag_noresult5 = (TextView)findViewById(R.id.textView_hashtag_noresult5);
 
         rgCat1 = (RadioGroup)findViewById(R.id.radioGrup_cat1);
         rgCat1.setOnCheckedChangeListener(rg1);
@@ -294,7 +291,9 @@ public class SettingCategoryBubleActivity extends AppCompatActivity {
         rgCat5 = (RadioGroup)findViewById(R.id.radioGrup_cat5);
         rgCat5.setOnCheckedChangeListener(rg5);
 
-        initData();
+        settingRadioGrup();
+        getDataHashTag();
+        getDataCategory();
     }
 
     final View.OnClickListener cat1 = new View.OnClickListener() {
@@ -438,6 +437,7 @@ public class SettingCategoryBubleActivity extends AppCompatActivity {
     };
 
     final TagsView.TagsListener tagListener = new TagsView.TagsListener(){
+
         @Override
         public void onTagsAdded(TagsView.Tags tags) {
 
@@ -450,23 +450,7 @@ public class SettingCategoryBubleActivity extends AppCompatActivity {
 
         @Override
         public void onTextChanged(CharSequence text) {
-            String teks = text.toString().toLowerCase();
-            if (newDataAfterRemove != null){
-                mMyAdapter.filterItems(teks);
-                if (mMyAdapter.getItemCount() < 1) textView_hashtag_noresult1.setVisibility(View.VISIBLE);
-                else textView_hashtag_noresult1.setVisibility(View.GONE);
-                Log.e("disini awal", "removeTagListSize" + editText_subcat1.removeTagsList.size());
-                if (editText_subcat1.removeTagsList.size() != 0) {
-                    editText_subcat1.removeTagsList.get(0);
-                    filteredList.add(editText_subcat1.removeTagsList.get(0).getHashTag().getHashTagName());
-                    newDataAfterRemove = new String[filteredList.size()];
-                    for (int i = 0; i < filteredList.size(); i++) {
-                        newDataAfterRemove[i] = filteredList.get(i).toString();
-                    }
-                    editText_subcat1.removeTagsList.clear();
-                    Log.e("disini akhir", "removeTagListSize" + editText_subcat1.removeTagsList.size());
-                }
-            }
+
         }
     };
 
@@ -492,37 +476,6 @@ public class SettingCategoryBubleActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    public void initData(){
-        settingRadioGrup();
-        //getDataHashTag();
-        getDataCategory();
-
-        initFormHashtag();
-    }
-
-    public void initDataHashtag(){
-        setVarToGetDataHashtag(0, dataHashtagName, editText_cat1);
-        setVarToGetDataHashtag(1, dataHashtagName2, editText_cat2);
-        setVarToGetDataHashtag(2, dataHashtagName3, editText_cat3);
-        setVarToGetDataHashtag(3, dataHashtagName4, editText_cat4);
-        setVarToGetDataHashtag(4, dataHashtagName5, editText_cat5);
-    }
-
-    public void initFormHashtag(){
-        showHideFormHashTag(editText_cat1, ll_sbt_ht1);
-        showHideFormHashTag(editText_cat2, ll_sbt_ht2);
-        showHideFormHashTag(editText_cat3, ll_sbt_ht3);
-        showHideFormHashTag(editText_cat4, ll_sbt_ht4);
-        showHideFormHashTag(editText_cat5, ll_sbt_ht5);
-    }
-
-    public void showHideFormHashTag(EditText editTextcat,ViewGroup ll_sbt_ht){
-        if (editTextcat.getText().toString().isEmpty())
-            ll_sbt_ht.setVisibility(View.GONE);
-        else
-            ll_sbt_ht.setVisibility(View.VISIBLE);
     }
 
     public void showHideContent(int pos){
@@ -600,56 +553,23 @@ public class SettingCategoryBubleActivity extends AppCompatActivity {
             case 1:
                 if (show)list_hashtag1.setVisibility(View.VISIBLE);
                 else list_hashtag1.setVisibility(View.GONE);
-                //setVarToGetDataHashtag(0,dataHashtagName,editText_cat1);//jangan pakai yang ini karena akan ambil data terus
-                /*String typeHashtag = "";
-                String catOrBrandNow = editText_cat1.getText().toString();
-                if (tipeCategory[0]==1) {
-                    for (int i = 0; i < nama_katagori.length; i++) {
-                        if (catOrBrandNow.equalsIgnoreCase(nama_katagori[i])) {
-                            typeHashtag = "" + id_kategori[i];
-                        }
-                    }
-                    if (dataHashtagName==null || !typeHashtag.equalsIgnoreCase(""+id_kategori_select_user[0]))getDataHashTag(typeHashtag);
-                } else {
-                    if (dataHashtagName==null || tipeCategory[0]==2)getDataHashTag(typeHashtag);
-                }*/
                 break;
             case 2:
                 if (show)list_hashtag2.setVisibility(View.VISIBLE);
                 else list_hashtag2.setVisibility(View.GONE);
-                setVarToGetDataHashtag(1,dataHashtagName2,editText_cat2);
                 break;
             case 3:
                 if (show)list_hashtag3.setVisibility(View.VISIBLE);
                 else list_hashtag3.setVisibility(View.GONE);
-                setVarToGetDataHashtag(2,dataHashtagName3,editText_cat3);
                 break;
             case 4:
                 if (show)list_hashtag4.setVisibility(View.VISIBLE);
                 else list_hashtag4.setVisibility(View.GONE);
-                setVarToGetDataHashtag(3,dataHashtagName4,editText_cat4);
                 break;
             case 5:
                 if (show)list_hashtag5.setVisibility(View.VISIBLE);
                 else list_hashtag5.setVisibility(View.GONE);
-                setVarToGetDataHashtag(4,dataHashtagName5,editText_cat5);
                 break;
-        }
-    }
-
-    public void setVarToGetDataHashtag(int indexTypeCategory,String[] data_HashtagName,EditText edittext){
-        String typeHashtag = "";
-        String catOrBrandNow = edittext.getText().toString();
-
-        if (tipeCategory[indexTypeCategory]==1) {
-            for (int i = 0; i < nama_katagori.length; i++) {
-                if (catOrBrandNow.equalsIgnoreCase(nama_katagori[i])) {
-                    typeHashtag = "" + id_kategori[i];
-                }
-            }
-            if (data_HashtagName==null || !typeHashtag.equalsIgnoreCase(""+id_kategori_select_user[indexTypeCategory]))getDataHashTag(typeHashtag);
-        } else {
-            if (data_HashtagName==null || tipeCategory[indexTypeCategory]==2)getDataHashTag(typeHashtag);
         }
     }
 
@@ -712,16 +632,15 @@ public class SettingCategoryBubleActivity extends AppCompatActivity {
 
     public void getDataCategory() {
         CallWebPageTask task = new CallWebPageTask();
-        task.applicationContext = SettingCategoryBubleActivity.this;
+        task.applicationContext = SettingCategoryBubleActivity_old.this;
         String urls =url;
         Log.e("Sukses", urls);
         task.execute(new String[]{urls});
     }
 
-    public void getDataHashTag(String typeHashtag) {
+    public void getDataHashTag() {
         CallWebPageTaskHashtag task = new CallWebPageTaskHashtag();
-        task.applicationContext = SettingCategoryBubleActivity.this;
-        //url = url+"?typeHashtag"+typeHashtag;
+        task.applicationContext = SettingCategoryBubleActivity_old.this;
         String urls =url;
         Log.e("Sukses", urls);
         task.execute(new String[]{urls});
@@ -742,7 +661,7 @@ public class SettingCategoryBubleActivity extends AppCompatActivity {
                 .setPositiveButton(logout, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         LoginManager.getInstance().logOut();
-                        Intent logout_user_fb = new Intent(SettingCategoryBubleActivity.this, FormLoginActivity.class);
+                        Intent logout_user_fb = new Intent(SettingCategoryBubleActivity_old.this, FormLoginActivity.class);
                         startActivity(logout_user_fb);
                         finish();
                     }
@@ -752,7 +671,7 @@ public class SettingCategoryBubleActivity extends AppCompatActivity {
     }
 
     public void back_to_previous_screen(){
-        Intent intent = new Intent(SettingCategoryBubleActivity.this,MainMenuActivity.class);
+        Intent intent = new Intent(SettingCategoryBubleActivity_old.this,MainMenuActivity.class);
         startActivity(intent);
         finish();
     }
@@ -799,15 +718,7 @@ public class SettingCategoryBubleActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             //this.dialog.cancel();
-            Log.e("get data complete"," 1 ");
-            if (nama_katagori==null){
-                Log.e("get data complete"," 2 ");
-                getDataCategory();
-            }
-            else {
-                initDataHashtag();
-                initFormHashtag();
-            }
+            if (nama_katagori==null)getDataCategory();
         }
     }
 
@@ -910,7 +821,7 @@ public class SettingCategoryBubleActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
                 // When user changed the Text
-                if (nama_katagori!=null)SettingCategoryBubleActivity.this.adapter.getFilter().filter(cs);
+                if (nama_katagori!=null)SettingCategoryBubleActivity_old.this.adapter.getFilter().filter(cs);
 
                 if (editText_inputSearch.getText().length() > 0) {
                     imageButton_clear.setVisibility(View.VISIBLE);
@@ -1005,27 +916,15 @@ public class SettingCategoryBubleActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             //this.dialog.cancel();
-            if (dataHashtagName==null)setVarToGetDataHashtag(0,dataHashtagName,editText_cat1);
+            if (dataHashtagName==null)getDataHashTag();
             else{
                 mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView_hashtag_listag1);
-                //mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-                mRecyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(), 2));
+                mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
                 mMyAdapter = new MyAdapter();
-                newDataAfterRemove = dataHashtagName;
-                Collections.addAll(filteredList, dataHashtagName);
+                mMyAdapter.data = dataHashtagName;
                 mRecyclerView.setAdapter(mMyAdapter);
-
             }
         }
-    }
-
-    public void getDataHashtag(){
-
-    }
-
-    public void setRecycleViewAttribute(MyAdapter mMyAdapterX, String[] newDataAfterRemoveX,String[]
-                                        dataHashtagNameX,List<String> filteredListX,RecyclerView mRecyclerViewX){
-
     }
 
     public void showDialogSubCategory(final int pos){
@@ -1068,8 +967,12 @@ public class SettingCategoryBubleActivity extends AppCompatActivity {
 
     public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
 
+        private String[] data = dataHashtagName;
+
+        private List<String> filteredList = new ArrayList<>();
+
         public MyAdapter() {
-            //Collections.addAll(filteredList, data);
+            Collections.addAll(filteredList, data);
         }
 
         @Override
@@ -1078,29 +981,8 @@ public class SettingCategoryBubleActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(final MyViewHolder holder, final int position) {
+        public void onBindViewHolder(MyViewHolder holder, int position) {
             holder.textView.setText(filteredList.get(position));
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String email = holder.textView.getText().toString();
-                    //Uri imgUrl = Math.random() > .7d ? null : Uri.parse("https://robohash.org/" + Math.abs(email.hashCode()));
-                    Uri imgUrl = null;
-                    HashTag hashTag = new HashTag("", "", email, imgUrl);
-                    editText_subcat1.addTags(email, imgUrl, hashTag);
-                    String itemLabel = filteredList.get(position);
-                    filteredList.remove(position);
-                    filteredList.remove(email);
-                    notifyItemRemoved(position);
-                    notifyItemRangeChanged(position, filteredList.size());
-
-                    //Toast.makeText(getApplicationContext(),"Added : " + itemLabel+" to Hashtag",Toast.LENGTH_SHORT).show();
-                    newDataAfterRemove = new String[filteredList.size()];
-                    for (int i = 0; i < filteredList.size(); i++) {
-                        newDataAfterRemove[i] = filteredList.get(i).toString();
-                    }
-                }
-            });
         }
 
         @Override
@@ -1111,9 +993,9 @@ public class SettingCategoryBubleActivity extends AppCompatActivity {
         public void filterItems(CharSequence text) {
             filteredList.clear();
             if (TextUtils.isEmpty(text)) {
-                Collections.addAll(filteredList, newDataAfterRemove);
+                Collections.addAll(filteredList, data);
             } else {
-                for (String s : newDataAfterRemove) {
+                for (String s : data) {
                     if (s.toLowerCase().contains(text)) {
                         filteredList.add(s);
                     }
@@ -1131,18 +1013,28 @@ public class SettingCategoryBubleActivity extends AppCompatActivity {
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public final TextView textView;
-        public final ImageView imageView;
+        public final CheckBox checkBox;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             textView = (TextView) itemView.findViewById(R.id.text_view_recyclerView);
-            imageView = (ImageView) itemView.findViewById(R.id.imageView_recyclerView);
+            checkBox = (CheckBox) itemView.findViewById(R.id.checkBox_recyclerView);
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
+            String email = textView.getText().toString();
+            //Uri imgUrl = Math.random() > .7d ? null : Uri.parse("https://robohash.org/" + Math.abs(email.hashCode()));
+            Uri imgUrl = null;
+            HashTag hashTag = new HashTag("", "", email, imgUrl);
 
+            if (checkBox.isChecked()) {
+                editText_subcat1.removeTagsBy(hashTag);
+            } else {
+                editText_subcat1.addTags(email, imgUrl, hashTag);
+            }
+            checkBox.toggle();
         }
     }
 

@@ -22,9 +22,11 @@ import com.facebook.login.LoginManager;
 public class DetailLocationActivity extends AppCompatActivity {
     android.support.v7.app.ActionBar actionBar;
     Bundle paket;
-    String loc_name, loc_address, kategori;
-    int id_loc, loc_promo, cat_id;
+    String loc_name, loc_address, kategori, icon;
+    int id_loc, loc_promo, cat_id, tot_loc;
     double radius, latitude, longitude;
+
+    String url = "";
 
     //NumberFormat formatter = new DecimalFormat("#0.000");
     Utility formatNumber = new Utility();
@@ -33,6 +35,8 @@ public class DetailLocationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_location);
+
+        url = String.format(getResources().getString(R.string.link_getSingleLocationById));//"http://dheket.esy.es/getSingleLocationById.php";
 
         paket = getIntent().getExtras();
         loc_name = paket.getString("loc_name");
@@ -44,6 +48,8 @@ public class DetailLocationActivity extends AppCompatActivity {
         latitude = paket.getDouble("latitude");
         longitude = paket.getDouble("longitude");
         kategori = paket.getString("kategori");
+        tot_loc = paket.getInt("tot_loc");
+        icon = paket.getString("icon");
 
         actionBar = getSupportActionBar();
         actionBar.setDisplayShowHomeEnabled(true);
@@ -64,7 +70,7 @@ public class DetailLocationActivity extends AppCompatActivity {
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager_loc_detail);
         final PagerAdapterDetailLoc adapter = new PagerAdapterDetailLoc(getSupportFragmentManager(), tabLayout.getTabCount(),id_loc,
-                cat_id, radius, latitude, longitude, kategori);
+                cat_id, radius, latitude, longitude, kategori,icon);
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -144,6 +150,8 @@ public class DetailLocationActivity extends AppCompatActivity {
         paket.putDouble("radius",radius);
         paket.putDouble("latitude",latitude);
         paket.putDouble("longitude",longitude);
+        paket.putInt("tot_loc",tot_loc);
+        paket.putString("icon",icon);
         intent.putExtras(paket);
         startActivity(intent);
         finish();

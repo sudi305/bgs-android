@@ -8,6 +8,7 @@ import android.location.LocationListener;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -55,6 +56,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -94,9 +96,9 @@ public class TabFragmentMap extends Fragment {
     private String jsonResult ="";
     double radius = 0.0;
     double latitude, longitude;
-    String urls ="http://dheket.esy.es/getLocationByCategory.php";
-    String parameters,kategori;
-    int cat_id;
+    String urls ="";
+    String parameters,kategori,icon;
+    int cat_id,looping=0;
     ViewGroup placeLayout;
 
     String[] loc_name, loc_address,loc_pic;
@@ -119,6 +121,9 @@ public class TabFragmentMap extends Fragment {
         latitude = getArguments().getDouble("latitude");
         longitude = getArguments().getDouble("longitude");
         kategori = getArguments().getString("kategori");
+        icon = getArguments().getString("icon");
+
+        urls = String.format(getResources().getString(R.string.link_getLocationByCategory));//"http://dheket.esy.es/getLocationByCategory.php"
 
         imageView_pic = (ImageView)rootView.findViewById(R.id.imageView_tfm_pic);
         imageView_pic_back = (ImageView)rootView.findViewById(R.id.imageView_tfm_pic_back);
@@ -149,7 +154,8 @@ public class TabFragmentMap extends Fragment {
                 paket.putDouble("latitude", latitude);
                 paket.putDouble("longitude", longitude);
                 paket.putDouble("radius", radius);
-                paket.putString("kategori",kategori);
+                paket.putString("kategori", kategori);
+                paket.putString("icon",icon);
                 //Toast.makeText(rootView.getContext(), "Id Loc " + selectId, Toast.LENGTH_LONG).show();
                 i.putExtras(paket);
                 startActivity(i);
@@ -196,7 +202,15 @@ public class TabFragmentMap extends Fragment {
         mCat3 = new PictureMarkerSymbol(rootView.getContext().getApplicationContext(), ContextCompat.getDrawable(rootView.getContext().getApplicationContext(), R.drawable.pin_blue));
         mCat4 = new PictureMarkerSymbol(rootView.getContext().getApplicationContext(), ContextCompat.getDrawable(rootView.getContext().getApplicationContext(), R.drawable.pin_orange));
         mCat5 = new PictureMarkerSymbol(rootView.getContext().getApplicationContext(), ContextCompat.getDrawable(rootView.getContext().getApplicationContext(), R.drawable.pin_yellow));
-        mAdd = new PictureMarkerSymbol(rootView.getContext().getApplicationContext(), ContextCompat.getDrawable(rootView.getContext().getApplicationContext(), R.drawable.pin_add));
+        //mAdd = new PictureMarkerSymbol(rootView.getContext().getApplicationContext(), ContextCompat.getDrawable(rootView.getContext().getApplicationContext(), R.drawable.pin_add));
+        Log.e("icon ","["+icon+"]");
+        if (!icon.isEmpty() && (!icon.equalsIgnoreCase("null") && !icon.equalsIgnoreCase(""))){
+            mAdd= new PictureMarkerSymbol();
+            mAdd.setUrl(icon);
+        } else {
+            mAdd= new PictureMarkerSymbol(rootView.getContext().getApplicationContext(), ContextCompat.getDrawable(rootView.getContext().getApplicationContext(), R.drawable.pin_blue));
+            Log.e("icon kosong","["+icon+"]");
+        }
 
         setupLocator();
         setupLocationListener();
@@ -208,7 +222,7 @@ public class TabFragmentMap extends Fragment {
     public void getDataFromServer() {
         task = new CallWebPageTask();
         task.applicationContext = rootView.getContext();
-        parameters = urls + "?rad=" + radius + "&lat=" + latitude + "&lng=" + longitude + "&cat=" + cat_id;
+        parameters = urls+"/"+(radius/1000)+"/"+latitude+"/"+longitude + "/" + cat_id;
         Log.e("OK Connecting Sukses", "" + parameters);
         //Log.e("Sukses", parameters);
         task.execute(new String[]{parameters});
@@ -323,6 +337,7 @@ public class TabFragmentMap extends Fragment {
     }
 
     private void setupLocationListener() {
+
         if ((mMapView != null) && (mMapView.isLoaded())) {
             mLDM = mMapView.getLocationDisplayManager();
             mLDM.setLocationListener(new LocationListener() {
@@ -345,6 +360,7 @@ public class TabFragmentMap extends Fragment {
                         }
 
                         getDataFromServer();
+                        Toast.makeText(rootView.getContext().getApplicationContext(),"location change "+(looping++),Toast.LENGTH_SHORT).show();
                         mLDM.setAutoPanMode(LocationDisplayManager.AutoPanMode.LOCATION);
                     }
                 }
@@ -555,12 +571,7 @@ public class TabFragmentMap extends Fragment {
                 attr.put("loc_lat", loc_lat[i]);
                 attr.put("loc_lng", loc_lng[i]);
 
-                Log.e("Ok sip", "this location at lat= " + loc_lat[i] + " and lng= " + loc_lng[i] + " | point on getAsPoint" + point + "");
-                if (cat_id==1) symbol = mCat1;
-                else if (cat_id==2) symbol = mCat2;
-                else if (cat_id==3) symbol = mCat3;
-                else if (cat_id==4) symbol = mCat4;
-                else symbol = mCat5;
+                symbol = mAdd;
 
                 mResultsLayer.addGraphic(new Graphic(point, symbol,attr));
                 fullExtent.add(point);

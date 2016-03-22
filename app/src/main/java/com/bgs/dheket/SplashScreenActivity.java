@@ -24,12 +24,13 @@ public class SplashScreenActivity extends Activity{
     ImageView imgLogo;
     RoundImage crop_image_circle;
     int wH_logo;
+    String url = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        //Mint.initAndStartSession(SplashScreenActivity.this, "609d861e");
+        Mint.initAndStartSession(SplashScreenActivity.this, "609d861e");
         FacebookSdk.sdkInitialize(getApplicationContext());
         imgLogo = (ImageView)findViewById(R.id.imgLogo);
         final Animation animAlpha = AnimationUtils.loadAnimation(this, R.anim.anim_alpha);
@@ -43,7 +44,7 @@ public class SplashScreenActivity extends Activity{
         imgLogo.setScaleType(ImageView.ScaleType.CENTER_CROP);*/
         imgLogo.setAnimation(animAlpha);
 
-
+        url = String.format(getResources().getString(R.string.link_cekUserLogin));
 
         new Handler().postDelayed(new Runnable() {
             @Override
