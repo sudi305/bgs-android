@@ -60,7 +60,7 @@ public class TabFragDetChat extends Fragment implements LocationListener {
 
     int cat_id;
     double radius,latitude,longitude;
-    String urls ="http://dheket.esy.es/getLocationByCategory.php";
+    String urls = "";
     String parameters;
     Utility format = new Utility();
 
@@ -83,6 +83,8 @@ public class TabFragDetChat extends Fragment implements LocationListener {
         longitude = getArguments().getDouble("longitude");
 
         final Animation animScale = AnimationUtils.loadAnimation(rootView.getContext(), R.anim.anim_scale_button_press);
+
+        urls = String.format(getResources().getString(R.string.link_getLocationByCategory));
 
         imageView_send = (ImageView)rootView.findViewById(R.id.imageView_chat_send);
         imageButton_send = (ImageButton)rootView.findViewById(R.id.imageButton_chat_send);
@@ -135,7 +137,7 @@ public class TabFragDetChat extends Fragment implements LocationListener {
         Log.e("Sukses bro", ""+parameters);
         task = new CallWebPageTask();
         task.applicationContext = rootView.getContext();
-        parameters = urls+"?rad="+radius+"&lat="+latitude+"&lng="+longitude + "&cat=" + cat_id;
+        parameters = urls+"/"+radius+"/"+latitude+"/"+longitude + "/" + cat_id;
         //Log.e("Sukses", parameters);
         task.execute(new String[]{parameters});
     }
@@ -222,7 +224,7 @@ public class TabFragDetChat extends Fragment implements LocationListener {
                 this.dialog.cancel();
                 isFirst=false;
             }
-            updateList();
+            //updateList();
         }
     }
 

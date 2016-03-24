@@ -44,7 +44,7 @@ public class ListAndMapAllLocActivity extends AppCompatActivity {
         /*actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Category " + paket.getString("kategori") + " in Radius "
                 + formatter.format(paket.getDouble("radius")) + " Km</font>"));*/
         actionBar.setSubtitle(Html.fromHtml("<font color='#ff9800'>Category " + paket.getString("kategori") + " in Radius "
-                + formatNumber.changeFormatNumber(paket.getDouble("radius")) + " Km</font>"));
+                + formatNumber.changeFormatNumber((paket.getDouble("radius"))/1000) + " Km</font>"));
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText("List"));
@@ -53,7 +53,8 @@ public class ListAndMapAllLocActivity extends AppCompatActivity {
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         final PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount(),
-                paket.getInt("cat_id"), paket.getDouble("radius"), paket.getDouble("latitude"), paket.getDouble("longitude"), paket.getString("kategori"));
+                paket.getInt("cat_id"), paket.getDouble("radius"), paket.getDouble("latitude"), paket.getDouble("longitude"),
+                paket.getString("kategori"),paket.getString("icon"));
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {

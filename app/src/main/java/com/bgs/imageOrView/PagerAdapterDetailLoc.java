@@ -17,9 +17,10 @@ import com.bgs.extended.TabFragmentMap;
 public class PagerAdapterDetailLoc extends FragmentStatePagerAdapter {
     int mNumOfTabs,cat_id,loc_id;
     double radius, latitude, longitude;
-    String kategori;
+    String kategori,icon;
 
-    public PagerAdapterDetailLoc(FragmentManager fm, int NumOfTabs,int loc_id,int cat_id, double radius, double latitude, double longitude, String kategori) {
+    public PagerAdapterDetailLoc(FragmentManager fm, int NumOfTabs,int loc_id,int cat_id, double radius,
+                                 double latitude, double longitude, String kategori, String icon) {
         super(fm);
         this.mNumOfTabs = NumOfTabs;
         this.loc_id = loc_id;
@@ -28,6 +29,7 @@ public class PagerAdapterDetailLoc extends FragmentStatePagerAdapter {
         this.latitude = latitude;
         this.longitude = longitude;
         this.kategori = kategori;
+        this.icon = icon;
     }
 
     @Override
@@ -43,6 +45,7 @@ public class PagerAdapterDetailLoc extends FragmentStatePagerAdapter {
                 paket.putDouble("latitude",latitude);
                 paket.putDouble("longitude",longitude);
                 paket.putString("kategori", kategori);
+                paket.putString("icon",icon);
                 tab1.setArguments(paket);
                 /*Bundle paket = new Bundle();
                 tab1.setArguments(paket);*/

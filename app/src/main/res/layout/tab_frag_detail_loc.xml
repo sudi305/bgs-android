@@ -29,7 +29,8 @@
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:visibility="visible">
 
                     <ImageView
                         android:layout_width="match_parent"
@@ -151,7 +152,7 @@
                                 android:layout_width="30dp"
                                 android:layout_height="30dp"
                                 android:id="@+id/imageView2"
-                                android:layout_gravity="center_vertical"
+                                android:layout_gravity="top"
                                 android:scaleType="fitCenter"
                                 android:layout_marginRight="5dp"
                                 android:tint="@color/colorAccent"
@@ -160,12 +161,12 @@
                             <LinearLayout
                                 android:orientation="vertical"
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent">
+                                android:layout_height="wrap_content">
 
                                 <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="Tes Nama Lokasi"
+                                    android:text="-"
                                     android:id="@+id/textView_fdl_loc_name"
                                     android:textColor="#000000" />
 
@@ -190,7 +191,7 @@
                                 android:layout_width="30dp"
                                 android:layout_height="30dp"
                                 android:id="@+id/imageView13"
-                                android:layout_gravity="center_vertical"
+                                android:layout_gravity="top"
                                 android:scaleType="fitCenter"
                                 android:layout_marginRight="5dp"
                                 android:src="@drawable/ic_explore_24dp"
@@ -199,12 +200,12 @@
                             <LinearLayout
                                 android:orientation="vertical"
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent" >
+                                android:layout_height="wrap_content" >
 
                                 <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="Alamat Lokasi"
+                                    android:text="-"
                                     android:id="@+id/textView_fdl_loc_address"
                                     android:textColor="#000000" />
 
@@ -228,7 +229,7 @@
                                 android:layout_width="30dp"
                                 android:layout_height="30dp"
                                 android:id="@+id/imageView15"
-                                android:layout_gravity="center_vertical"
+                                android:layout_gravity="top"
                                 android:scaleType="fitCenter"
                                 android:layout_marginRight="5dp"
                                 android:src="@drawable/ic_local_phone_24dp"
@@ -237,12 +238,12 @@
                             <LinearLayout
                                 android:orientation="vertical"
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent" >
+                                android:layout_height="wrap_content" >
 
                                 <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="0792759040xxx"
+                                    android:text="-"
                                     android:id="@+id/textView_fdl_loc_hp"
                                     android:textColor="#000000" />
 
@@ -266,7 +267,7 @@
                                 android:layout_width="30dp"
                                 android:layout_height="30dp"
                                 android:id="@+id/imageView16"
-                                android:layout_gravity="center_vertical"
+                                android:layout_gravity="top"
                                 android:scaleType="fitCenter"
                                 android:layout_marginRight="5dp"
                                 android:src="@drawable/ic_storage_24dp"
@@ -275,7 +276,7 @@
                             <LinearLayout
                                 android:orientation="vertical"
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent" >
+                                android:layout_height="wrap_content" >
 
                                 <TextView
                                     android:layout_width="match_parent"
@@ -304,7 +305,7 @@
                                 android:layout_width="30dp"
                                 android:layout_height="30dp"
                                 android:id="@+id/imageView18"
-                                android:layout_gravity="center_vertical"
+                                android:layout_gravity="top"
                                 android:scaleType="fitCenter"
                                 android:layout_marginRight="5dp"
                                 android:src="@drawable/ic_style_24dp"
@@ -313,7 +314,7 @@
                             <LinearLayout
                                 android:orientation="vertical"
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent" >
+                                android:layout_height="wrap_content" >
 
                                 <TextView
                                     android:layout_width="match_parent"
@@ -351,7 +352,7 @@
                             <LinearLayout
                                 android:orientation="vertical"
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent" >
+                                android:layout_height="wrap_content" >
 
                                 <TextView
                                     android:layout_width="match_parent"
@@ -415,7 +416,7 @@
                                 android:layout_width="30dp"
                                 android:layout_height="30dp"
                                 android:id="@+id/imageView19"
-                                android:layout_gravity="center_vertical"
+                                android:layout_gravity="top"
                                 android:scaleType="fitCenter"
                                 android:layout_marginRight="5dp"
                                 android:src="@drawable/ic_subject_24dp"
@@ -424,7 +425,7 @@
                             <LinearLayout
                                 android:orientation="vertical"
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent" >
+                                android:layout_height="wrap_content" >
 
                                 <TextView
                                     android:layout_width="match_parent"

@@ -58,8 +58,8 @@ public class TabFragmentList extends Fragment implements LocationListener {
 
     int cat_id;
     double radius,latitude,longitude;
-    String urls ="http://dheket.esy.es/getLocationByCategory.php";
-    String parameters,kategori;
+    String urls = "";
+    String parameters,kategori,icon;
     //NumberFormat formatter = new DecimalFormat("#0.000");
     Utility formatNumber = new Utility();
 
@@ -79,6 +79,9 @@ public class TabFragmentList extends Fragment implements LocationListener {
         latitude = getArguments().getDouble("latitude");
         longitude = getArguments().getDouble("longitude");
         kategori = getArguments().getString("kategori");
+        icon = getArguments().getString("icon");
+
+        urls = String.format(getResources().getString(R.string.link_getLocationByCategory));//"http://dheket.esy.es/getLocationByCategory.php"
 
         btn_update = (Button)rootView.findViewById(R.id.btn_update_list);
         customListView = (ListView)rootView.findViewById(R.id.listView);
@@ -105,6 +108,7 @@ public class TabFragmentList extends Fragment implements LocationListener {
                 paket.putDouble("longitude", longitude);
                 paket.putDouble("radius", radius);
                 paket.putString("kategori",kategori);
+                paket.putString("icon",icon);
 
                 //Toast.makeText(rootView.getContext(), "Id Loc " + selectId, Toast.LENGTH_LONG).show();
                 i.putExtras(paket);
@@ -132,7 +136,7 @@ public class TabFragmentList extends Fragment implements LocationListener {
         Log.e("Sukses bro", ""+parameters);
         task = new CallWebPageTask();
         task.applicationContext = rootView.getContext();
-        parameters = urls+"?rad="+radius+"&lat="+latitude+"&lng="+longitude + "&cat=" + cat_id;
+        parameters = urls+"/"+(radius/1000)+"/"+latitude+"/"+longitude + "/" + cat_id;
         //Log.e("Sukses", parameters);
         task.execute(new String[]{parameters});
     }
@@ -217,8 +221,8 @@ public class TabFragmentList extends Fragment implements LocationListener {
         protected void onPostExecute(String result) {
             if (isFirst){
                 this.dialog.cancel();
-                isFirst=false;
                 updateList();
+                isFirst=false;
             } else {
                 if (isDataUpdate())btn_update.setVisibility(View.VISIBLE);
             }

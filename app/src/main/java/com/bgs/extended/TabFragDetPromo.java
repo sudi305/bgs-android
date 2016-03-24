@@ -38,7 +38,7 @@ public class TabFragDetPromo extends Fragment implements LocationListener {
 
     int cat_id,loc_id;
     double radius, latitude, longitude;
-    String urls = "http://dheket.esy.es/getLocationByCategory.php";
+    String urls = "";
     String parameters;
     NumberFormat formatter = new DecimalFormat("#0.000");
 
@@ -59,7 +59,7 @@ public class TabFragDetPromo extends Fragment implements LocationListener {
         latitude = getArguments().getDouble("latitude");
         longitude = getArguments().getDouble("longitude");*/
         loc_id = getArguments().getInt("loc_id");
-
+        urls = String.format(getResources().getString(R.string.link_getDetailLocationPromo));
         getServiceFromGPS();
 
         setHasOptionsMenu(true);
