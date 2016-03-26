@@ -14,7 +14,7 @@ import com.facebook.login.LoginManager;
 /**
  * Created by ade on 01-Feb-16.
  */
-public class SearchView extends AppCompatActivity {
+public class SearchViewActivity extends AppCompatActivity {
     // Declare Variables
     String id_category; //rank
     String category_name; //country
@@ -97,7 +97,7 @@ public class SearchView extends AppCompatActivity {
                 .setPositiveButton(logout, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         LoginManager.getInstance().logOut();
-                        Intent logout_user_fb = new Intent(SearchView.this, FormLoginActivity.class);
+                        Intent logout_user_fb = new Intent(SearchViewActivity.this, FormLoginActivity.class);
                         startActivity(logout_user_fb);
                         finish();
                     }
@@ -112,7 +112,7 @@ public class SearchView extends AppCompatActivity {
     }
 
     public void back_to_previous_screen(){
-        Intent intent = new Intent(SearchView.this,SearchAllCategoryActivity.class);
+        Intent intent = new Intent(SearchViewActivity.this,SearchAllCategoryActivity.class);
         startActivity(intent);
         finish();
     }

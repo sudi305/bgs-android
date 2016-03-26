@@ -79,20 +79,22 @@ public class SettingCategoryBubleActivity extends AppCompatActivity {
     String url = "";
     private JSONObject jObject;
     String []nama_katagori;
+    String []nama_katagori_select_user;
     int []id_kategori;
-    int []id_kategori_select_user = {9999,9999,9999,9999,9999};
+    int []id_kategori_select_user;
     /*int []id_subCat;
     int []temp_id_cat = new int[1];*/
     ArrayAdapter<String> adapter;
     int lastPosition;
     double radius;
+    Bundle paket;
 
     private RecyclerView mRecyclerView,mRecyclerView2,mRecyclerView3,mRecyclerView4,mRecyclerView5;
     private MyAdapter mMyAdapter,mMyAdapter2,mMyAdapter3,mMyAdapter4,mMyAdapter5;
 
     boolean []showHideContent = {true,false,false,false,false,false};
     boolean []hasValid = {true,true,true,true,true,true,true,true,true,true,true,true};
-    int []tipeCategory = {2,1,2,1,2};
+    int []tipeCategory = {1,1,1,1,1};
 
     String [] dataHashtagName,dataHashtagId,
             dataHashtagName2,dataHashtagId2,
@@ -121,6 +123,13 @@ public class SettingCategoryBubleActivity extends AppCompatActivity {
         actionBar.setSubtitle(Html.fromHtml("<font color='#ff9800'>Setting category bubble</font>"));
 
         url = String.format(getResources().getString(R.string.link_getAllCategory));
+        paket = getIntent().getExtras();
+
+        radius = paket.getDouble("radius");
+        id_kategori_select_user = new int[paket.getIntArray("id_kategori").length];
+        id_kategori_select_user = paket.getIntArray("id_kategori");
+        nama_katagori_select_user = new String[paket.getStringArray("kategori").length];
+        nama_katagori_select_user = paket.getStringArray("kategori");
 
         title_rad = (ViewGroup)findViewById(R.id.ll_sbt_rad);
         title_rad.setOnClickListener(title0);
@@ -159,21 +168,27 @@ public class SettingCategoryBubleActivity extends AppCompatActivity {
         imageView_expand_cat5 = (ImageView)findViewById(R.id.imageView_sbt_cat5);
         
         editText_cat1 = (EditText)findViewById(R.id.editText_sb_cat1);
+        editText_cat1.setText(""+nama_katagori_select_user[0]);
         editText_cat1.setOnClickListener(cat1);
 
         editText_cat2 = (EditText)findViewById(R.id.editText_sb_cat2);
+        editText_cat2.setText(""+nama_katagori_select_user[1]);
         editText_cat2.setOnClickListener(cat2);
 
         editText_cat3 = (EditText)findViewById(R.id.editText_sb_cat3);
+        editText_cat3.setText(""+nama_katagori_select_user[2]);
         editText_cat3.setOnClickListener(cat3);
 
         editText_cat4 = (EditText)findViewById(R.id.editText_sb_cat4);
+        editText_cat4.setText(""+nama_katagori_select_user[3]);
         editText_cat4.setOnClickListener(cat4);
 
         editText_cat5 = (EditText)findViewById(R.id.editText_sb_cat5);
+        editText_cat5.setText(""+nama_katagori_select_user[4]);
         editText_cat5.setOnClickListener(cat5);
 
         editText_radius = (EditText)findViewById(R.id.editText_sb_radius);
+        editText_radius.setText(""+ radius);
         editText_radius.addTextChangedListener(textWatcher);
 
         editText_subcat1 = (TagsView)findViewById(R.id.view_sb_tag1);
@@ -495,6 +510,7 @@ public class SettingCategoryBubleActivity extends AppCompatActivity {
     }
 
     public void initData(){
+
         settingRadioGrup();
         //getDataHashTag();
         getDataCategory();

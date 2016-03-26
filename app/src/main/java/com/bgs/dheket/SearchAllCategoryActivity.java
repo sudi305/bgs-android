@@ -2,19 +2,19 @@ package com.bgs.dheket;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 
-import com.bgs.common.JSONfunctions;
-import com.bgs.common.Utility;
+import com.bgs.imageOrView.ListViewAdapter;
+import com.bgs.networkAndSensor.HttpGetOrPost;
 import com.facebook.login.LoginManager;
 
 import org.json.JSONArray;
@@ -32,13 +32,14 @@ public class SearchAllCategoryActivity extends AppCompatActivity {
     // Declare Variables
     JSONObject jsonobject;
     JSONArray jsonarray;
+    private JSONObject jObject;
     ListView listview;
     ListViewAdapter adapter;
     ProgressDialog mProgressDialog;
     ArrayList<HashMap<String, String>> arraylist;
-    static String id_category = ""; //rank
-    static String category_name = "category_name"; //country
-    static String category_id = ""; //population
+    public static String id_category = ""; //rank
+    public static String category_name = "category_name"; //country
+    public static String category_id = ""; //population
 
     boolean tambah = true;  // tombol back
     android.support.v7.app.ActionBar actionBar;  // tombol back
@@ -57,53 +58,60 @@ public class SearchAllCategoryActivity extends AppCompatActivity {
         actionBar.setTitle("Dheket"); // tombol back
 //        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
         // Execute DownloadJSON AsyncTask
-        new DownloadJSON().execute();
+        getDataCategory();
+    }
+
+    public void getDataCategory() {
+        CallWebPageTask task = new CallWebPageTask();
+        task.applicationContext = getApplicationContext();
+        String urls = String.format(getResources().getString(R.string.link_getAllCategory));
+        Log.e("Sukses", urls);
+        task.execute(new String[]{urls});
     }
 
     // DownloadJSON AsyncTask
-    private class DownloadJSON extends AsyncTask<Void, Void, Void> {
+
+    private class CallWebPageTask extends AsyncTask<String, Void, String> {
+
+        private ProgressDialog dialog;
+        protected Context applicationContext;
 
         @Override
         protected void onPreExecute() {
-            super.onPreExecute();
-            // Create a progressdialog
-            mProgressDialog = new ProgressDialog(SearchAllCategoryActivity.this);
-            // Set progressdialog title
-            mProgressDialog.setTitle("Dheket");
+            //this.dialog = ProgressDialog.show(applicationContext, "Login Process", "Please Wait...", true);
         }
 
         @Override
-        protected Void doInBackground(Void... params) {
-            // Create an array
+        protected String doInBackground(String... urls) {
+            String response = "";
+            HttpGetOrPost httpGetOrPost = new HttpGetOrPost();
+            response = httpGetOrPost.getRequest(urls[0]);
             arraylist = new ArrayList<HashMap<String, String>>();
-            // Retrieve JSON Objects from the given URL address
-            jsonobject = JSONfunctions
-                    .getJSONfromURL(String.format(getResources().getString(R.string.link_getAllCategory)));
-
             try {
-                // Locate the array name in JSON
-                jsonarray = jsonobject.getJSONArray("dheket_allCat");  //world population
+                JSONArray menuItemArray = null;
+                jObject = new JSONObject(response);
+                menuItemArray = jObject.getJSONArray("dheket_allCat");
+                for (int i = 0; i < menuItemArray.length(); i++) {
 
-                for (int i = 0; i < jsonarray.length(); i++) {
+
                     HashMap<String, String> map = new HashMap<String, String>();
-                    jsonobject = jsonarray.getJSONObject(i);
+                    jsonobject = menuItemArray.getJSONObject(i);
                     // Retrive JSON Objects
                     map.put("id_category", jsonobject.getString("id_category")); // rank
                     map.put("category_name", jsonobject.getString("category_name")); //country
-                    map.put("category_id", jsonobject.getString("category_id")); //population
                     // Set the JSON Objects into the array
                     arraylist.add(map);
                 }
             } catch (JSONException e) {
-                Log.e("Error", e.getMessage());
                 e.printStackTrace();
             }
-            return null;
+
+            return response;
         }
 
         @Override
-        protected void onPostExecute(Void args) {
-            // Locate the listview in listview_main.xml
+        protected void onPostExecute(String result) {
+            //this.dialog.cancel();
             listview = (ListView) findViewById(R.id.listview);
             // Pass the results into ListViewAdapter.java
             adapter = new ListViewAdapter(SearchAllCategoryActivity.this, arraylist);
@@ -111,7 +119,6 @@ public class SearchAllCategoryActivity extends AppCompatActivity {
             listview.setAdapter(adapter);
         }
     }
-
 
     ///
     @Override

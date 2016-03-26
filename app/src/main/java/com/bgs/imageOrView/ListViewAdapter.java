@@ -1,4 +1,4 @@
-package com.bgs.dheket;
+package com.bgs.imageOrView;
 
 /**
  * Created by ade on 01-Feb-16.
@@ -6,6 +6,7 @@ package com.bgs.dheket;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -14,6 +15,10 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
+import com.bgs.dheket.R;
+import com.bgs.dheket.SearchAllCategoryActivity;
+import com.bgs.dheket.SearchViewActivity;
 
 
 public class ListViewAdapter extends BaseAdapter {
@@ -77,7 +82,7 @@ public class ListViewAdapter extends BaseAdapter {
             public void onClick(View arg0) {
                 // Get the position
                 resultp = data.get(position);
-                Intent intent = new Intent(context, SearchView.class);
+                Intent intent = new Intent(context, SearchViewActivity.class);
                 // Pass all data id_category
                 intent.putExtra("", resultp.get(SearchAllCategoryActivity.id_category)); //RANK
                 // Pass all data category_name
@@ -86,6 +91,7 @@ public class ListViewAdapter extends BaseAdapter {
                 intent.putExtra("", resultp.get(SearchAllCategoryActivity.category_id)); //POPULATION
                 // Start SingleItemView Class
                 context.startActivity(intent);
+                ((Activity)context).finish();
                 //context.finish();
             }
         });

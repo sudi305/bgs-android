@@ -1,6 +1,7 @@
 package com.bgs.dheket;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -8,28 +9,40 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -84,9 +97,17 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     String detailUser;
     boolean tambah = true;
     android.support.v7.app.ActionBar actionBar;
+    float scale;
 
     Intent goToScreen;
     Utility formatNumber = new Utility();
+
+    private SeekBar bar, bartext;
+    private TextView textViewRad;
+    Button textViewMore;
+    ViewGroup layoutRadiusSlider;
+    LinearLayout formRadius,formRadiusBackground;
+    RelativeLayout.LayoutParams p;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +128,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         url = String.format(getResources().getString(R.string.link_getDataUser));
 
         checkInternetGPS = new ConfigInternetAndGPS(getApplicationContext());
+
+        scale = getResources().getDisplayMetrics().density;
 
         buble_cat1 = (LinearLayout) findViewById(R.id.buble_cat1);
         buble_cat2 = (LinearLayout) findViewById(R.id.buble_cat2);
@@ -133,6 +156,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         view_usrPro = (ProfilePictureView_viaFB) findViewById(R.id.view_userProfile);
         textView_usrNm = (TextView) findViewById(R.id.textView_usrNm);
 
+        initFormSettingRadius();
         updateData();
         getServiceFromGPS();
 
@@ -204,15 +228,117 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             @Override
             public void onClick(View v) {
                 btn_search.setAnimation(animButtonPress);
-
-                // btn_search.setText("Internet "+checkInternetGPS.isConnectingToInternet()+" | GPS "+checkInternetGPS.isGPSActived());
-                // if (tambah==true)tambah=false;
-                // else tambah=true;
                 Intent toSearch = new Intent(getApplicationContext(), SearchAllCategoryActivity.class);
                 startActivity(toSearch);
                 finish();
             }
         });
+    }
+
+    public void initFormSettingRadius(){
+        formRadius = (LinearLayout)findViewById(R.id.layout_main_slider_seekbar);
+        formRadiusBackground = (LinearLayout)findViewById(R.id.linearLayout_form_lms_slider);
+        ViewGroup.LayoutParams params = formRadius.getLayoutParams();
+        TypedValue tv = new TypedValue();
+        int actionBarHeight = 0;
+
+        if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
+        {
+            actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
+        }
+
+        params.height = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getHeight()
+                -actionBarHeight-getStatusBarHeight();
+        formRadius.setLayoutParams(params);
+        bar = (SeekBar)findViewById(R.id.seekBar_lms_radius);
+        bartext = (SeekBar)findViewById(R.id.seekBar);
+        bartext.setEnabled(false);
+        textViewRad = (TextView) findViewById(R.id.textView_lms_rad);
+        textViewMore = (Button) findViewById(R.id.button_lms_more);
+        //layoutRadiusSlider = (ViewGroup)findViewById(R.id.relativeLayout_seekbar);
+        bar.setMax(9);
+        bar.setProgress((int) (radius - 1));
+        bartext.setMax(9);
+        bartext.setProgress((int) (radius - 1));
+        textViewRad.setText(String.valueOf(bar.getProgress() + 1) + " Km");
+        bartext.setThumb(writeOnDrawable(R.drawable.transparant, String.valueOf(bar.getProgress() + 1) + " Km"));
+        p = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        p.addRule(RelativeLayout.ABOVE, bar.getId());
+        int xpos = bar.getLayoutParams().width - ((bar.getLayoutParams().width/bar.getMax())*(bar.getMax()-bar.getProgress()));
+        p.setMargins(xpos - (textViewRad.getWidth() / (int) (2 * scale + 0.5f)), 0, 0, 0);
+        textViewRad.setLayoutParams(p);
+        /*bar.setThumb(getApplicationContext().getResources().getDrawable(
+                R.drawable.menu_info));*/
+        bar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                // TODO Auto-generated method stub
+                //textView.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress,
+                                          boolean fromUser) {
+                // TODO Auto-generated method stub
+                Rect thumbRect = bar.getThumb().getBounds();
+                //Toast.makeText(getApplicationContext(),"position "+thumbRect.centerX(),Toast.LENGTH_SHORT).show();
+                p = new RelativeLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.WRAP_CONTENT,
+                        RelativeLayout.LayoutParams.WRAP_CONTENT);
+                p.addRule(RelativeLayout.ABOVE, bar.getId());
+                p.setMargins((int) (thumbRect.centerX() - (textViewRad.getWidth() / (5 * scale + 0.5f))), 0, 0, 0);
+                textViewRad.setLayoutParams(p);
+                textViewRad.setText(String.valueOf(progress + 1) + " Km");
+                bartext.setProgress(progress);
+                bartext.setThumb(writeOnDrawable(R.drawable.transparant, String.valueOf(bar.getProgress() + 1) + " Km"));
+                //textView.setVisibility(View.VISIBLE);
+                //final Animation animationFadeOut = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
+                //textView.startAnimation(animationFadeOut);
+            }
+        });
+        textViewMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toSetting();
+            }
+        });
+        formRadius.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                formRadius.setVisibility(View.GONE);
+            }
+        });
+        formRadiusBackground.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+    }
+
+    public BitmapDrawable writeOnDrawable(int drawableId, String text){
+        float scale = getResources().getDisplayMetrics().density;
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), drawableId).copy(Bitmap.Config.ARGB_8888, true);
+
+        Paint paint = new Paint();
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(Color.BLACK);
+        paint.setTextSize(45 * scale + 0.5f);
+        paint.setTextAlign(Paint.Align.CENTER);
+
+        Canvas canvas = new Canvas(bm);
+        canvas.drawText(text, bm.getWidth()/2, (bm.getHeight()/3), paint);
+
+        return new BitmapDrawable(bm);
     }
 
     public void showDialogDetail() {
@@ -243,9 +369,20 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         paket.putDouble("radius", radius);
         paket.putDouble("latitude", latitude);
         paket.putDouble("longitude", longitude);
-        paket.putString("icon",icon);
+        paket.putString("icon", icon);
         goToScreen.putExtras(paket);
         startActivity(goToScreen);
+        finish();
+    }
+
+    public void toSetting(){
+        Intent gotoSetting = new Intent(getApplicationContext(), SettingCategoryBubleActivity.class);
+        Bundle paket = new Bundle();
+        paket.putStringArray("kategori", nama_katagori);
+        paket.putIntArray("id_kategori", id_kategori);
+        paket.putDouble("radius", radius);
+        gotoSetting.putExtras(paket);
+        startActivity(gotoSetting);
         finish();
     }
 
@@ -279,7 +416,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         this.menu = menu;
-        getMenuInflater().inflate(R.menu.menu_main_setting, menu);
+        getMenuInflater().inflate(R.menu.menu_main_slider, menu);
         return true;
     }
 
@@ -296,20 +433,28 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         }
 
         if (item.getItemId() == R.id.goto_setting) {
-            Intent gotoSetting = new Intent(getApplicationContext(), SettingCategoryBubleActivity.class);
-            Bundle paket = new Bundle();
-            paket.putStringArray("kategori",nama_katagori);
-            paket.putDouble("radius",radius);
-            startActivity(gotoSetting);
+            /*if (formRadius.is)*/
+            if (formRadius.getVisibility() == View.VISIBLE) {
+                formRadius.setVisibility(View.GONE);
+            } else {
+                formRadius.setVisibility(View.VISIBLE);
+            }
+
+            return super.onOptionsItemSelected(item);
+        }
+
+        if (item.getItemId() == R.id.goto_search) {
+            Intent toSearch = new Intent(getApplicationContext(), SearchAllCategoryActivity.class);
+            startActivity(toSearch);
             finish();
             return super.onOptionsItemSelected(item);
         }
 
-        //noinspection SimplifiableIfStatement
+        /*//noinspection SimplifiableIfStatement
         if (id == R.id.action_logout) {
             logout_user();
             return true;
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
@@ -338,8 +483,16 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         builder.create().show();
     }
 
+    public int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
+
     public void resizeBuble(Button button, int lokasi) {
-        final float scale = getResources().getDisplayMetrics().density;
         if (lokasi <= 5) lokasi = (int) (40 * scale + 0.5f);
         else if (lokasi > 5 && lokasi < 11) lokasi = (int) (((lokasi - 1) * 10) * scale + 0.5f);
         else if (lokasi > 10) lokasi = (int) (90 * scale + 0.5f);
@@ -421,7 +574,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
     public void updateData() {
         actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatNumber.changeFormatNumber(radius) + " Km</font>"));
-
+        initFormSettingRadius();
         txt_tot_cat1.setText("" + lokasi[0]);
         String cat1 = "-";
         if (nama_katagori[0] != null) cat1 = nama_katagori[0];
