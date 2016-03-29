@@ -92,8 +92,6 @@ public class SearchAllCategoryActivity extends AppCompatActivity {
                 jObject = new JSONObject(response);
                 menuItemArray = jObject.getJSONArray("dheket_allCat");
                 for (int i = 0; i < menuItemArray.length(); i++) {
-
-
                     HashMap<String, String> map = new HashMap<String, String>();
                     jsonobject = menuItemArray.getJSONObject(i);
                     // Retrive JSON Objects

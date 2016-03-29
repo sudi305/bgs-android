@@ -94,7 +94,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     double radius = 0.0;
     double latitude, longitude;
     String url = "";
-    String detailUser;
+    String detailUser,email;
     boolean tambah = true;
     android.support.v7.app.ActionBar actionBar;
     float scale;
@@ -376,11 +376,9 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     }
 
     public void toSetting(){
-        Intent gotoSetting = new Intent(getApplicationContext(), SettingCategoryBubleActivity.class);
+        Intent gotoSetting = new Intent(getApplicationContext(), SettingCategoryBubbleActivity.class);
         Bundle paket = new Bundle();
-        paket.putStringArray("kategori", nama_katagori);
-        paket.putIntArray("id_kategori", id_kategori);
-        paket.putDouble("radius", radius);
+        paket.putString("email",email);
         gotoSetting.putExtras(paket);
         startActivity(gotoSetting);
         finish();
@@ -541,6 +539,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 jObject = new JSONObject(response);
                 menuItemArray = jObject.getJSONArray("tag_cat");
                 real_radius = Double.parseDouble(jObject.getString("rad"));
+                email = jObject.getString("email");
                 radius = (real_radius/1000);
 
                 for (int i = 0; i < menuItemArray.length(); i++) {

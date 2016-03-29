@@ -1,7 +1,6 @@
 package com.bgs.imageOrView;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
@@ -15,8 +14,6 @@ import com.bgs.common.Utility;
 import com.bgs.dheket.R;
 import com.bgs.model.ItemObjectCustomList;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.List;
 
 /**
@@ -52,7 +49,7 @@ public class CustomAdapter extends BaseAdapter {
         isPromo = listStorage.get(position).getLoc_promo();
         if(convertView == null){
             listViewHolder = new ViewHolder();
-            convertView = lInflater.inflate(R.layout.listview_modified, parent, false);
+            convertView = lInflater.inflate(R.layout.listview_modified_item, parent, false);
             listViewHolder.textView_loc_id = (TextView)convertView.findViewById(R.id.textView_loc_id);
             listViewHolder.textView_loc_name = (TextView)convertView.findViewById(R.id.textView_loc_name);
             listViewHolder.textView_loc_address = (TextView)convertView.findViewById(R.id.textView_loc_address);
