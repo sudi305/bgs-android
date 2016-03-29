@@ -43,6 +43,7 @@
         <activity android:name="com.bgs.dheket.SearchAllCategoryActivity"/>
         <activity android:name="com.bgs.dheket.SingleMapLocationActivity"/>
         <activity android:name="com.bgs.dheket.SettingCategoryBubleActivity"/>
+        <activity android:name="com.bgs.dheket.SettingCategoryBubbleActivity"/>
         <activity android:name="com.bgs.dheket.SearchViewActivity"/>
 
     </application>

@@ -19,6 +19,7 @@
     <string name="link_getSingleLocationById">http://dheket.co.id/index.php/getlocationbylocationid</string> <!--getlocationbylocationid/{center_lat}/{center_lng}/{loc_id}-->
     <string name="link_getLocationByCategory">http://dheket.co.id/index.php/getlocationbycategoryid</string> <!--getlocationbycategoryid/{rad}/{center_lat}/{center_lng}/{cat}-->
     <string name="link_getDataUser">http://dheket.co.id/index.php/getprofileuserbyemail</string> <!--getprofileuserbyemail/{email}/{center_lat}/{center_lng}-->
+    <string name="link_getUserConfig">http://dheket.co.id/index.php/getconfigurationuserbyemail</string> <!--getconfigurationuserbyemail/{email}-->
     <string name="link_cekUserLogin">http://dheket.co.id/index.php/checkexistinguserbyemail</string><!--checkexistinguserbyemail/{email}-->
 
 
