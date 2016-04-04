@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.bgs.dheket.R;
 import com.bgs.dheket.SearchAllCategoryActivity;
 import com.bgs.dheket.SearchViewActivity;
+import com.bgs.dheket.SelectCategoryActivity;
 import com.bgs.dheket.SettingCategoryBubbleActivity;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
@@ -82,7 +83,7 @@ public class ListViewAdapterSettingBubble extends BaseAdapter {
             textView_id_category.setText(result.get("id_category"));
             textView_category_name.setText(result.get("category_name"));
             textView_id_profile_tag.setText(result.get("id_profile_tag"));
-            if (result.get("detail_tag")!=null)textView_hashtag.setText(result.get("detail_tag"));
+            if (!result.get("detail_tag").isEmpty() && !result.get("detail_tag").toString().equalsIgnoreCase("null"))textView_hashtag.setText(result.get("detail_tag"));
             else textView_hashtag.setText("-");
             textView_radius_or_edit.setText("Edit");
         } else {
@@ -100,13 +101,14 @@ public class ListViewAdapterSettingBubble extends BaseAdapter {
             public void onClick(View arg0) {
                 result = data.get(position);
                 if (position!=data.size()-1){
-                    Intent intent = new Intent(context, SearchViewActivity.class);
+                    Intent intent = new Intent(context, SelectCategoryActivity.class);
                     Bundle paket = new Bundle();
                     paket.putString("email",email);
                     paket.putString("id_category",result.get("id_category"));
                     paket.putString("category_name",result.get("category_name"));
                     paket.putString("id_profile_tag",result.get("id_profile_tag"));
                     paket.putString("detail_tag",result.get("detail_tag"));
+                    intent.putExtras(paket);
                     context.startActivity(intent);
                     ((Activity)context).finish();
                 } else {

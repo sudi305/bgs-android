@@ -28,16 +28,27 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bgs.imageOrView.ListViewAdapter;
 import com.bgs.imageOrView.ListViewAdapterSettingBubble;
 import com.bgs.imageOrView.RoundImage;
 import com.bgs.networkAndSensor.HttpGetOrPost;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -50,10 +61,10 @@ public class SettingCategoryBubbleActivity extends AppCompatActivity {
 
     RoundImage roundImage;
 
-    String url = "";
+    String url = "",responseServer="";
     private JSONObject JsonObject, jsonobject;
     ArrayList<HashMap<String, String>> arraylist;
-    int radius;
+    int radius, newRadius;
     String email;
 
     ListViewAdapterSettingBubble adapter;
@@ -185,6 +196,92 @@ public class SettingCategoryBubbleActivity extends AppCompatActivity {
         }
     }
 
+    public static class InputStreamToStringExample {
+
+        public static void main(String[] args) throws IOException {
+
+            // intilize an InputStream
+            InputStream is = new ByteArrayInputStream("file content is process".getBytes());
+
+            String result = getStringFromInputStream(is);
+
+            System.out.println(result);
+            System.out.println("Done");
+
+        }
+
+        // convert InputStream to String
+        private static String getStringFromInputStream(InputStream is) {
+
+            BufferedReader br = null;
+            StringBuilder sb = new StringBuilder();
+
+            String line;
+            try {
+
+                br = new BufferedReader(new InputStreamReader(is));
+                while ((line = br.readLine()) != null) {
+                    sb.append(line);
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (br != null) {
+                    try {
+                        br.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            return sb.toString();
+        }
+    }
+
+    /* Inner class to get response */
+    class AsyncTAddingDataToServer extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            String url = String.format(getResources().getString(R.string.link_updateRadiusByEmail));
+            HttpClient httpclient = new DefaultHttpClient();
+            HttpPost httppost = new HttpPost(url);
+
+            try {
+                JSONObject jsonobj = new JSONObject();
+                jsonobj.put("email", email);
+                jsonobj.put("rad", newRadius);
+                Log.e("mainToPost", "mainToPost" + jsonobj.toString());
+                httppost.setEntity(new StringEntity(jsonobj.toString())); //json without header {"a"="a","b"=1}
+                // Execute HTTP Post Request
+                HttpResponse response = httpclient.execute(httppost);
+                InputStream inputStream = response.getEntity().getContent();
+                InputStreamToStringExample str = new InputStreamToStringExample();
+                responseServer = str.getStringFromInputStream(inputStream);
+                Log.e("response", "response ----- " + responseServer.toString() + "|");
+                Log.e("response", "response ----- " + responseServer.toString().equalsIgnoreCase("{\"success\":1}") + "|");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if (responseServer!=null && responseServer.equalsIgnoreCase("{\"success\":1}")) {
+                Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
+                responseServer="";
+                getDataConfig();
+            } else {
+                if (responseServer.equalsIgnoreCase("") || responseServer.isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "Ops, Error! Please Try Again!",Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
+
     public void initFormSettingRadius(){
         linearLayout = (LinearLayout)findViewById(R.id.linearLayout_setbub_dialog);
         viewGroup = (ViewGroup)findViewById(R.id.relativeLayout_setbub_formdialog);
@@ -209,6 +306,8 @@ public class SettingCategoryBubbleActivity extends AppCompatActivity {
                 // TODO Auto-generated method stub
                 //textView.setVisibility(View.INVISIBLE);
                 //saving to db
+                AsyncTAddingDataToServer asyncTAddingDataToServer = new AsyncTAddingDataToServer();
+                asyncTAddingDataToServer.execute();
             }
 
             @Override
@@ -226,6 +325,7 @@ public class SettingCategoryBubbleActivity extends AppCompatActivity {
                 String texts = "";
                 //Toast.makeText(getApplicationContext(),"position "+thumbRect.centerX(),Toast.LENGTH_SHORT).show();
                 texts=""+(seekBar_rad.getProgress()+1)+" Km";
+                newRadius = seekBar_rad.getProgress()+1;
                 seekBar_back.setProgress(progress);
                 seekBar_back.setThumb(writeOnDrawable(R.drawable.transparant, texts));
             }
