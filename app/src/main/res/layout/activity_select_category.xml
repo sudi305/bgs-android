@@ -35,4 +35,9 @@
         android:layout_gravity="center_horizontal"
         android:visibility="gone" />
 
+    <com.zhy.view.flowlayout.TagFlowLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/view" />
+
 </LinearLayout>

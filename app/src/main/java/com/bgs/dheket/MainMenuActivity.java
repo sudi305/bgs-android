@@ -47,6 +47,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bgs.common.Utility;
+import com.bgs.flowLayout.CategoryActivity;
 import com.bgs.networkAndSensor.ConfigInternetAndGPS;
 import com.bgs.networkAndSensor.HttpGetOrPost;
 import com.bgs.imageOrView.ProfilePictureView_viaFB;
@@ -246,7 +247,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             @Override
             public void onClick(View v) {
                 btn_search.setAnimation(animButtonPress);
-                Intent toSearch = new Intent(getApplicationContext(), SearchAllCategoryActivity.class);
+                Intent toSearch = new Intent(getApplicationContext(), CategoryActivity.class);
                 startActivity(toSearch);
                 finish();
             }

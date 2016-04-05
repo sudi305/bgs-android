@@ -46,6 +46,7 @@
         <activity android:name="com.bgs.dheket.SettingCategoryBubbleActivity"/>
         <activity android:name="com.bgs.dheket.SearchViewActivity"/>
         <activity android:name="com.bgs.dheket.SelectCategoryActivity"/>
+        <activity android:name="com.bgs.flowLayout.CategoryActivity"/>
 
     </application>
 
