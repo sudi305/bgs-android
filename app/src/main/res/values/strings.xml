@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Dheket</string>
+    <string name="app_name">Dheket User</string>
     <string name="loading">Please wait...</string>
     <string name="signUpEmail">Sign up with e-mail</string>
     <string name="facebook_app_id">591231707696050</string>
