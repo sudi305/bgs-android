@@ -47,6 +47,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bgs.common.Utility;
+import com.bgs.flowLayout.CategoryActivity;
 import com.bgs.networkAndSensor.ConfigInternetAndGPS;
 import com.bgs.networkAndSensor.HttpGetOrPost;
 import com.bgs.imageOrView.ProfilePictureView_viaFB;
@@ -57,9 +58,25 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by SND on 20/01/2016.
@@ -80,6 +97,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     ImageButton imageButton_close;
     ConfigInternetAndGPS checkInternetGPS;
     HttpGetOrPost httpGetOrPost;
+    String responseServer="";
 
     LocationManager myLocationManager;
     Criteria criteria;
@@ -92,6 +110,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     String[] nama_katagori = new String[5], icon_kategori = new String[5];
     double real_radius = 0.0;
     double radius = 0.0;
+    int newRadius = 0;
     double latitude, longitude;
     String url = "";
     String detailUser,email;
@@ -228,7 +247,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             @Override
             public void onClick(View v) {
                 btn_search.setAnimation(animButtonPress);
-                Intent toSearch = new Intent(getApplicationContext(), SearchAllCategoryActivity.class);
+                Intent toSearch = new Intent(getApplicationContext(), CategoryActivity.class);
                 startActivity(toSearch);
                 finish();
             }
@@ -276,6 +295,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             public void onStopTrackingTouch(SeekBar seekBar) {
                 // TODO Auto-generated method stub
                 //textView.setVisibility(View.INVISIBLE);
+                AsyncTAddingDataToServer asyncT = new AsyncTAddingDataToServer();
+                asyncT.execute();
             }
 
             @Override
@@ -300,6 +321,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 textViewRad.setText(String.valueOf(progress + 1) + " Km");
                 bartext.setProgress(progress);
                 bartext.setThumb(writeOnDrawable(R.drawable.transparant, String.valueOf(bar.getProgress() + 1) + " Km"));
+                newRadius = bar.getProgress()+1;
                 //textView.setVisibility(View.VISIBLE);
                 //final Animation animationFadeOut = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
                 //textView.startAnimation(animationFadeOut);
@@ -397,6 +419,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                         view_usrPro.setProfileId(json.getString("id"));
                         view_usrPro.setCropped(true);
                         textView_usrNm.setText(json.getString("name"));
+                        email = json.getString("email");
                     }
 
                 } catch (JSONException e) {
@@ -563,6 +586,92 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         }
     }
 
+    public static class InputStreamToStringExample {
+
+        public static void main(String[] args) throws IOException {
+
+            // intilize an InputStream
+            InputStream is = new ByteArrayInputStream("file content is process".getBytes());
+
+            String result = getStringFromInputStream(is);
+
+            System.out.println(result);
+            System.out.println("Done");
+
+        }
+
+        // convert InputStream to String
+        private static String getStringFromInputStream(InputStream is) {
+
+            BufferedReader br = null;
+            StringBuilder sb = new StringBuilder();
+
+            String line;
+            try {
+
+                br = new BufferedReader(new InputStreamReader(is));
+                while ((line = br.readLine()) != null) {
+                    sb.append(line);
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (br != null) {
+                    try {
+                        br.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            return sb.toString();
+        }
+    }
+
+    /* Inner class to get response */
+    class AsyncTAddingDataToServer extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            String url = String.format(getResources().getString(R.string.link_updateRadiusByEmail));
+            HttpClient httpclient = new DefaultHttpClient();
+            HttpPost httppost = new HttpPost(url);
+
+            try {
+                JSONObject jsonobj = new JSONObject();
+                jsonobj.put("email", email);
+                jsonobj.put("rad", newRadius);
+                Log.e("mainToPost", "mainToPost" + jsonobj.toString());
+                httppost.setEntity(new StringEntity(jsonobj.toString())); //json without header {"a"="a","b"=1}
+                // Execute HTTP Post Request
+                HttpResponse response = httpclient.execute(httppost);
+                InputStream inputStream = response.getEntity().getContent();
+                InputStreamToStringExample str = new InputStreamToStringExample();
+                responseServer = str.getStringFromInputStream(inputStream);
+                Log.e("response", "response ----- " + responseServer.toString() + "|");
+                Log.e("response", "response ----- " + responseServer.toString().equalsIgnoreCase("{\"success\":1}") + "|");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if (responseServer!=null && responseServer.equalsIgnoreCase("{\"success\":1}")) {
+                Toast.makeText(getApplicationContext(),"Success!",Toast.LENGTH_SHORT).show();
+                responseServer="";
+                getDataCategory(email, latitude, longitude);
+            } else {
+                if (responseServer.equalsIgnoreCase("") || responseServer.isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "Ops, Error! Please Try Again!",Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
+
     public void getDataCategory(String email, double lat, double lng) {
         CallWebPageTask task = new CallWebPageTask();
         task.applicationContext = getApplicationContext();
@@ -615,7 +724,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         latitude = location.getLatitude();
         longitude = location.getLongitude();
         //Toast.makeText(getApplicationContext(),"lat "+latitude+" | lgt "+longitude, Toast.LENGTH_LONG).show();
-        getDataCategory("yangkutahu@gmail.com", latitude, longitude);
+        getDataCategory(email, latitude, longitude);
     }
 
     @Override

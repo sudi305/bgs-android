@@ -382,7 +382,7 @@
                     android:text="MORE"
                     android:id="@+id/button_lms_more"
                     android:layout_gravity="center_horizontal"
-                    android:background="#ffffff"
+                    android:background="@drawable/corner_round_small_all"
                     android:textColor="#929292" />
             </LinearLayout>
 
