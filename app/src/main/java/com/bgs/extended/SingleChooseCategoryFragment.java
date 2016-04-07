@@ -1,4 +1,4 @@
-package com.bgs.flowLayout;
+package com.bgs.extended;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -27,12 +27,9 @@ import java.util.Set;
 /**
  * Created by zhy on 15/9/10.
  */
-public class SingleChooseFragment extends Fragment
+public class SingleChooseCategoryFragment extends Fragment
 {
-    private String[] mVals = new String[]
-            {"Hello", "Android", "Weclome Hi ", "Button", "TextView", "Hello User",
-                    "Androids", "Weclome", "Button ImageView", "TextView 1", "Helloworld",
-                    "Android X", "Weclome Hello New", "Button Text", "D TextView"};
+    private String[] mVals;
 
     private TagFlowLayout mFlowLayout, mFlowLayoutSearch;
     private EditText editText;

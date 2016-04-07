@@ -247,7 +247,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             @Override
             public void onClick(View v) {
                 btn_search.setAnimation(animButtonPress);
-                Intent toSearch = new Intent(getApplicationContext(), CategoryActivity.class);
+                Intent toSearch = new Intent(getApplicationContext(), SearchAllCategoryActivity.class);
                 startActivity(toSearch);
                 finish();
             }

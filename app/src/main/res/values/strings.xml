@@ -22,6 +22,8 @@
     <string name="link_getUserConfig">http://dheket.co.id/index.php/getconfigurationuserbyemail</string> <!--getconfigurationuserbyemail/{email}-->
     <string name="link_cekUserLogin">http://dheket.co.id/index.php/checkexistinguserbyemail</string><!--checkexistinguserbyemail/{email}-->
     <string name="link_updateRadiusByEmail">http://dheket.co.id/index.php/saveradbyemail/</string><!--saveradbyemail/ {"email"="a@m.c","rad"=5}-->
+    <string name="link_updateCategoryUserByEmail">http://dheket.co.id/index.php/updatecatuserbyemail/</string> <!--updatecatuserbyemail/ {"email"="a@m.c","cat_old"=1,"cat_new"=2}-->
+    <string name="link_updateHashtagUserByEmail">http://dheket.co.id/index.php/updatetagcatuserbyemail/</string> <!--updatetagcatuserbyemail/ {"email"="a@m.c","cat_old"=1,"cat_new"=2}-->
 
 
     <string name="menu_locate">Locate</string>
