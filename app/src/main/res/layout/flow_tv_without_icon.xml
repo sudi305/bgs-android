@@ -4,7 +4,6 @@
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
     android:background="@drawable/flow_tag_bg"
-    android:drawableRight="@drawable/flow_drawable_icon"
     android:state_checked="true"
     android:drawablePadding="2dp"
     android:text="Helloworld"

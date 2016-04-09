@@ -48,6 +48,17 @@ public abstract class TagAdapter<T>
         notifyDataChanged();
     }
 
+    public void setSingleSelected(int pos){
+        mCheckedPosList.clear();
+        mCheckedPosList.add(pos);
+        notifyDataChanged();
+    }
+
+    public void clearSingleSelected(int pos){
+        mCheckedPosList.remove(pos);
+        notifyDataChanged();
+    }
+
     HashSet<Integer> getPreCheckedList()
     {
         return mCheckedPosList;
@@ -76,5 +87,8 @@ public abstract class TagAdapter<T>
         return false;
     }
 
-
+    public boolean setSingleSelected(int position ,T t)
+    {
+        return true;
+    }
 }
