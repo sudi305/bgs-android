@@ -32,6 +32,7 @@ public class ListViewAdapterSettingBubble extends BaseAdapter {
     Context context;
     LayoutInflater inflater;
     ArrayList<HashMap<String, String>> data;
+    ArrayList<String>categoryUser = new ArrayList<>();
     String email;
 
     Picasso picasso;
@@ -100,6 +101,10 @@ public class ListViewAdapterSettingBubble extends BaseAdapter {
             @Override
             public void onClick(View arg0) {
                 result = data.get(position);
+                for (int i = 0; i < result.size() ; i++) {
+                    categoryUser.add(i, data.get(i).get("category_name"));
+                    Log.e("datax " + categoryUser.size(), data.get(i).get("category_name").toString());
+                }
                 if (position!=data.size()-1){
                     Intent intent = new Intent(context, SelectCategoryActivity.class);
                     Bundle paket = new Bundle();
@@ -108,6 +113,7 @@ public class ListViewAdapterSettingBubble extends BaseAdapter {
                     paket.putString("category_name",result.get("category_name"));
                     paket.putString("id_profile_tag",result.get("id_profile_tag"));
                     paket.putString("detail_tag",result.get("detail_tag"));
+                    paket.putStringArrayList("data_category",categoryUser);
                     intent.putExtras(paket);
                     context.startActivity(intent);
                     ((Activity)context).finish();

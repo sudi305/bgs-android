@@ -16,13 +16,14 @@
     <string name="link_getLocationPromo">http://dheket.co.id/index.php/BELUM</string>
     <string name="link_getDetailLocationPromo">http://dheket.co.id/index.php/BELUM</string>
     <string name="link_getAllCategory">http://dheket.co.id/index.php/getallcategory</string> <!--getallcategory-->
+    <string name="link_getHashtagByCatId">http://dheket.co.id/index.php/getallhashtagbycatid</string><!--getallhashtagbycatid/{cat_id}-->
     <string name="link_getSingleLocationById">http://dheket.co.id/index.php/getlocationbylocationid</string> <!--getlocationbylocationid/{center_lat}/{center_lng}/{loc_id}-->
     <string name="link_getLocationByCategory">http://dheket.co.id/index.php/getlocationbycategoryid</string> <!--getlocationbycategoryid/{rad}/{center_lat}/{center_lng}/{cat}-->
     <string name="link_getDataUser">http://dheket.co.id/index.php/getprofileuserbyemail</string> <!--getprofileuserbyemail/{email}/{center_lat}/{center_lng}-->
     <string name="link_getUserConfig">http://dheket.co.id/index.php/getconfigurationuserbyemail</string> <!--getconfigurationuserbyemail/{email}-->
     <string name="link_cekUserLogin">http://dheket.co.id/index.php/checkexistinguserbyemail</string><!--checkexistinguserbyemail/{email}-->
     <string name="link_updateRadiusByEmail">http://dheket.co.id/index.php/saveradbyemail/</string><!--saveradbyemail/ {"email"="a@m.c","rad"=5}-->
-    <string name="link_updateCategoryUserByEmail">http://dheket.co.id/index.php/updatecatuserbyemail/</string> <!--updatecatuserbyemail/ {"email"="a@m.c","cat_old"=1,"cat_new"=2}-->
+    <string name="link_updateCategoryUserByEmail">http://dheket.co.id/index.php/createorupdatecatuserbyemail/</string> <!--updatecatuserbyemail/ {"email"="a@m.c","cat_old"=1,"cat_new"=2}-->
     <string name="link_updateHashtagUserByEmail">http://dheket.co.id/index.php/updatetagcatuserbyemail/</string> <!--updatetagcatuserbyemail/ {"email"="a@m.c","cat_old"=1,"cat_new"=2}-->
 
 

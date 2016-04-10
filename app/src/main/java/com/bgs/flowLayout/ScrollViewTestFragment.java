@@ -85,6 +85,7 @@ public class ScrollViewTestFragment extends Fragment
             public void onSelected(Set<Integer> selectPosSet)
             {
                 getActivity().setTitle("choose:" + selectPosSet.toString());
+                selectPosSet.iterator().hasNext();
             }
         });
     }
