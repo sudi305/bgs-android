@@ -543,12 +543,22 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
      */
     private class CallWebPageTask extends AsyncTask<String, Void, String> {
 
+        public CallWebPageTask() {
+            applicationContext = MainMenuActivity.this;
+            dialog = new ProgressDialog(applicationContext);
+        }
+
+
         private ProgressDialog dialog;
         protected Context applicationContext;
 
         @Override
         protected void onPreExecute() {
-            //this.dialog = ProgressDialog.show(applicationContext, "Login Process", "Please Wait...", true);
+            this.dialog.setTitle("Requesting Data");
+            this.dialog.setMessage("Please Wait...!!!");
+            this.dialog.setCanceledOnTouchOutside(false);
+            this.dialog.setCancelable(false);
+            //this.dialog.show();
         }
 
         @Override
@@ -581,7 +591,9 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
         @Override
         protected void onPostExecute(String result) {
-            //this.dialog.cancel();
+            /*if (dialog.isShowing()) {
+                dialog.dismiss();
+            }*/
             updateData();
         }
     }

@@ -40,6 +40,12 @@ public abstract class TagAdapter<T>
             mCheckedPosList.add(pos[i]);
         notifyDataChanged();
     }
+    public void unSetSelectedList(int... pos)
+    {
+        for (int i = 0; i < pos.length; i++)
+            mCheckedPosList.remove(pos[i]);
+        notifyDataChanged();
+    }
 
     public void setSelectedList(Set<Integer> set)
     {
@@ -51,6 +57,11 @@ public abstract class TagAdapter<T>
     public void setSingleSelected(int pos){
         mCheckedPosList.clear();
         mCheckedPosList.add(pos);
+        notifyDataChanged();
+    }
+
+    public void unSetSingleSelected(int pos){
+        mCheckedPosList.remove(pos);
         notifyDataChanged();
     }
 

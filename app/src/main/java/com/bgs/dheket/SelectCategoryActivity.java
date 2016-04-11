@@ -63,9 +63,11 @@ public class SelectCategoryActivity extends AppCompatActivity {
     String url = "",responseServer="";
     private JSONObject JsonObject, jsonobject;
     ArrayList<HashMap<String, String>> catarraylist;
-    private String[] categorys;
-    String email,category_name,id_category,id_profile_tag,detail_tag,new_id_category;
+    private ArrayList<String> categorys = new ArrayList<>();
+    private String[] categoryReady;
+    String email,category_name,new_category_name,id_category,id_profile_tag,detail_tag,new_id_category;
     String selectCategorys;
+    ArrayList<String>categoryUser;
     Bundle paket;
 
     LinearLayout ll_sc_search, ll_sc_result;
@@ -101,6 +103,13 @@ public class SelectCategoryActivity extends AppCompatActivity {
         id_profile_tag = paket.getString("id_profile_tag");
         detail_tag = paket.getString("detail_tag");
         category_name = paket.getString("category_name");
+        categoryUser = paket.getStringArrayList("data_category");
+        Log.e("sizex "+categoryUser.size(),""+categoryUser.toString());
+
+        for (int i = 0; i <categoryUser.size() ; i++) {
+            if (categoryUser.get(i).equalsIgnoreCase(category_name))categoryUser.remove(i);
+        }
+        Log.e("size",""+categoryUser.size());
 
         editText_search = (EditText)findViewById(R.id.editText_search_select_category);
         editText_search.addTextChangedListener(textWatcher);
@@ -150,7 +159,8 @@ public class SelectCategoryActivity extends AppCompatActivity {
 
         if (item.getItemId() == R.id.select_done) {
             //save
-            back_to_previous_screen();
+            new_id_category = id_category;
+            gotoSelectHashtag();
             return super.onOptionsItemSelected(item);
         }
 
@@ -200,14 +210,26 @@ public class SelectCategoryActivity extends AppCompatActivity {
                 JSONArray menuItemArray = null;
                 JsonObject = new JSONObject(response);
                 menuItemArray = JsonObject.getJSONArray("dheket_allCat");
-                categorys = new String[menuItemArray.length()];
+                int index = 0;
+                boolean notEqual = true;
                 for (int i = 0; i < menuItemArray.length(); i++) {
                     map = new HashMap<String, String>();
                     jsonobject = menuItemArray.getJSONObject(i);
 
                     map.put("id_category", jsonobject.getString("id_category"));
                     map.put("category_name", jsonobject.getString("category_name"));
-                    categorys[i]=jsonobject.getString("category_name");
+                    for (int j = 0; j < categoryUser.size(); j++){
+                        if (jsonobject.getString("category_name").equalsIgnoreCase(categoryUser.get(j).toString())){
+                            notEqual = false;
+                            Log.e("sama",""+jsonobject.getString("category_name").equalsIgnoreCase(categoryUser.get(j).toString()));
+                        }
+                    }
+                    if (notEqual==true){
+                        categorys.add(index,jsonobject.getString("category_name"));
+                        index++;
+                    } else {
+                        notEqual=true;
+                    }
                     // Set the JSON Objects into the array
                     catarraylist.add(map);
                 }
@@ -230,8 +252,12 @@ public class SelectCategoryActivity extends AppCompatActivity {
             String email = catarraylist.get(i).get("category_name").toString();
             //Uri imgUrl = Math.random() > .7d ? null : Uri.parse("https://robohash.org/" + Math.abs(email.hashCode()));
         }*/
-        newDataAfterRemove = categorys;
-        Collections.addAll(filteredList, categorys);
+        categoryReady = new String[categorys.size()];
+        for (int i = 0; i < categoryReady.length; i++) {
+            categoryReady[i]=categorys.get(i).toString();
+        }
+        newDataAfterRemove = categoryReady;
+        Collections.addAll(filteredList, categoryReady);
         initResultCat();
     }
 
@@ -253,9 +279,17 @@ public class SelectCategoryActivity extends AppCompatActivity {
             public boolean onTagClick(View view, int position, FlowLayout parent) {
                 //Toast.makeText(getApplicationContext(), catarraylist.get(position).get("category_name"), Toast.LENGTH_SHORT).show();
                 //view.setVisibility(View.GONE);
-                new_id_category = catarraylist.get(position).get("id_category");
+                new_category_name = catarraylist.get(position).get("category_name");
+                for (int i = 0; i < catarraylist.size() ; i++) {
+                    if (categorys.get(position).equalsIgnoreCase(catarraylist.get(i).get("category_name"))){
+                        new_id_category = catarraylist.get(i).get("id_category");
+                        new_category_name = catarraylist.get(i).get("category_name");
+                    }
+                }
+
                 AsyncTAddingDataToServer asyncTAddingDataToServer = new AsyncTAddingDataToServer();
                 asyncTAddingDataToServer.execute();
+
                 return true;
             }
         });
@@ -268,8 +302,8 @@ public class SelectCategoryActivity extends AppCompatActivity {
             }
         });
 
-        for (int i = 0; i < categorys.length ; i++) {
-            if (categorys[i].equalsIgnoreCase(category_name)){
+        for (int i = 0; i < categoryReady.length ; i++) {
+            if (categoryReady[i].equalsIgnoreCase(category_name)){
                 //mAdapter.setSingleSelected(i,categorys[i]);
                 //Log.e("selected",""+mAdapter.setSingleSelected(i,categorys[i])+" | "+categorys[i]);
                 mAdapter.setSingleSelected(i);
@@ -334,14 +368,21 @@ public class SelectCategoryActivity extends AppCompatActivity {
                 //Toast.makeText(getApplicationContext(), filteredList.get(position), Toast.LENGTH_SHORT).show();
                 //view.setVisibility(View.GONE);
                 //Log.e("yang terpilih", "" + searchItem[0] + "|" + cari[0]);
-                for (int i = 0; i < categorys.length; i++) {
-                    if (categorys[i].equalsIgnoreCase(filteredList.get(position))){
+                for (int i = 0; i < categoryReady.length; i++) {
+                    if (categoryReady[i].equalsIgnoreCase(filteredList.get(position))){
                         //mAdapter.setSingleSelected(i,categorys[i]);
                         //Log.e("selected",""+mAdapter.setSingleSelected(i,categorys[i])+" | "+categorys[i]);
                         mAdapter.setSingleSelected(i);
+                        Log.e("mAdapter", "" + mAdapter.getItem(i).toString());
                         ll_sc_search.setVisibility(View.GONE);
                         ll_sc_result.setVisibility(View.VISIBLE);
-                        new_id_category = catarraylist.get(i).get("id_category");
+                        for (int j = 0; j < catarraylist.size() ; j++) {
+                            if (mAdapter.getItem(i).toString().equalsIgnoreCase(catarraylist.get(j).get("category_name"))){
+                                new_id_category = catarraylist.get(j).get("id_category");
+                                new_category_name = catarraylist.get(j).get("category_name");
+                            }
+                        }
+
                         AsyncTAddingDataToServer asyncTAddingDataToServer = new AsyncTAddingDataToServer();
                         asyncTAddingDataToServer.execute();
                         editText_search.setText("");
@@ -441,6 +482,7 @@ public class SelectCategoryActivity extends AppCompatActivity {
             if (responseServer!=null && responseServer.equalsIgnoreCase("{\"success\":1}")) {
                 Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
                 responseServer="";
+                gotoSelectHashtag();
             } else {
                 if (responseServer.equalsIgnoreCase("") || responseServer.isEmpty()) {
                     Toast.makeText(getApplicationContext(), "Ops, Error! Please Try Again!",Toast.LENGTH_SHORT).show();
@@ -449,46 +491,26 @@ public class SelectCategoryActivity extends AppCompatActivity {
         }
     }
 
-    /* Inner class to get response */
-    class AsyncTClearDataHashtag extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... voids) {
-            String url = String.format(getResources().getString(R.string.link_updateCategoryUserByEmail));
-            HttpClient httpclient = new DefaultHttpClient();
-            HttpPost httppost = new HttpPost(url);
-            Log.e("link",url+" | "+id_category+" | "+new_id_category+" | "+email);
-            try {
-                JSONObject jsonobj = new JSONObject();
-                jsonobj.put("email", email);
-                jsonobj.put("cat_old", Integer.parseInt(id_category));
-                jsonobj.put("cat_new",Integer.parseInt(new_id_category));
-                Log.e("mainToPost", "mainToPost" + jsonobj.toString());
-                httppost.setEntity(new StringEntity(jsonobj.toString())); //json without header {"a"="a","b"=1}
-                // Execute HTTP Post Request
-                HttpResponse response = httpclient.execute(httppost);
-                InputStream inputStream = response.getEntity().getContent();
-                InputStreamToStringExample str = new InputStreamToStringExample();
-                responseServer = str.getStringFromInputStream(inputStream);
-                Log.e("response", "response ----- " + responseServer.toString() + "|");
-                Log.e("response", "response ----- " + responseServer.toString().equalsIgnoreCase("{\"success\":1}") + "|");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
+    public void gotoSelectHashtag(){
+        Intent tonext = new Intent(getApplicationContext(), SelectHashtagActivity.class);
+        Bundle paket = new Bundle();
+        paket.putString("email", email);
+        paket.putString("id_profile_tag", id_profile_tag);
+        if (Integer.parseInt(id_category)==Integer.parseInt(new_id_category)){
+            paket.putString("detail_tag",detail_tag);
+            paket.putString("id_category",id_category);
+            paket.putString("category_name", category_name);
+        } else {
+            paket.putString("id_category",new_id_category);
+            paket.putString("category_name", new_category_name);
+            paket.putString("detail_tag","");
+            categoryUser.remove(category_name);
+            categoryUser.add(new_category_name);
         }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            if (responseServer!=null && responseServer.equalsIgnoreCase("{\"success\":1}")) {
-                Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
-                responseServer="";
-            } else {
-                if (responseServer.equalsIgnoreCase("") || responseServer.isEmpty()) {
-                    Toast.makeText(getApplicationContext(), "Ops, Error! Please Try Again!",Toast.LENGTH_SHORT).show();
-                }
-            }
-        }
+        paket.putStringArrayList("data_category",categoryUser);
+        tonext.putExtras(paket);
+        startActivity(tonext);
+        finish();
     }
 }
 
