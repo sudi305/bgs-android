@@ -41,9 +41,20 @@ import com.facebook.login.widget.ProfilePictureView;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 /**
  * Created by SND on 18/01/2016.
@@ -57,7 +68,8 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
     android.support.v7.app.ActionBar actionBar;
 
     String url = "";
-    String email = "";
+    String urlCreateAccount = "";
+    String email = "",username="",password="",facebook_id="",responseServer="";
     double latitude=0, longitude=0;
 
     LocationManager myLocationManager;
@@ -91,6 +103,7 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
         loading = (TextView)findViewById(R.id.textView_formLogin_loading);
 
         url = String.format(getResources().getString(R.string.link_cekUserLogin));
+        urlCreateAccount = String.format(getResources().getString(R.string.link_addUserCustomerByEmail));
 
 //        if(AccessToken.getCurrentAccessToken() != null){
 //            RequestData();
@@ -175,8 +188,12 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
                 JSONObject json = response.getJSONObject();
                 try {
                     if (json != null) {
+                        Log.e("json",""+json.toString());
                         String text = "<b>Name :</b> " + json.getString("name") + "<br><br><b>Email :</b> " + json.getString("email") + "<br><br><b>Profile link :</b> " + json.getString("link");
                         email = json.getString("email");
+                        username = json.getString("");
+                        password = "123456";
+                        facebook_id = "";
                         checkExistingUser(email,latitude,longitude);
                     }
 
@@ -260,6 +277,7 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
                 //simpan data dari web ke dalam array
                 jObject = new JSONObject(response);
                 menuItemArray = jObject.getJSONArray("tag_cat");
+                email = jObject.getString("email");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -269,10 +287,111 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
         @Override
         protected void onPostExecute(String result) {
             //this.dialog.cancel();
-            if (AccessToken.getCurrentAccessToken() != null) {
-                Intent loginWithFb = new Intent(FormLoginActivity.this,MainMenuActivity.class);
-                startActivity(loginWithFb);
-                finish();
+            if (email.equalsIgnoreCase("guest@dheket.co.id")) {
+                createUserAccountCustomer();
+            } else {
+                if (AccessToken.getCurrentAccessToken() != null) {
+                    Intent loginWithFb = new Intent(FormLoginActivity.this, MainMenuActivity.class);
+                    startActivity(loginWithFb);
+                    finish();
+                }
+            }
+        }
+    }
+
+    public void createUserAccountCustomer() {
+        AsyncTAddingDataToServer asyncT = new AsyncTAddingDataToServer();
+        asyncT.execute();
+    }
+
+    public static class InputStreamToStringExample {
+
+        public static void main(String[] args) throws IOException {
+
+            // intilize an InputStream
+            InputStream is = new ByteArrayInputStream("file content is process".getBytes());
+
+            String result = getStringFromInputStream(is);
+
+            System.out.println(result);
+            System.out.println("Done");
+
+        }
+
+        // convert InputStream to String
+        private static String getStringFromInputStream(InputStream is) {
+
+            BufferedReader br = null;
+            StringBuilder sb = new StringBuilder();
+
+            String line;
+            try {
+
+                br = new BufferedReader(new InputStreamReader(is));
+                while ((line = br.readLine()) != null) {
+                    sb.append(line);
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (br != null) {
+                    try {
+                        br.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            return sb.toString();
+        }
+    }
+
+    /* Inner class to get response */
+    class AsyncTAddingDataToServer extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            String url = urlCreateAccount;
+            HttpClient httpclient = new DefaultHttpClient();
+            HttpPost httppost = new HttpPost(url);
+
+            try {
+                JSONObject jsonobj = new JSONObject();
+                jsonobj.put("email", email);
+                jsonobj.put("username", username);
+                jsonobj.put("password", password);
+                jsonobj.put("facebook_id", facebook_id);
+                Log.e("mainToPost", "mainToPost" + jsonobj.toString());
+                httppost.setEntity(new StringEntity(jsonobj.toString())); //json without header {"a"="a","b"=1}
+                // Execute HTTP Post Request
+                HttpResponse response = httpclient.execute(httppost);
+                InputStream inputStream = response.getEntity().getContent();
+                InputStreamToStringExample str = new InputStreamToStringExample();
+                responseServer = str.getStringFromInputStream(inputStream);
+                Log.e("response", "response ----- " + responseServer.toString() + "|");
+                Log.e("response", "response ----- " + responseServer.toString().equalsIgnoreCase("{\"success\":1}") + "|");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if (responseServer!=null && responseServer.equalsIgnoreCase("{\"success\":1}")) {
+                Toast.makeText(getApplicationContext(),"Success!",Toast.LENGTH_SHORT).show();
+                responseServer="";
+                if (AccessToken.getCurrentAccessToken() != null) {
+                    Intent loginWithFb = new Intent(FormLoginActivity.this, MainMenuActivity.class);
+                    startActivity(loginWithFb);
+                    finish();
+                }
+            } else {
+                if (responseServer.equalsIgnoreCase("") || responseServer.isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "Ops, Error! Please Try Again!",Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }

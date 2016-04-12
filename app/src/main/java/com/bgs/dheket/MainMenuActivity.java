@@ -23,8 +23,13 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.util.Log;
 import android.util.TypedValue;
@@ -82,7 +87,7 @@ import java.util.List;
  * Created by SND on 20/01/2016.
  */
 
-public class MainMenuActivity extends AppCompatActivity implements LocationListener {
+public class MainMenuActivity extends AppCompatActivity implements LocationListener, NavigationView.OnNavigationItemSelectedListener  {
 
     LinearLayout buble_cat1, buble_cat2, buble_cat3, buble_cat4, buble_cat5;
     Button btn_buble_cat1, btn_buble_cat2, btn_buble_cat3, btn_buble_cat4, btn_buble_cat5, btn_search;
@@ -126,14 +131,18 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     Button textViewMore;
     ViewGroup layoutRadiusSlider;
     LinearLayout formRadius,formRadiusBackground;
+    RelativeLayout rl;
     RelativeLayout.LayoutParams p;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_menu_new);
-        actionBar = getSupportActionBar();
+        setContentView(R.layout.activity_main_menu);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        actionBar = getSupportActionBar();
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
         //actionBar.setHomeAsUpIndicator(R.drawable.logo);
@@ -142,9 +151,18 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 //        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
         actionBar.setSubtitle(Html.fromHtml("<font color='#ff9800' size='10'>Radius " + formatNumber.changeFormatNumber(radius) + " Km</font>"));
 
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
         FacebookSdk.sdkInitialize(getApplicationContext());
 
-        url = String.format(getResources().getString(R.string.link_getDataUser));
+        url = String.format(getResources().getString(R.string.link_cekUserLogin));
 
         checkInternetGPS = new ConfigInternetAndGPS(getApplicationContext());
 
@@ -174,6 +192,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         txt_tot_cat5 = (TextView) findViewById(R.id.textView_total_cat5);
         view_usrPro = (ProfilePictureView_viaFB) findViewById(R.id.view_userProfile);
         textView_usrNm = (TextView) findViewById(R.id.textView_usrNm);
+
+        rl = (RelativeLayout)findViewById(R.id.rl_main_menu_bubble);
 
         initFormSettingRadius();
         updateData();
@@ -211,35 +231,35 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         btn_buble_cat1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toListAndMapScreen(id_kategori[0], real_radius, nama_katagori[0], icon_kategori[0]);
+                toListAndMapScreen(id_kategori[0], real_radius, nama_katagori[0], icon_kategori[0],lokasi[0]);
             }
         });
 
         btn_buble_cat2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toListAndMapScreen(id_kategori[1], real_radius, nama_katagori[1],icon_kategori[1]);
+                toListAndMapScreen(id_kategori[1], real_radius, nama_katagori[1],icon_kategori[1],lokasi[1]);
             }
         });
 
         btn_buble_cat3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toListAndMapScreen(id_kategori[2], real_radius, nama_katagori[2],icon_kategori[2]);
+                toListAndMapScreen(id_kategori[2], real_radius, nama_katagori[2],icon_kategori[2],lokasi[2]);
             }
         });
 
         btn_buble_cat4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toListAndMapScreen(id_kategori[3], real_radius, nama_katagori[3],icon_kategori[3]);
+                toListAndMapScreen(id_kategori[3], real_radius, nama_katagori[3],icon_kategori[3],lokasi[3]);
             }
         });
 
         btn_buble_cat5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toListAndMapScreen(id_kategori[4], real_radius, nama_katagori[4],icon_kategori[4]);
+                toListAndMapScreen(id_kategori[4], real_radius, nama_katagori[4],icon_kategori[4],lokasi[4]);
             }
         });
 
@@ -358,7 +378,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         paint.setTextAlign(Paint.Align.CENTER);
 
         Canvas canvas = new Canvas(bm);
-        canvas.drawText(text, bm.getWidth()/2, (bm.getHeight()/3), paint);
+        canvas.drawText(text, bm.getWidth() / 2, (bm.getHeight() / 3), paint);
 
         return new BitmapDrawable(bm);
     }
@@ -383,18 +403,20 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         dialog.show();
     }
 
-    public void toListAndMapScreen(int cat_id, double radius, String kategori, String icon) {
-        goToScreen = new Intent(getApplicationContext(), ListAndMapAllLocActivity.class);
-        Bundle paket = new Bundle();
-        paket.putInt("cat_id", cat_id);
-        paket.putString("kategori", kategori);
-        paket.putDouble("radius", radius);
-        paket.putDouble("latitude", latitude);
-        paket.putDouble("longitude", longitude);
-        paket.putString("icon", icon);
-        goToScreen.putExtras(paket);
-        startActivity(goToScreen);
-        finish();
+    public void toListAndMapScreen(int cat_id, double radius, String kategori, String icon,int lokasi) {
+        if (lokasi!=0){
+            goToScreen = new Intent(getApplicationContext(), ListAndMapAllLocActivity.class);
+            Bundle paket = new Bundle();
+            paket.putInt("cat_id", cat_id);
+            paket.putString("kategori", kategori);
+            paket.putDouble("radius", radius);
+            paket.putDouble("latitude", latitude);
+            paket.putDouble("longitude", longitude);
+            paket.putString("icon", icon);
+            goToScreen.putExtras(paket);
+            startActivity(goToScreen);
+            finish();
+        }
     }
 
     public void toSetting(){
@@ -485,9 +507,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         finish();
     }
 
-    public void logout_user() {
-        String logout = getResources().getString(com.facebook.R.string.com_facebook_loginview_log_out_action);
-        String cancel = getResources().getString(com.facebook.R.string.com_facebook_loginview_cancel_action);
+    /*public void warningInfo() {
         String message = "Are you sure?";
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(message)
@@ -502,7 +522,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 })
                 .setNegativeButton(cancel, null);
         builder.create().show();
-    }
+    }*/
 
     public int getStatusBarHeight() {
         int result = 0;
@@ -536,6 +556,29 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             }
         }
 
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.nav_camera) {
+            // Handle the camera action
+        } else if (id == R.id.nav_gallery) {
+
+        } else if (id == R.id.nav_slideshow) {
+
+        } else if (id == R.id.nav_manage) {
+
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_send) {
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 
     /**
@@ -594,6 +637,23 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             /*if (dialog.isShowing()) {
                 dialog.dismiss();
             }*/
+            if (email.equalsIgnoreCase("guest@dheket.co.id")){
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainMenuActivity.this);
+                builder.setMessage("This is Guest account! Are you sure to stay with this account?")
+                        .setCancelable(true)
+                        .setPositiveButton("No, Re-Login", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                LoginManager.getInstance().logOut();
+                                Intent logout_user_fb = new Intent(getApplicationContext(), FormLoginActivity.class);
+                                startActivity(logout_user_fb);
+                                finish();
+                            }
+                        })
+                        .setNegativeButton("Yes", null);
+                builder.create().show();
+            } else {
+                url = String.format(getResources().getString(R.string.link_getDataUser));
+            }
             updateData();
         }
     }
@@ -689,7 +749,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         task.applicationContext = getApplicationContext();
         String urls = url + "/" + email + "/" + lat + "/" + lng;
         Log.e("Sukses", urls);
-        task.execute(new String[]{urls});
+        if (email!=null)task.execute(new String[]{urls});
     }
 
     public void updateData() {

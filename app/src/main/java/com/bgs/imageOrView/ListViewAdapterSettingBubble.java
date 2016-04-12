@@ -21,6 +21,7 @@ import com.bgs.dheket.R;
 import com.bgs.dheket.SearchAllCategoryActivity;
 import com.bgs.dheket.SearchViewActivity;
 import com.bgs.dheket.SelectCategoryActivity;
+import com.bgs.dheket.SelectHashtagActivity;
 import com.bgs.dheket.SettingCategoryBubbleActivity;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
@@ -106,7 +107,13 @@ public class ListViewAdapterSettingBubble extends BaseAdapter {
                     Log.e("datax " + categoryUser.size(), data.get(i).get("category_name").toString());
                 }
                 if (position!=data.size()-1){
-                    Intent intent = new Intent(context, SelectCategoryActivity.class);
+                    Intent intent = null;
+                    if (result.get("category_name").equalsIgnoreCase("Best Buddies") ||
+                            result.get("category_name").equalsIgnoreCase("Brand")){
+                        intent = new Intent(context, SelectHashtagActivity.class);
+                    } else {
+                        intent = new Intent(context, SelectCategoryActivity.class);
+                    }
                     Bundle paket = new Bundle();
                     paket.putString("email",email);
                     paket.putString("id_category",result.get("id_category"));
