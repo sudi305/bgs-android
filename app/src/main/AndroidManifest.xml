@@ -37,7 +37,7 @@
             android:exported="true"/>
 
         <activity android:name="com.bgs.dheket.FormLoginActivity"/>
-        <activity android:name="com.bgs.dheket.MainMenuActivity"/>
+        <activity android:name="com.bgs.dheket.MainMenuActivity" android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name="com.bgs.dheket.ListAndMapAllLocActivity"/>
         <activity android:name="com.bgs.dheket.DetailLocationActivity"/>
         <activity android:name="com.bgs.dheket.SearchAllCategoryActivity"/>
@@ -48,6 +48,8 @@
         <activity android:name="com.bgs.dheket.SelectCategoryActivity"/>
         <activity android:name="com.bgs.dheket.SelectHashtagActivity"/>
         <activity android:name="com.bgs.flowLayout.CategoryActivity"/>
+        <activity android:name="com.bgs.dheket.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
 
     </application>
 

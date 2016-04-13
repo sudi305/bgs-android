@@ -51,6 +51,7 @@ public class SplashScreenActivity extends Activity{
             public void run() {
                 if (AccessToken.getCurrentAccessToken() != null) {
                     Intent loginWithFb = new Intent(SplashScreenActivity.this, MainMenuActivity.class);
+                    /*Intent loginWithFb = new Intent(SplashScreenActivity.this, MainActivity.class);*/
                     startActivity(loginWithFb);
                     finish();
                 }else {

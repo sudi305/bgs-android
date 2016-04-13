@@ -25,7 +25,9 @@
     <string name="link_updateRadiusByEmail">http://dheket.co.id/index.php/saveradbyemail/</string><!--saveradbyemail/ {"email"="a@m.c","rad"=5}-->
     <string name="link_updateCategoryUserByEmail">http://dheket.co.id/index.php/createorupdatecatuserbyemail/</string> <!--updatecatuserbyemail/ {"email"="a@m.c","cat_old"=1,"cat_new"=2}-->
     <string name="link_updateHashtagUserByEmail">http://dheket.co.id/index.php/updatetagcatuserbyemail/</string> <!--updatetagcatuserbyemail/ {"email"="a@m.c","cat_old"=1,"cat_new"=2}-->
-
+    <string name="link_addUserCustomerByEmail">http://dheket.co.id/index.php/addprofileusercustomerbyemail/</string><!--addprofileusercustomerbyemail/{"email"="a@m.c","username"="u","password"="**","facebook_id"="aaa"}-->
 
     <string name="menu_locate">Locate</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 </resources>
