@@ -197,6 +197,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
         initFormSettingRadius();
         updateData();
+        preProcessingGetData();
         getServiceFromGPS();
 
         final Animation animTranslate = AnimationUtils.loadAnimation(this, R.anim.anim_translate);
@@ -268,10 +269,35 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             public void onClick(View v) {
                 btn_search.setAnimation(animButtonPress);
                 Intent toSearch = new Intent(getApplicationContext(), SearchAllCategoryActivity.class);
+                myLocationManager.removeUpdates(MainMenuActivity.this);
+                myLocationManager = null;
                 startActivity(toSearch);
                 finish();
             }
         });
+    }
+
+    public void preProcessingGetData(){
+        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius ... </font>"));
+        txt_tot_cat1.setText("...");
+        btn_buble_cat1.setText("...");
+        txt_promo_cat1.setText("Promo: ...");
+
+        txt_tot_cat2.setText("...");
+        btn_buble_cat2.setText("...");
+        txt_promo_cat2.setText("Promo: ...");
+
+        txt_tot_cat3.setText("...");
+        btn_buble_cat3.setText("...");
+        txt_promo_cat3.setText("Promo: ...");
+
+        txt_tot_cat4.setText("...");
+        btn_buble_cat4.setText("...");
+        txt_promo_cat4.setText("Promo: ...");
+
+        txt_tot_cat5.setText("...");
+        btn_buble_cat5.setText("...");
+        txt_promo_cat5.setText("Promo: ...");
     }
 
     public void initFormSettingRadius(){
@@ -414,6 +440,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             paket.putDouble("longitude", longitude);
             paket.putString("icon", icon);
             goToScreen.putExtras(paket);
+            myLocationManager.removeUpdates(MainMenuActivity.this);
+            myLocationManager = null;
             startActivity(goToScreen);
             finish();
         }
@@ -424,6 +452,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         Bundle paket = new Bundle();
         paket.putString("email",email);
         gotoSetting.putExtras(paket);
+        myLocationManager.removeUpdates(MainMenuActivity.this);
+        myLocationManager = null;
         startActivity(gotoSetting);
         finish();
     }
@@ -488,6 +518,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
         if (item.getItemId() == R.id.goto_search) {
             Intent toSearch = new Intent(getApplicationContext(), SearchAllCategoryActivity.class);
+            myLocationManager.removeUpdates(MainMenuActivity.this);
+            myLocationManager = null;
             startActivity(toSearch);
             finish();
             return super.onOptionsItemSelected(item);
@@ -644,6 +676,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                         .setPositiveButton("No, Re-Login", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 LoginManager.getInstance().logOut();
+                                myLocationManager.removeUpdates(MainMenuActivity.this);
+                                myLocationManager = null;
                                 Intent logout_user_fb = new Intent(getApplicationContext(), FormLoginActivity.class);
                                 startActivity(logout_user_fb);
                                 finish();

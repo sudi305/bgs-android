@@ -69,7 +69,7 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
 
     String url = "";
     String urlCreateAccount = "";
-    String email = "",username="",password="",facebook_id="",responseServer="";
+    String temp_email = "",email = "",username="",password="",facebook_id="",responseServer="";
     double latitude=0, longitude=0;
 
     LocationManager myLocationManager;
@@ -118,7 +118,9 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
                 loading.setVisibility(View.VISIBLE);
                 login.setVisibility(View.GONE);
                 signup.setVisibility(View.GONE);
+                Log.e("Success", "1");
                 RequestDataFromFB();
+                Log.e("Success", "1a");
             }
 
             @Override
@@ -191,10 +193,13 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
                         Log.e("json",""+json.toString());
                         String text = "<b>Name :</b> " + json.getString("name") + "<br><br><b>Email :</b> " + json.getString("email") + "<br><br><b>Profile link :</b> " + json.getString("link");
                         email = json.getString("email");
-                        username = json.getString("");
+                        temp_email = email;
+                        username = json.getString("name");
                         password = "123456";
-                        facebook_id = "";
-                        checkExistingUser(email,latitude,longitude);
+                        facebook_id = json.getString("id");
+                        Log.e("Success", "2");
+                        checkExistingUser(email, latitude, longitude);
+                        Log.e("Success", "2a");
                     }
 
                 } catch (JSONException e) {
@@ -205,7 +210,9 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
         Bundle parameters = new Bundle();
         parameters.putString("fields", "id,name,link,email,picture");
         request.setParameters(parameters);
+        Log.e("Success", "3");
         request.executeAsync();
+        Log.e("Success", "3a");
     }
 
     public void checkExistingUser(String email, double latitude, double longitude) {
@@ -287,11 +294,15 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
         @Override
         protected void onPostExecute(String result) {
             //this.dialog.cancel();
+            Log.e("Success","4");
             if (email.equalsIgnoreCase("guest@dheket.co.id")) {
+                Log.e("Success", "5");
                 createUserAccountCustomer();
+                Log.e("Success", "5a");
             } else {
                 if (AccessToken.getCurrentAccessToken() != null) {
                     Intent loginWithFb = new Intent(FormLoginActivity.this, MainMenuActivity.class);
+                    Log.e("Success", "6");
                     startActivity(loginWithFb);
                     finish();
                 }
@@ -357,7 +368,7 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
 
             try {
                 JSONObject jsonobj = new JSONObject();
-                jsonobj.put("email", email);
+                jsonobj.put("email", temp_email);
                 jsonobj.put("username", username);
                 jsonobj.put("password", password);
                 jsonobj.put("facebook_id", facebook_id);
@@ -370,7 +381,7 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
                 responseServer = str.getStringFromInputStream(inputStream);
                 Log.e("response", "response ----- " + responseServer.toString() + "|");
                 Log.e("response", "response ----- " + responseServer.toString().equalsIgnoreCase("{\"success\":1}") + "|");
-
+                Log.e("Success","7");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -380,17 +391,22 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            Log.e("Success", "8");
             if (responseServer!=null && responseServer.equalsIgnoreCase("{\"success\":1}")) {
                 Toast.makeText(getApplicationContext(),"Success!",Toast.LENGTH_SHORT).show();
                 responseServer="";
+                Log.e("Success", "8a");
                 if (AccessToken.getCurrentAccessToken() != null) {
                     Intent loginWithFb = new Intent(FormLoginActivity.this, MainMenuActivity.class);
+                    Log.e("Success", "8b");
                     startActivity(loginWithFb);
                     finish();
                 }
+                Log.e("Success","9");
             } else {
                 if (responseServer.equalsIgnoreCase("") || responseServer.isEmpty()) {
                     Toast.makeText(getApplicationContext(), "Ops, Error! Please Try Again!",Toast.LENGTH_SHORT).show();
+                    Log.e("Success", "10");
                 }
             }
         }
