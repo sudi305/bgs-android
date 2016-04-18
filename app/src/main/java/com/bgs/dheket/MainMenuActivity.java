@@ -16,6 +16,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -33,6 +34,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -267,12 +269,14 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         btn_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                btn_search.setAnimation(animButtonPress);
+                /*btn_search.setAnimation(animButtonPress);
                 Intent toSearch = new Intent(getApplicationContext(), SearchAllCategoryActivity.class);
                 myLocationManager.removeUpdates(MainMenuActivity.this);
                 myLocationManager = null;
                 startActivity(toSearch);
-                finish();
+                finish();*/
+                showDialog(MainMenuActivity.this, v.getLeft()-(v.getWidth()*2),
+                        v.getTop()+(v.getHeight()*2));
             }
         });
     }
@@ -536,7 +540,13 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
     @Override
     public void onBackPressed() {
-        finish();
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+            finish();
+        }
     }
 
     /*public void warningInfo() {
@@ -602,11 +612,11 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
         } else if (id == R.id.nav_manage) {
 
-        } else if (id == R.id.nav_share) {
+        } /*else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
 
-        }
+        }*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -648,7 +658,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 menuItemArray = jObject.getJSONArray("tag_cat");
                 real_radius = Double.parseDouble(jObject.getString("rad"));
                 email = jObject.getString("email");
-                radius = (real_radius/1000);
+                radius = (real_radius);
 
                 for (int i = 0; i < menuItemArray.length(); i++) {
                     id_kategori[i] = menuItemArray.getJSONObject(i).getInt("id_category");
@@ -690,6 +700,23 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             }
             updateData();
         }
+    }
+
+    public void showDialog(Context context, int x, int y){
+        // x -->  X-Cordinate
+        // y -->  Y-Cordinate
+        Dialog dialog  = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        dialog.setContentView(R.layout.dialog_confirmation);
+        dialog.setCanceledOnTouchOutside(true);
+
+        WindowManager.LayoutParams wmlp = dialog.getWindow().getAttributes();
+        wmlp.gravity = Gravity.TOP | Gravity.LEFT;
+        wmlp.x = x;
+        wmlp.y = y;
+
+        dialog.show();
     }
 
     public static class InputStreamToStringExample {
