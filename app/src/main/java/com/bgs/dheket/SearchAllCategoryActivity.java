@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 
+import com.bgs.imageOrView.CustomListView;
 import com.bgs.imageOrView.ListViewAdapter;
 import com.bgs.networkAndSensor.HttpGetOrPost;
 import com.facebook.login.LoginManager;
@@ -110,11 +111,13 @@ public class SearchAllCategoryActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             //this.dialog.cancel();
-            listview = (ListView) findViewById(R.id.listview);
+            listview = (CustomListView) findViewById(R.id.listview);
+
             // Pass the results into ListViewAdapter.java
             adapter = new ListViewAdapter(SearchAllCategoryActivity.this, arraylist);
             // Set the adapter ListView
             listview.setAdapter(adapter);
+            //listview.setScrollContainer(false);
         }
     }
 

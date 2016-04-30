@@ -44,7 +44,7 @@ public class ListAndMapAllLocActivity extends AppCompatActivity {
         /*actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Category " + paket.getString("kategori") + " in Radius "
                 + formatter.format(paket.getDouble("radius")) + " Km</font>"));*/
         actionBar.setSubtitle(Html.fromHtml("<font color='#ff9800'>Category " + paket.getString("kategori") + " in Radius "
-                + formatNumber.changeFormatNumber((paket.getDouble("radius"))/1000) + " Km</font>"));
+                + formatNumber.changeFormatNumber((paket.getDouble("radius"))) + " Km</font>"));
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText("List"));

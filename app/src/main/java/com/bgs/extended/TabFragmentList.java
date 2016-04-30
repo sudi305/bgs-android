@@ -136,7 +136,7 @@ public class TabFragmentList extends Fragment implements LocationListener {
         Log.e("Sukses bro", ""+parameters);
         task = new CallWebPageTask();
         task.applicationContext = rootView.getContext();
-        parameters = urls+"/"+(radius/1000)+"/"+latitude+"/"+longitude + "/" + cat_id;
+        parameters = urls+"/"+(radius)+"/"+latitude+"/"+longitude + "/" + cat_id;
         //Log.e("Sukses", parameters);
         task.execute(new String[]{parameters});
     }
