@@ -44,7 +44,7 @@
                 android:layout_centerHorizontal="true"
                 android:id="@+id/relativeLayout_setbub_seekbar" >
 
-                <SeekBar
+                <com.bgs.imageOrView.MySeekBar
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/seekBar_setbub_back"
@@ -57,9 +57,24 @@
                     android:layout_marginRight="10dp"
                     android:thumbTint="#059fd7"
                     android:secondaryProgressTint="#0ca2d8"
-                    android:progressBackgroundTint="#0ea3d8" />
+                    android:progressBackgroundTint="#0ea3d8"  />
 
-                <SeekBar
+                <!--<SeekBar
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/seekBar_setbub_back"
+                    android:layout_gravity="center"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="20dp"
+                    android:indeterminate="false"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:thumbTint="#059fd7"
+                    android:secondaryProgressTint="#0ca2d8"
+                    android:progressBackgroundTint="#0ea3d8" />-->
+
+                <com.bgs.imageOrView.MySeekBar
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/seekBar_setbub_rad"
@@ -70,6 +85,18 @@
                     android:indeterminate="false"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp" />
+
+                <!--<SeekBar
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/seekBar_setbub_rad"
+                    android:layout_gravity="center"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="20dp"
+                    android:indeterminate="false"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp" />-->
             </RelativeLayout>
 
         </LinearLayout>

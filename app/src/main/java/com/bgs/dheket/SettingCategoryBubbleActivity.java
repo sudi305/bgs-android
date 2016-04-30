@@ -32,6 +32,7 @@ import android.widget.Toast;
 
 import com.bgs.imageOrView.ListViewAdapter;
 import com.bgs.imageOrView.ListViewAdapterSettingBubble;
+import com.bgs.imageOrView.MySeekBar;
 import com.bgs.imageOrView.RoundImage;
 import com.bgs.networkAndSensor.HttpGetOrPost;
 
@@ -71,7 +72,7 @@ public class SettingCategoryBubbleActivity extends AppCompatActivity {
     ListView listView;
     LinearLayout linearLayout;
     public static ViewGroup viewGroup;
-    SeekBar seekBar_rad, seekBar_back;
+    MySeekBar seekBar_rad, seekBar_back;
 
     Bundle paket;
 
@@ -285,8 +286,8 @@ public class SettingCategoryBubbleActivity extends AppCompatActivity {
     public void initFormSettingRadius(){
         linearLayout = (LinearLayout)findViewById(R.id.linearLayout_setbub_dialog);
         viewGroup = (ViewGroup)findViewById(R.id.relativeLayout_setbub_formdialog);
-        seekBar_back = (SeekBar)findViewById(R.id.seekBar_setbub_back);
-        seekBar_rad = (SeekBar)findViewById(R.id.seekBar_setbub_rad);
+        seekBar_back = (MySeekBar)findViewById(R.id.seekBar_setbub_back);
+        seekBar_rad = (MySeekBar)findViewById(R.id.seekBar_setbub_rad);
 
         seekBar_back.setEnabled(false);
 

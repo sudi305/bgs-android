@@ -47,9 +47,8 @@
         <activity android:name="com.bgs.dheket.SearchViewActivity"/>
         <activity android:name="com.bgs.dheket.SelectCategoryActivity"/>
         <activity android:name="com.bgs.dheket.SelectHashtagActivity"/>
+        <activity android:name="com.bgs.dheket.SearchLocationByCategoryActivity"/>
         <activity android:name="com.bgs.flowLayout.CategoryActivity"/>
-        <activity android:name="com.bgs.dheket.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
 
     </application>
 

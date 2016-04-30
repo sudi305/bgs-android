@@ -55,6 +55,7 @@ import android.widget.Toast;
 
 import com.bgs.common.Utility;
 import com.bgs.flowLayout.CategoryActivity;
+import com.bgs.imageOrView.MySeekBar;
 import com.bgs.networkAndSensor.ConfigInternetAndGPS;
 import com.bgs.networkAndSensor.HttpGetOrPost;
 import com.bgs.imageOrView.ProfilePictureView_viaFB;
@@ -94,13 +95,13 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     LinearLayout buble_cat1, buble_cat2, buble_cat3, buble_cat4, buble_cat5;
     Button btn_buble_cat1, btn_buble_cat2, btn_buble_cat3, btn_buble_cat4, btn_buble_cat5, btn_search;
     TextView txt_tot_cat1, txt_tot_cat2, txt_tot_cat3, txt_tot_cat4, txt_tot_cat5;
-    TextView txt_promo_cat1, txt_promo_cat2, txt_promo_cat3, txt_promo_cat4, txt_promo_cat5;
+    TextView txt_promo_cat1, txt_promo_cat2, txt_promo_cat3, txt_promo_cat4, txt_promo_cat5, txt_mapView;
     ImageView imVi_usrPro;
     ProfilePictureView_viaFB view_usrPro;
     Menu menu;
     CallbackManager callbackManager;
     //Dialog details_dialog;
-    TextView details_txt, textView_usrNm;
+    TextView details_txt, textView_usrNm, textView_usrEmail;
     ImageButton imageButton_close;
     ConfigInternetAndGPS checkInternetGPS;
     HttpGetOrPost httpGetOrPost;
@@ -121,14 +122,14 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     double latitude, longitude;
     String url = "";
     String detailUser,email;
-    boolean tambah = true;
+    boolean first_check = true;
     android.support.v7.app.ActionBar actionBar;
     float scale;
 
     Intent goToScreen;
     Utility formatNumber = new Utility();
 
-    private SeekBar bar, bartext;
+    private MySeekBar bar, bartext;
     private TextView textViewRad;
     Button textViewMore;
     ViewGroup layoutRadiusSlider;
@@ -164,7 +165,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
         FacebookSdk.sdkInitialize(getApplicationContext());
 
-        url = String.format(getResources().getString(R.string.link_cekUserLogin));
+        //url = String.format(getResources().getString(R.string.link_cekUserLogin));
+        url = String.format(getResources().getString(R.string.link_getDataUser));
 
         checkInternetGPS = new ConfigInternetAndGPS(getApplicationContext());
 
@@ -192,6 +194,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         txt_tot_cat3 = (TextView) findViewById(R.id.textView_total_cat3);
         txt_tot_cat4 = (TextView) findViewById(R.id.textView_total_cat4);
         txt_tot_cat5 = (TextView) findViewById(R.id.textView_total_cat5);
+        txt_mapView = (TextView) findViewById(R.id.textView_MapView);
         view_usrPro = (ProfilePictureView_viaFB) findViewById(R.id.view_userProfile);
         textView_usrNm = (TextView) findViewById(R.id.textView_usrNm);
 
@@ -218,6 +221,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 //        Dialog.show(getFragmentManager(), "tag");
 
         if (AccessToken.getCurrentAccessToken() != null) {
+            Log.e("getdatafrom fb","yes");
             RequestDataFromFB();
         }
 
@@ -234,7 +238,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         btn_buble_cat1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toListAndMapScreen(id_kategori[0], real_radius, nama_katagori[0], icon_kategori[0],lokasi[0]);
+                toListAndMapScreen(id_kategori[0], real_radius, nama_katagori[0], icon_kategori[0], lokasi[0]);
             }
         });
 
@@ -275,8 +279,15 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 myLocationManager = null;
                 startActivity(toSearch);
                 finish();*/
-                showDialog(MainMenuActivity.this, v.getLeft()-(v.getWidth()*2),
-                        v.getTop()+(v.getHeight()*2));
+                showDialog(MainMenuActivity.this, v.getLeft() - (v.getWidth() * 2),
+                        v.getTop() + (v.getHeight() * 2));
+            }
+        });
+
+        txt_mapView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
             }
         });
     }
@@ -319,8 +330,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         params.height = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getHeight()
                 -actionBarHeight-getStatusBarHeight();
         formRadius.setLayoutParams(params);
-        bar = (SeekBar)findViewById(R.id.seekBar_lms_radius);
-        bartext = (SeekBar)findViewById(R.id.seekBar);
+        bar = (MySeekBar)findViewById(R.id.seekBar_lms_radius);
+        bartext = (MySeekBar)findViewById(R.id.seekBar);
         bartext.setEnabled(false);
         textViewRad = (TextView) findViewById(R.id.textView_lms_rad);
         textViewMore = (Button) findViewById(R.id.button_lms_more);
@@ -454,7 +465,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     public void toSetting(){
         Intent gotoSetting = new Intent(getApplicationContext(), SettingCategoryBubbleActivity.class);
         Bundle paket = new Bundle();
-        paket.putString("email",email);
+        paket.putString("email", email);
         gotoSetting.putExtras(paket);
         myLocationManager.removeUpdates(MainMenuActivity.this);
         myLocationManager = null;
@@ -511,21 +522,30 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
         if (item.getItemId() == R.id.goto_setting) {
             /*if (formRadius.is)*/
-            if (formRadius.getVisibility() == View.VISIBLE) {
-                formRadius.setVisibility(View.GONE);
-            } else {
-                formRadius.setVisibility(View.VISIBLE);
+            if (real_radius>0){
+                if (formRadius.getVisibility() == View.VISIBLE) {
+                    formRadius.setVisibility(View.GONE);
+                } else {
+                    formRadius.setVisibility(View.VISIBLE);
+                }
             }
 
             return super.onOptionsItemSelected(item);
         }
 
         if (item.getItemId() == R.id.goto_search) {
-            Intent toSearch = new Intent(getApplicationContext(), SearchAllCategoryActivity.class);
-            myLocationManager.removeUpdates(MainMenuActivity.this);
-            myLocationManager = null;
-            startActivity(toSearch);
-            finish();
+            if (real_radius>0){
+                Intent toSearch = new Intent(getApplicationContext(), SearchLocationByCategoryActivity.class);
+                myLocationManager.removeUpdates(MainMenuActivity.this);
+                myLocationManager = null;
+                Bundle paket = new Bundle();
+                paket.putDouble("radius",radius);
+                paket.putDouble("latitude",latitude);
+                paket.putDouble("longitude",longitude);
+                toSearch.putExtras(paket);
+                startActivity(toSearch);
+                finish();
+            }
             return super.onOptionsItemSelected(item);
         }
 
@@ -679,7 +699,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             /*if (dialog.isShowing()) {
                 dialog.dismiss();
             }*/
-            if (email.equalsIgnoreCase("guest@dheket.co.id")){
+            Log.e("first_check",""+first_check);
+            /*if (email.equalsIgnoreCase("guest@dheket.co.id")){
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainMenuActivity.this);
                 builder.setMessage("This is Guest account! Are you sure to stay with this account?")
                         .setCancelable(true)
@@ -695,9 +716,12 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                         })
                         .setNegativeButton("Yes", null);
                 builder.create().show();
-            } else {
+            } else if (first_check){
+                Log.e("");
                 url = String.format(getResources().getString(R.string.link_getDataUser));
-            }
+                getDataCategory(email, latitude, longitude);
+                first_check = false;
+            }*/
             updateData();
         }
     }

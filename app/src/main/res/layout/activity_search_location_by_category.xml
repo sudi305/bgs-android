@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:zhy="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText_search_select_category"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="5dp"
+        android:drawableLeft="@drawable/ic_search_24dp"
+        android:drawableTint="@color/colorAccent"
+        android:hint="What matters to you?" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/ll_sc_search"
+        android:visibility="gone"
+        android:background="#b149bcdd">
+
+        <ScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/scrollView5" >
+
+            <com.zhy.view.flowlayout.TagFlowLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tfl_sc_search"
+                app:gravity="center"
+                zhy:max_select="1">
+                </com.zhy.view.flowlayout.TagFlowLayout>
+        </ScrollView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/ll_sc_result_cat"
+        android:background="#b149bcdd">
+
+        <ScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/scrollView4"
+            android:visibility="visible">
+
+            <com.zhy.view.flowlayout.TagFlowLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/tfl_sc_result_cat"
+                app:gravity="center"
+                zhy:max_select="1">
+                </com.zhy.view.flowlayout.TagFlowLayout>
+        </ScrollView>
+    </LinearLayout>
+
+</LinearLayout>

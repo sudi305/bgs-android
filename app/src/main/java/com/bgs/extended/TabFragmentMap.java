@@ -222,7 +222,7 @@ public class TabFragmentMap extends Fragment {
     public void getDataFromServer() {
         task = new CallWebPageTask();
         task.applicationContext = rootView.getContext();
-        parameters = urls+"/"+(radius/1000)+"/"+latitude+"/"+longitude + "/" + cat_id;
+        parameters = urls+"/"+(radius)+"/"+latitude+"/"+longitude + "/" + cat_id;
         Log.e("OK Connecting Sukses", "" + parameters);
         //Log.e("Sukses", parameters);
         task.execute(new String[]{parameters});
