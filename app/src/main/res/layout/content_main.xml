@@ -30,6 +30,15 @@
                     android:layout_height="530dp"
                     android:layout_weight="1">
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Please Wait . . ."
+                        android:id="@+id/textView_cm_load"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="10dp"
+                        android:visibility="gone" />
+
                     <RelativeLayout
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
@@ -348,6 +357,7 @@
 
                     </RelativeLayout>
                 </LinearLayout>
+
             </LinearLayout>
         </ScrollView>
 

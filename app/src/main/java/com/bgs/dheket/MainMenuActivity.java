@@ -130,7 +130,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     Utility formatNumber = new Utility();
 
     private MySeekBar bar, bartext;
-    private TextView textViewRad;
+    private TextView textViewRad, textViewLoad;
     Button textViewMore;
     ViewGroup layoutRadiusSlider;
     LinearLayout formRadius,formRadiusBackground;
@@ -154,14 +154,14 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 //        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
         actionBar.setSubtitle(Html.fromHtml("<font color='#ff9800' size='10'>Radius " + formatNumber.changeFormatNumber(radius) + " Km</font>"));
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        /*DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
-        toggle.syncState();
+        toggle.syncState();*/
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        /*NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);*/
 
         FacebookSdk.sdkInitialize(getApplicationContext());
 
@@ -197,6 +197,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         txt_mapView = (TextView) findViewById(R.id.textView_MapView);
         view_usrPro = (ProfilePictureView_viaFB) findViewById(R.id.view_userProfile);
         textView_usrNm = (TextView) findViewById(R.id.textView_usrNm);
+        textViewLoad = (TextView)findViewById(R.id.textView_cm_load);
 
         rl = (RelativeLayout)findViewById(R.id.rl_main_menu_bubble);
 
@@ -292,7 +293,18 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         txt_mapView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if (radius!=0) {
+                    Intent toMap = new Intent(getApplicationContext(),MapViewActivity.class);
+                    Bundle paket = new Bundle();
+                    paket.putString("email",email);
+                    paket.putDouble("latitude", latitude);
+                    paket.putDouble("longitude", longitude);
+                    paket.putStringArray("icon", icon_kategori);
+                    paket.putIntArray("id_cat",id_kategori);
+                    toMap.putExtras(paket);
+                    startActivity(toMap);
+                    finish();
+                }
             }
         });
     }
@@ -451,7 +463,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
     public void toListAndMapScreen(int cat_id, double radius, String kategori, String icon,int lokasi) {
         if (lokasi!=0){
-            goToScreen = new Intent(getApplicationContext(), ListAndMapAllLocActivity.class);
+            //goToScreen = new Intent(getApplicationContext(), ListAndMapAllLocActivity.class);
+            goToScreen = new Intent(getApplicationContext(), MapViewWithListActivity.class);
             Bundle paket = new Bundle();
             paket.putInt("cat_id", cat_id);
             paket.putString("kategori", kategori);
@@ -492,6 +505,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                         view_usrPro.setCropped(true);
                         textView_usrNm.setText(json.getString("name"));
                         email = json.getString("email");
+                        getDataCategory(email,latitude,longitude);
                     }
 
                 } catch (JSONException e) {
@@ -565,13 +579,13 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+       /* DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
+        } else {*/
             super.onBackPressed();
             finish();
-        }
+        /*}*/
     }
 
     /*public void warningInfo() {
@@ -844,6 +858,11 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
     public void updateData() {
         actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatNumber.changeFormatNumber(radius) + " Km</font>"));
+        if (radius<1) {
+            textViewLoad.setVisibility(View.VISIBLE);
+        } else {
+            textViewLoad.setVisibility(View.GONE);
+        }
         initFormSettingRadius();
         txt_tot_cat1.setText("" + lokasi[0]);
         String cat1 = "-";
