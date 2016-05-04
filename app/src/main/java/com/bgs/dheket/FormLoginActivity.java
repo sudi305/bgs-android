@@ -214,6 +214,12 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
         request.setParameters(parameters);
         Log.e("Success", "3");
         request.executeAsync();
+        if (email.equalsIgnoreCase("")||email.isEmpty()){
+            temp_email = "user"+facebook_id+"@dheket.co.id";
+            createUserAccountCustomer();
+        } else {
+            checkExistingUser(email, latitude, longitude);
+        }
         Log.e("Success", "3a");
     }
 
@@ -297,7 +303,7 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
         protected void onPostExecute(String result) {
             //this.dialog.cancel();
             Log.e("Success","4");
-            if (email.equalsIgnoreCase("guest@dheket.co.id")) {
+            if (email.equalsIgnoreCase("guest@dheket.co.id") || email.equalsIgnoreCase("") || email.equalsIgnoreCase(null)) {
                 Log.e("Success", "5");
                 createUserAccountCustomer();
                 Log.e("Success", "5a");

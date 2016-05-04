@@ -20,7 +20,7 @@
             android:name=".SplashScreenActivity"
             android:label="Dheket"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Black.NoTitleBar" >
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -49,6 +49,9 @@
         <activity android:name="com.bgs.dheket.SelectHashtagActivity"/>
         <activity android:name="com.bgs.dheket.SearchLocationByCategoryActivity"/>
         <activity android:name="com.bgs.flowLayout.CategoryActivity"/>
+        <activity android:name="com.bgs.dheket.MapViewActivity"/>
+        <activity android:name="com.bgs.dheket.MapViewWithListActivity"/>
+        <activity android:name="com.bgs.dheket.MapViewExtendActivity"/>
 
     </application>
 
