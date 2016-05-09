@@ -133,7 +133,9 @@ public class SelectCategoryActivity extends AppCompatActivity {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            filterItems(s);
+            if (catarraylist.size()!=0) {
+                filterItems(s);
+            }
         }
 
         @Override
@@ -252,13 +254,15 @@ public class SelectCategoryActivity extends AppCompatActivity {
             String email = catarraylist.get(i).get("category_name").toString();
             //Uri imgUrl = Math.random() > .7d ? null : Uri.parse("https://robohash.org/" + Math.abs(email.hashCode()));
         }*/
-        categoryReady = new String[categorys.size()];
-        for (int i = 0; i < categoryReady.length; i++) {
-            categoryReady[i]=categorys.get(i).toString();
+        if (catarraylist.size()!=0) {
+            categoryReady = new String[categorys.size()];
+            for (int i = 0; i < categoryReady.length; i++) {
+                categoryReady[i] = categorys.get(i).toString();
+            }
+            newDataAfterRemove = categoryReady;
+            Collections.addAll(filteredList, categoryReady);
+            initResultCat();
         }
-        newDataAfterRemove = categoryReady;
-        Collections.addAll(filteredList, categoryReady);
-        initResultCat();
     }
 
     public void initResultCat(){

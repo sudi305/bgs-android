@@ -106,9 +106,6 @@ public class MapViewExtendActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         //actionBar.setHomeAsUpIndicator(R.drawable.logo);
         actionBar.setHomeButtonEnabled(true);
-        actionBar.setTitle("Dheket");
-//        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
-        actionBar.setSubtitle(Html.fromHtml("<font color='#ff9800' size='10'>Radius " + formatNumber.changeFormatNumber(radius) + " Km</font>"));
 
         //Retrieve the map and initial extent from XML layout
         mMapView = (MapView) findViewById(R.id.map_single);
@@ -122,10 +119,15 @@ public class MapViewExtendActivity extends AppCompatActivity {
         longitude = paket.getDouble("longitude");
         email = paket.getString("email");
         icon = paket.getString("icon");
+        Log.e("icon",icon);
         category = paket.getString("kategori");
         radius = paket.getDouble("radius");
 
         urls = String.format(getResources().getString(R.string.link_getLocationByCategory));//"http://dheket.esy.es/getLocationByCategory.php"
+
+        actionBar.setTitle(category);
+//        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
+        actionBar.setSubtitle(Html.fromHtml("<font color='#ff9800' size='10'>Radius " + formatNumber.changeFormatNumber(radius) + " Km</font>"));
 
         textView_id_loc = (TextView) findViewById(R.id.textView_map_id);
         textView_loc_name = (TextView) findViewById(R.id.textView_map_nama_lokasi);
@@ -147,13 +149,17 @@ public class MapViewExtendActivity extends AppCompatActivity {
         placeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(getApplicationContext(), DetailLocationActivity.class);
+                Intent goToScreen = new Intent(getApplicationContext(), DetailLocationWithNoMerchantActivity.class);
                 Bundle paket = new Bundle();
-                paket.putInt("id_loc", Integer.parseInt(textView_id_loc.getText().toString()));
-                paket.putString("loc_name", textView_loc_name.getText().toString());
-                paket.putString("loc_address", textView_loc_address.getText().toString());
-                i.putExtras(paket);
-                startActivity(i);
+                paket.putInt("location_id", Integer.parseInt(textView_id_loc.getText().toString()));
+                paket.putInt("cat_id", cat_id);
+                paket.putString("kategori", category);
+                paket.putDouble("radius", radius);
+                paket.putDouble("latitude", latitude);
+                paket.putDouble("longitude", longitude);
+                paket.putString("icon", icon);
+                goToScreen.putExtras(paket);
+                startActivity(goToScreen);
                 finish();
             }
         });
@@ -190,8 +196,6 @@ public class MapViewExtendActivity extends AppCompatActivity {
         // Create the Compass custom view, and add it onto the MapView.
         mCompass = new Compass(getApplicationContext(), null, mMapView);
         mMapView.addView(mCompass);
-
-        mcat = new PictureMarkerSymbol(getApplicationContext(), ContextCompat.getDrawable(getApplicationContext(), R.drawable.pin_orange));
         //mAdd = new PictureMarkerSymbol(rootView.getContext().getApplicationContext(), ContextCompat.getDrawable(rootView.getContext().getApplicationContext(), R.drawable.pin_add));
 
         setupLocator();
@@ -345,6 +349,7 @@ public class MapViewExtendActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         this.menu = menu;
         getMenuInflater().inflate(R.menu.menu_main_slider, menu);
+        menu.getItem(0).setVisible(false);
         return true;
     }
 

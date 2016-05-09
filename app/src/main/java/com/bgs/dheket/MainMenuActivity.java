@@ -301,6 +301,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                     paket.putDouble("longitude", longitude);
                     paket.putStringArray("icon", icon_kategori);
                     paket.putIntArray("id_cat",id_kategori);
+                    paket.putDouble("radius", radius);
                     toMap.putExtras(paket);
                     startActivity(toMap);
                     finish();

@@ -138,7 +138,9 @@ public class SelectHashtagActivity extends AppCompatActivity {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            filterItems(s);
+            if (tagarraylist.size()!=0) {
+                filterItems(s);
+            }
         }
 
         @Override
@@ -261,13 +263,15 @@ public class SelectHashtagActivity extends AppCompatActivity {
             String email = tagarraylist.get(i).get("category_name").toString();
             //Uri imgUrl = Math.random() > .7d ? null : Uri.parse("https://robohash.org/" + Math.abs(email.hashCode()));
         }*/
-        hashtagReady = new String[hashtags.size()];
-        for (int i = 0; i < hashtagReady.length; i++) {
-            hashtagReady[i]=hashtags.get(i).toString();
+        if (tagarraylist.size()!=0) {
+            hashtagReady = new String[hashtags.size()];
+            for (int i = 0; i < hashtagReady.length; i++) {
+                hashtagReady[i] = hashtags.get(i).toString();
+            }
+            newDataAfterRemove = hashtagReady;
+            Collections.addAll(filteredList, hashtagReady);
+            initResultCat();
         }
-        newDataAfterRemove = hashtagReady;
-        Collections.addAll(filteredList, hashtagReady);
-        initResultCat();
     }
 
     public void initResultCat(){

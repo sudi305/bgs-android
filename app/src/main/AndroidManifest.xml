@@ -52,6 +52,7 @@
         <activity android:name="com.bgs.dheket.MapViewActivity"/>
         <activity android:name="com.bgs.dheket.MapViewWithListActivity"/>
         <activity android:name="com.bgs.dheket.MapViewExtendActivity"/>
+        <activity android:name="com.bgs.dheket.DetailLocationWithNoMerchantActivity"/>
 
     </application>
 

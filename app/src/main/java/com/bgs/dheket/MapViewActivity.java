@@ -117,7 +117,6 @@ public class MapViewActivity extends AppCompatActivity {
         actionBar.setHomeButtonEnabled(true);
         actionBar.setTitle("Dheket");
 //        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
-        actionBar.setSubtitle(Html.fromHtml("<font color='#ff9800' size='10'>Radius " + formatNumber.changeFormatNumber(radius) + " Km</font>"));
 
         //Retrieve the map and initial extent from XML layout
         mMapView = (MapView) findViewById(R.id.map_single);
@@ -131,12 +130,15 @@ public class MapViewActivity extends AppCompatActivity {
         email = paket.getString("email");
         icon_cat = paket.getStringArray("icon");
         id_cat = paket.getIntArray("id_cat");
+        radius = paket.getDouble("radius");
         madd = new PictureMarkerSymbol[id_cat.length];
         for (int i = 0; i < id_cat.length; i++) {
             PictureMarkerSymbol a = new PictureMarkerSymbol();
             a.setUrl(icon_cat[i]);
             madd[i]=a;
         }
+
+        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatNumber.changeFormatNumber(radius) + " Km</font>"));
 
         urls = String.format(getResources().getString(R.string.link_getLocUserConfig));//"http://dheket.esy.es/getLocationByCategory.php"
 
@@ -152,13 +154,19 @@ public class MapViewActivity extends AppCompatActivity {
         placeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(getApplicationContext(), DetailLocationActivity.class);
+                Intent goToScreen = new Intent(getApplicationContext(), DetailLocationWithNoMerchantActivity.class);
                 Bundle paket = new Bundle();
-                paket.putInt("id_loc", Integer.parseInt(textView_id_loc.getText().toString()));
-                paket.putString("loc_name", textView_loc_name.getText().toString());
-                paket.putString("loc_address", textView_loc_address.getText().toString());
-                i.putExtras(paket);
-                startActivity(i);
+                paket.putInt("location_id", Integer.parseInt(textView_id_loc.getText().toString()));
+                paket.putInt("cat_id", cat_id);
+                paket.putString("kategori", " ");
+                paket.putDouble("radius", radius);
+                paket.putDouble("latitude", latitude);
+                paket.putDouble("longitude", longitude);
+                paket.putString("email",email);
+                paket.putStringArray("icon", icon_cat);
+                paket.putIntArray("id_cat",id_cat);
+                goToScreen.putExtras(paket);
+                startActivity(goToScreen);
                 finish();
             }
         });

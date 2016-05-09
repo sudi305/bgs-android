@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.provider.Settings;
 
 import com.facebook.login.LoginManager;
@@ -77,12 +78,43 @@ public class ConfigInternetAndGPS extends Activity {
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             LoginManager.getInstance().logOut();
-                            Intent intent = new Intent(Settings.ACTION_SETTINGS);
+                            Intent intent = null;
+                            if (!isGPSActived())
+                                intent = new Intent(Settings.ACTION_SETTINGS);
+                            else intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                             startActivity(intent);
                         }
                     })
                     .setNegativeButton("No", null);
             builder.create().show();
+        }
+    }
+
+    public void turnGPSOn(){ //on android version 4.4 to up isn't
+        Intent intent = new Intent("android.location.GPS_ENABLED_CHANGE");
+        intent.putExtra("enabled", true);
+        this.context.sendBroadcast(intent);
+
+        String provider = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+        if(!provider.contains("gps")){ //if gps is disabled
+            final Intent poke = new Intent();
+            poke.setClassName("com.android.settings", "com.android.settings.widget.SettingsAppWidgetProvider");
+            poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
+            poke.setData(Uri.parse("3"));
+            this.context.sendBroadcast(poke);
+
+
+        }
+    }
+    // automatic turn off the gps
+    public void turnGPSOff(){
+        String provider = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+        if(provider.contains("gps")){ //if gps is enabled
+            final Intent poke = new Intent();
+            poke.setClassName("com.android.settings", "com.android.settings.widget.SettingsAppWidgetProvider");
+            poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
+            poke.setData(Uri.parse("3"));
+            this.context.sendBroadcast(poke);
         }
     }
 

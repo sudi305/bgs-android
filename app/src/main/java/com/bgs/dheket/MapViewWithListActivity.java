@@ -107,9 +107,6 @@ public class MapViewWithListActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         //actionBar.setHomeAsUpIndicator(R.drawable.logo);
         actionBar.setHomeButtonEnabled(true);
-        actionBar.setTitle("Dheket");
-//        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
-        actionBar.setSubtitle(Html.fromHtml("<font color='#ff9800' size='10'>Radius " + formatNumber.changeFormatNumber(radius) + " Km</font>"));
 
         //Retrieve the map and initial extent from XML layout
         mMapView = (MapView) findViewById(R.id.map_single);
@@ -125,6 +122,10 @@ public class MapViewWithListActivity extends AppCompatActivity {
         icon = paket.getString("icon");
         category = paket.getString("kategori");
         radius = paket.getDouble("radius");
+
+        actionBar.setTitle(category);
+//        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
+        actionBar.setSubtitle(Html.fromHtml("<font color='#ff9800' size='10'>Radius " + formatNumber.changeFormatNumber(radius) + " Km</font>"));
 
         urls = String.format(getResources().getString(R.string.link_getLocationByCategory));//"http://dheket.esy.es/getLocationByCategory.php"
 
@@ -303,6 +304,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         this.menu = menu;
         getMenuInflater().inflate(R.menu.menu_main_slider, menu);
+        menu.getItem(0).setVisible(false);
         return true;
     }
 
@@ -482,10 +484,10 @@ public class MapViewWithListActivity extends AppCompatActivity {
                 fullExtent.add(point);
 
                 LayoutInflater inflater = (LayoutInflater) getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-                View ll = inflater.inflate(R.layout.item_listmod, null);
-                TextView id = (TextView)ll.findViewById(R.id.textView_il_id);
+                final View ll = inflater.inflate(R.layout.item_listmod, null);
+                final TextView id = (TextView)ll.findViewById(R.id.textView_il_id);
                 id.setText(arraylist.get(i).get("id_loc").toString());
-                TextView nama = (TextView)ll.findViewById(R.id.textView_il_nama);
+                final TextView nama = (TextView)ll.findViewById(R.id.textView_il_nama);
                 nama.setText(arraylist.get(i).get("loc_name").toString());
                 TextView alamat = (TextView)ll.findViewById(R.id.textView_il_alamat);
                 alamat.setText(arraylist.get(i).get("loc_address").toString());
@@ -493,6 +495,25 @@ public class MapViewWithListActivity extends AppCompatActivity {
                 jarak.setText(arraylist.get(i).get("loc_distance").toString()+" Km");
                 ImageView foto = (ImageView)ll.findViewById(R.id.imageView_il_foto);
                 linearLayout_contentlist.addView(ll);
+
+                ll.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //Toast.makeText(ll.getContext().getApplicationContext(),nama.getText().toString(),Toast.LENGTH_SHORT).show();
+                        Intent goToScreen = new Intent(getApplicationContext(), DetailLocationWithNoMerchantActivity.class);
+                        Bundle paket = new Bundle();
+                        paket.putInt("location_id", Integer.parseInt(id.getText().toString()));
+                        paket.putInt("cat_id", cat_id);
+                        paket.putString("kategori", category);
+                        paket.putDouble("radius", radius);
+                        paket.putDouble("latitude", latitude);
+                        paket.putDouble("longitude", longitude);
+                        paket.putString("icon", icon);
+                        goToScreen.putExtras(paket);
+                        startActivity(goToScreen);
+                        finish();
+                    }
+                });
             }
             /*for (int i = 0; i < id_loc.length; i++) {
                 Location locationPin = location;
