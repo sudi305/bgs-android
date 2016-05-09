@@ -239,7 +239,6 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         btn_buble_cat1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("Category 1 ",""+id_kategori[0]+ "radius "+real_radius + "icon "+icon_kategori[0] + "lokasi "+lokasi[0]);
                 toListAndMapScreen(id_kategori[0], real_radius, nama_katagori[0], icon_kategori[0], lokasi[0]);
             }
         });
@@ -247,7 +246,6 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         btn_buble_cat2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("Category 2 ",""+id_kategori[1]+ "radius "+real_radius + "icon "+icon_kategori[1] + "lokasi "+lokasi[1]);
                 toListAndMapScreen(id_kategori[1], real_radius, nama_katagori[1],icon_kategori[1],lokasi[1]);
             }
         });
@@ -255,7 +253,6 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         btn_buble_cat3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("Category 3 ",""+id_kategori[2]+ "radius "+real_radius + "icon "+icon_kategori[2] + "lokasi "+lokasi[2]);
                 toListAndMapScreen(id_kategori[2], real_radius, nama_katagori[2],icon_kategori[2],lokasi[2]);
             }
         });
@@ -263,7 +260,6 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         btn_buble_cat4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("Category 4 ",""+id_kategori[4]+ "radius "+real_radius + "icon "+icon_kategori[4] + "lokasi "+lokasi[4]);
                 toListAndMapScreen(id_kategori[3], real_radius, nama_katagori[3],icon_kategori[3],lokasi[3]);
             }
         });
@@ -271,7 +267,6 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         btn_buble_cat5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("Category 5 ",""+id_kategori[4]+ "radius "+real_radius + "icon "+icon_kategori[4] + "lokasi "+lokasi[4]);
                 toListAndMapScreen(id_kategori[4], real_radius, nama_katagori[4],icon_kategori[4],lokasi[4]);
             }
         });
