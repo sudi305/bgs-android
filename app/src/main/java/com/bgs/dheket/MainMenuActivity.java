@@ -120,7 +120,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     double radius = 0.0;
     int newRadius = 0;
     double latitude, longitude;
-    String url = "";
+    String url = "", urls="";
     String detailUser,email;
     boolean first_check = true;
     android.support.v7.app.ActionBar actionBar;
@@ -683,6 +683,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
         @Override
         protected String doInBackground(String... urls) {
+            Log.e("Proses 2","Lakukan Pemanggilan WS = " + urls);
             String response = "";
             HttpGetOrPost httpGetOrPost = new HttpGetOrPost();
             response = httpGetOrPost.getRequest(urls[0]);
@@ -694,7 +695,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 real_radius = Double.parseDouble(jObject.getString("rad"));
                 email = jObject.getString("email");
                 radius = (real_radius);
-
+                Log.e("Proses 3","Try get data dari WS = " + urls + "\nJumlah data dari WS = "+menuItemArray.length());
                 for (int i = 0; i < menuItemArray.length(); i++) {
                     id_kategori[i] = menuItemArray.getJSONObject(i).getInt("id_category");
                     nama_katagori[i] = menuItemArray.getJSONObject(i).getString("category_name").toString();
@@ -704,6 +705,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
+                Log.e("Proses 4", "Gagal Panggil WS = " + urls);
             }
 
             return response;
@@ -737,6 +739,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 getDataCategory(email, latitude, longitude);
                 first_check = false;
             }*/
+            Log.e("Proses 5","selesai panggil WS = " + urls);
             updateData();
         }
     }
@@ -847,8 +850,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     public void getDataCategory(String email, double lat, double lng) {
         CallWebPageTask task = new CallWebPageTask();
         task.applicationContext = getApplicationContext();
-        String urls = url + "/" + email + "/" + lat + "/" + lng;
-        Log.e("Sukses", urls);
+        urls = url + "/" + email + "/" + lat + "/" + lng;
+        Log.e("Proses 1","Persiapan Panggil WS = " + urls);
         if (email!=null)task.execute(new String[]{urls});
     }
 
@@ -901,6 +904,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         latitude = location.getLatitude();
         longitude = location.getLongitude();
         //Toast.makeText(getApplicationContext(),"lat "+latitude+" | lgt "+longitude, Toast.LENGTH_LONG).show();
+        Log.e("Proses 6","Ada perubahan lokasi maka panggil WS lagi= " + urls);
         getDataCategory(email, latitude, longitude);
     }
 
