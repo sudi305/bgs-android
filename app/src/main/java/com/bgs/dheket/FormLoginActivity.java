@@ -65,8 +65,8 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
     CallbackManager callbackManager;
     LoginButton login;
     Button signup;
-    TextView loading;
-    android.support.v7.app.ActionBar actionBar;
+    TextView loading, login_fb;
+    //android.support.v7.app.ActionBar actionBar;
 
     String url = "";
     String urlCreateAccount = "";
@@ -88,13 +88,13 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
         AppEventsLogger.activateApp(this);
         setContentView(R.layout.activity_form_login);
 
-        actionBar = getSupportActionBar();
+        /*actionBar = getSupportActionBar();
 
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
         //actionBar.setHomeAsUpIndicator(R.drawable.logo);
         actionBar.setHomeButtonEnabled(true);
-        actionBar.setTitle("Login to Dheket");
+        actionBar.setTitle("Login to Dheket");*/
 
         getServiceFromGPS();
 
@@ -103,6 +103,7 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
         login.setReadPermissions("public_profile email");
         signup = (Button)findViewById(R.id.signup_button);
         loading = (TextView)findViewById(R.id.textView_formLogin_loading);
+        login_fb = (TextView)findViewById(R.id.textView_login_fb);
 
         url = String.format(getResources().getString(R.string.link_cekUserLogin));
         urlCreateAccount = String.format(getResources().getString(R.string.link_addUserCustomerByEmail));
@@ -113,7 +114,12 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
 //        } else {
 //            login.setVisibility(View.VISIBLE);
 //        }
-
+        login_fb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                login.performClick();
+            }
+        });
         login.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -123,6 +129,7 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
                 Log.e("Success", "1");
                 RequestDataFromFB();
                 Log.e("Success", "1a");
+                login_fb.setVisibility(View.GONE);
             }
 
             @Override

@@ -105,6 +105,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
         actionBar = getSupportActionBar();
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeAsUpIndicator(getResources().getDrawable(R.drawable.d_ic_back));
         //actionBar.setHomeAsUpIndicator(R.drawable.logo);
         actionBar.setHomeButtonEnabled(true);
 

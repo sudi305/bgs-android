@@ -20,7 +20,7 @@
             android:name=".SplashScreenActivity"
             android:label="Dheket"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -36,7 +36,7 @@
             android:name="com.facebook.FacebookContentProvider"
             android:exported="true"/>
 
-        <activity android:name="com.bgs.dheket.FormLoginActivity"/>
+        <activity android:name="com.bgs.dheket.FormLoginActivity" android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"/>
         <activity android:name="com.bgs.dheket.MainMenuActivity" android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name="com.bgs.dheket.ListAndMapAllLocActivity"/>
         <activity android:name="com.bgs.dheket.DetailLocationActivity"/>
@@ -52,6 +52,7 @@
         <activity android:name="com.bgs.dheket.MapViewActivity"/>
         <activity android:name="com.bgs.dheket.MapViewWithListActivity"/>
         <activity android:name="com.bgs.dheket.MapViewExtendActivity"/>
+        <activity android:name="com.bgs.dheket.MapViewSingleActivity"/>
         <activity android:name="com.bgs.dheket.DetailLocationWithNoMerchantActivity"/>
 
     </application>

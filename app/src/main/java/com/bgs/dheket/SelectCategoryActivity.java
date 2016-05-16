@@ -90,6 +90,7 @@ public class SelectCategoryActivity extends AppCompatActivity {
 
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeAsUpIndicator(getResources().getDrawable(R.drawable.d_ic_back));
         //actionBar.setHomeAsUpIndicator(R.drawable.logo);
         actionBar.setHomeButtonEnabled(true);
         actionBar.setTitle("Select Category");

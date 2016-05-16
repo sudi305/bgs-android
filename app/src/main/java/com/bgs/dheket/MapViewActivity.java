@@ -113,6 +113,7 @@ public class MapViewActivity extends AppCompatActivity {
         actionBar = getSupportActionBar();
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeAsUpIndicator(getResources().getDrawable(R.drawable.d_ic_back));
         //actionBar.setHomeAsUpIndicator(R.drawable.logo);
         actionBar.setHomeButtonEnabled(true);
         actionBar.setTitle("Dheket");
@@ -491,14 +492,6 @@ public class MapViewActivity extends AppCompatActivity {
                 jObject = new JSONObject(response);
                 menuItemArray = jObject.getJSONArray("tag_cat");
                 arraylist = new ArrayList<HashMap<String, String>>();
-                /*id_loc = new int[menuItemArray.length()];
-                loc_name = new String[menuItemArray.length()];
-                loc_address = new String[menuItemArray.length()];
-                loc_promo = new int[menuItemArray.length()];
-                loc_distance = new double[menuItemArray.length()];
-                loc_pic = new String[menuItemArray.length()];
-                loc_lat = new double[menuItemArray.length()];
-                loc_lng = new double[menuItemArray.length()];*/
                 Log.e("Data dari server", "" + menuItemArray.length());
                 for (int i = 0; i < menuItemArray.length(); i++) {
                     HashMap<String, String> map = new HashMap<String, String>();
@@ -510,15 +503,6 @@ public class MapViewActivity extends AppCompatActivity {
                     map.put("cat_id",menuItemArray.getJSONObject(i).getString("category_id"));
                     map.put("loc_icon", menuItemArray.getJSONObject(i).getString("icon"));
                     map.put("loc_distance",menuItemArray.getJSONObject(i).getString("distance"));
-                    //map.put()
-                    /*id_loc[i] = menuItemArray.getJSONObject(i).getInt("id_location");
-                    loc_name[i] = menuItemArray.getJSONObject(i).getString("location_name").toString();
-                    loc_address[i] = menuItemArray.getJSONObject(i).getString("location_address").toString();
-                    loc_promo[i] = menuItemArray.getJSONObject(i).getInt("isPromo");
-                    loc_distance[i] = Double.parseDouble(formatNumber.changeFormatNumber(menuItemArray.getJSONObject(i).getDouble("distance")));
-                    loc_pic[i] = menuItemArray.getJSONObject(i).getString("photo").toString();
-                    loc_lat[i] = menuItemArray.getJSONObject(i).getDouble("latitude");
-                    loc_lng[i] = menuItemArray.getJSONObject(i).getDouble("longitude");*/
                     arraylist.add(map);
                 }
             } catch (JSONException e) {

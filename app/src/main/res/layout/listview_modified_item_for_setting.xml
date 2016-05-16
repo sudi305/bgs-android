@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="88dp"
     android:background="#ffffff">
 
     <LinearLayout
@@ -15,8 +15,9 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:id="@+id/imageView_list_setting_icon"
+            android:src="@drawable/d_ic_radius"
             android:background="@drawable/ring_bb"
-            android:src="@drawable/buble" />
+            android:layout_gravity="center_vertical" />
 
         <LinearLayout
             android:orientation="vertical"
@@ -34,7 +35,8 @@
                 android:textStyle="bold"
                 android:singleLine="true"
                 android:textSize="22dp"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:textColor="#231f20" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -45,7 +47,8 @@
                 android:singleLine="true"
                 android:textSize="14dp"
                 android:layout_weight="1"
-                android:gravity="center_vertical" />
+                android:gravity="center_vertical"
+                android:textColor="#bdbfbf" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -71,7 +74,8 @@
             android:text="Edit"
             android:id="@+id/textView_list_setting_edit_or_radius"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="15dp" />
+            android:layout_marginLeft="15dp"
+            android:textColor="#bdbfbf" />
 
     </LinearLayout>
 </LinearLayout>

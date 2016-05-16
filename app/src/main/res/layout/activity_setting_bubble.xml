@@ -13,7 +13,7 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:background="#7d000000"
+        android:background="@drawable/d_img_base_popup"
         android:id="@+id/relativeLayout_setbub_formdialog"
         android:visibility="gone" >
 
@@ -54,10 +54,7 @@
                     android:layout_marginBottom="20dp"
                     android:indeterminate="false"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:thumbTint="#059fd7"
-                    android:secondaryProgressTint="#0ca2d8"
-                    android:progressBackgroundTint="#0ea3d8"  />
+                    android:layout_marginRight="10dp" />
 
                 <!--<SeekBar
                     android:layout_width="fill_parent"
@@ -84,7 +81,10 @@
                     android:layout_marginBottom="20dp"
                     android:indeterminate="false"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp" />
+                    android:layout_marginRight="10dp"
+                    android:progressBackgroundTint="#5197e5"
+                    android:secondaryProgressTint="#5197e5"
+                    android:thumbTint="#5197e5" />
 
                 <!--<SeekBar
                     android:layout_width="fill_parent"

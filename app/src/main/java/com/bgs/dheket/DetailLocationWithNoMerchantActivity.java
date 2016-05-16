@@ -58,7 +58,7 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
     private ImageView[] dots;
     private ViewPagerAdapter mAdapter;
 
-    int[] arraylist_foto = new int[] {R.drawable.buble, R.drawable.dheket, R.drawable.small_logo};
+    int[] arraylist_foto = new int[] {R.drawable.default_placeholder};
     String[] icon_cat;
     int[] id_cat;
 
@@ -70,6 +70,7 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
 
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeAsUpIndicator(getResources().getDrawable(R.drawable.d_ic_back));
         //actionBar.setHomeAsUpIndicator(R.drawable.logo);
         actionBar.setHomeButtonEnabled(true);
         actionBar.setTitle("Detail Location");
@@ -133,7 +134,7 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
     }
 
     public void toMapScreen(){
-        Intent gotoMapExtend = new Intent(getApplicationContext(),MapViewExtendActivity.class);
+        Intent gotoMapSingle = new Intent(getApplicationContext(),MapViewSingleActivity.class);
         Bundle paket = new Bundle();
         paket.putInt("cat_id", cat_id);
         paket.putString("kategori", kategori);
@@ -141,8 +142,9 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
         paket.putDouble("latitude", latitude);
         paket.putDouble("longitude", longitude);
         paket.putString("icon", icon);
-        gotoMapExtend.putExtras(paket);
-        startActivity(gotoMapExtend);
+        paket.putInt("location_id", Integer.parseInt(arraylist.get(0).get("loc_id")));
+        gotoMapSingle.putExtras(paket);
+        startActivity(gotoMapSingle);
         finish();
     }
 

@@ -54,6 +54,7 @@ public class SearchAllCategoryActivity extends AppCompatActivity {
 
         actionBar.setDisplayShowHomeEnabled(true); // tombol back
         actionBar.setDisplayHomeAsUpEnabled(true); // tombol back
+        actionBar.setHomeAsUpIndicator(getResources().getDrawable(R.drawable.d_ic_back));
         //actionBar.setHomeAsUpIndicator(R.drawable.logo);
         actionBar.setHomeButtonEnabled(true); // tombol back
         actionBar.setTitle("Dheket"); // tombol back

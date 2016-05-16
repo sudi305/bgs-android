@@ -13,7 +13,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            mapoptions.MapType="Streets" >
+            mapoptions.MapType="Streets"
+            android:background="#4fbede">
         </com.esri.android.map.MapView>
 
         <LinearLayout
@@ -78,8 +79,8 @@
         </LinearLayout>
 
         <Button
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
+            android:layout_width="175dp"
+            android:layout_height="33dp"
             android:text="Bubble View"
             android:id="@+id/button_map_tomainmenu"
             android:layout_alignParentBottom="true"
@@ -89,16 +90,16 @@
             android:background="@drawable/roundedbutton_square5" />
 
         <ImageButton
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:id="@+id/imageButton_map_center"
             android:layout_marginBottom="20dp"
             android:layout_above="@+id/button_map_tomainmenu"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_marginRight="10dp"
-            android:src="@drawable/ic_gps_fixed_24dp"
-            android:background="@drawable/roundedbutton_square5" />
+            android:src="@drawable/d_ic_current_loc"
+            android:background="@drawable/roundedbutton_square_current_loc" />
 
     </RelativeLayout>
 

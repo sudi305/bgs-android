@@ -4,12 +4,12 @@
     tools:context="com.bgs.myapplication.MainActivity">
     <item
         android:id="@+id/goto_setting"
-        android:icon="@drawable/ic_tune_24dp"
+        android:icon="@drawable/d_ic_configuration"
         app:showAsAction="always"
         android:title="Setting"/>
     <item
         android:id="@+id/goto_search"
-        android:icon="@drawable/ic_search_24dp"
+        android:icon="@drawable/d_ic_search"
         app:showAsAction="always"
         android:title="Search"/>
 </menu>

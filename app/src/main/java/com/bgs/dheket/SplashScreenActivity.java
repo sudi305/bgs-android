@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -24,7 +25,7 @@ import com.splunk.mint.Mint;
 /**
  * Created by SND on 18/01/2016.
  */
-public class SplashScreenActivity extends Activity{
+public class SplashScreenActivity extends AppCompatActivity{
     // Splash screen timer
     private static int SPLASH_TIME_OUT = 3000;
     ImageView imgLogo;
@@ -85,7 +86,7 @@ public class SplashScreenActivity extends Activity{
             AlertDialog.Builder builder = new AlertDialog.Builder(SplashScreenActivity.this);
             builder.setTitle("Alert");
             String message = "";
-            message="Your GPS is turn off! Please turn on your GPS!";
+            message="Your GPS is turn off! Please turn on your GPS for the best location!";
             builder.setMessage(message)
                     .setCancelable(true)
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {

@@ -34,6 +34,7 @@ public class SearchViewActivity extends AppCompatActivity {
         actionBar.setDisplayShowHomeEnabled(true); // tombol back
         actionBar.setDisplayHomeAsUpEnabled(true); // tombol back
         //actionBar.setHomeAsUpIndicator(R.drawable.logo);
+        actionBar.setHomeAsUpIndicator(getResources().getDrawable(R.drawable.d_ic_back));
         actionBar.setHomeButtonEnabled(true); // tombol back
         actionBar.setTitle("Dheket"); // tombol back
 

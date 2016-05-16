@@ -148,8 +148,10 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         actionBar = getSupportActionBar();
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeAsUpIndicator(getResources().getDrawable(R.drawable.d_ic_back));
         //actionBar.setHomeAsUpIndicator(R.drawable.logo);
         actionBar.setHomeButtonEnabled(true);
+        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#00FFFFFF")));
         actionBar.setTitle("Dheket");
 //        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
         actionBar.setSubtitle(Html.fromHtml("<font color='#ff9800' size='10'>Radius " + formatNumber.changeFormatNumber(radius) + " Km</font>"));
@@ -298,6 +300,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                     paket.putIntArray("id_cat",id_kategori);
                     paket.putDouble("radius", radius);
                     toMap.putExtras(paket);
+                    myLocationManager.removeUpdates(MainMenuActivity.this);
+                    myLocationManager = null;
                     startActivity(toMap);
                     finish();
                 }
