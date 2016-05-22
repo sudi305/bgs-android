@@ -3,9 +3,13 @@ package com.bgs.dheket;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -48,7 +52,7 @@ import java.util.Set;
 /**
  * Created by SND on 31/03/2016.
  */
-public class SearchLocationByCategoryActivity extends AppCompatActivity {
+public class SearchLocationByCategoryActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener  {
 
     android.support.v7.app.ActionBar actionBar;
 
@@ -57,7 +61,7 @@ public class SearchLocationByCategoryActivity extends AppCompatActivity {
     ArrayList<HashMap<String, String>> catarraylist;
     private ArrayList<String> categorys = new ArrayList<>();
     private String[] categoryReady;
-    String category_name,id_category;
+    String category_name,id_category, icon, email;
     Double radius, latitude,longitude;
     String selectCategorys;
     ArrayList<String>categoryUser;
@@ -79,14 +83,20 @@ public class SearchLocationByCategoryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_category);
-        actionBar = getSupportActionBar();
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        actionBar = getSupportActionBar();
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeAsUpIndicator(getResources().getDrawable(R.drawable.d_ic_back));
         //actionBar.setHomeAsUpIndicator(R.drawable.logo);
         actionBar.setHomeButtonEnabled(true);
+        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#00FFFFFF")));
         actionBar.setTitle("Search");
+        //actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FF092937")));
+        //actionBar.setElevation(0f);
 //        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
 
         url = String.format(getResources().getString(R.string.link_getAllCategory));
@@ -95,8 +105,10 @@ public class SearchLocationByCategoryActivity extends AppCompatActivity {
         radius = paket.getDouble("radius");
         latitude = paket.getDouble("latitude");
         longitude = paket.getDouble("longitude");
+        email = paket.getString("email");
 
         editText_search = (EditText)findViewById(R.id.editText_search_select_category);
+        editText_search.setHint("Try to find anything you want");
         editText_search.addTextChangedListener(textWatcher);
 
         ll_sc_result = (LinearLayout)findViewById(R.id.ll_sc_result_cat);
@@ -170,6 +182,11 @@ public class SearchLocationByCategoryActivity extends AppCompatActivity {
         task.execute(new String[]{urls});
     }
 
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        return false;
+    }
+
     private class CallWebPageTask extends AsyncTask<String, Void, String> {
 
         private ProgressDialog dialog;
@@ -199,6 +216,7 @@ public class SearchLocationByCategoryActivity extends AppCompatActivity {
 
                     map.put("id_category", jsonobject.getString("id_category"));
                     map.put("category_name", jsonobject.getString("category_name"));
+                    map.put("icon", jsonobject.getString("icon"));
                     categorys.add(index,jsonobject.getString("category_name"));
                     // Set the JSON Objects into the array
                     catarraylist.add(map);
@@ -254,6 +272,7 @@ public class SearchLocationByCategoryActivity extends AppCompatActivity {
                     if (categorys.get(position).equalsIgnoreCase(catarraylist.get(i).get("category_name"))){
                         id_category = catarraylist.get(i).get("id_category");
                         category_name = catarraylist.get(i).get("category_name");
+                        icon = catarraylist.get(i).get("icon");
                     }
                 }
                 return true;
@@ -340,12 +359,13 @@ public class SearchLocationByCategoryActivity extends AppCompatActivity {
                         //Log.e("selected",""+mAdapter.setSingleSelected(i,categorys[i])+" | "+categorys[i]);
                         mAdapter.setSingleSelected(i);
                         Log.e("mAdapter", "" + mAdapter.getItem(i).toString());
-                        ll_sc_search.setVisibility(View.GONE);
-                        ll_sc_result.setVisibility(View.VISIBLE);
+                        /*ll_sc_search.setVisibility(View.GONE);
+                        ll_sc_result.setVisibility(View.VISIBLE);*/
                         for (int j = 0; j < catarraylist.size() ; j++) {
                             if (mAdapter.getItem(i).toString().equalsIgnoreCase(catarraylist.get(j).get("category_name"))){
                                 id_category = catarraylist.get(j).get("id_category");
                                 category_name = catarraylist.get(j).get("category_name");
+                                icon = catarraylist.get(j).get("icon");
                                 //editText_search.setText(category_name);
                             }
                         }
@@ -416,14 +436,16 @@ public class SearchLocationByCategoryActivity extends AppCompatActivity {
     }
 
     public void gotoSearchResult(){
-        Intent goToScreen = new Intent(getApplicationContext(), ListAndMapAllLocActivity.class);
+        Intent goToScreen = new Intent(getApplicationContext(), MapViewWithListActivity.class);
         Bundle paket = new Bundle();
+
         paket.putInt("cat_id", Integer.parseInt(id_category));
         paket.putString("kategori", category_name);
         paket.putDouble("radius", radius);
         paket.putDouble("latitude", latitude);
         paket.putDouble("longitude", longitude);
-        paket.putString("icon","");
+        paket.putString("icon", icon);
+        paket.putString("email", email);
         goToScreen.putExtras(paket);
 
         startActivity(goToScreen);

@@ -17,7 +17,7 @@
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
 
         <activity
-            android:name=".SplashScreenActivity"
+            android:name="com.bgs.dheket.SplashScreenActivity"
             android:label="Dheket"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen">
@@ -45,9 +45,9 @@
         <activity android:name="com.bgs.dheket.SettingCategoryBubleActivity"/>
         <activity android:name="com.bgs.dheket.SettingCategoryBubbleActivity"/>
         <activity android:name="com.bgs.dheket.SearchViewActivity"/>
-        <activity android:name="com.bgs.dheket.SelectCategoryActivity"/>
-        <activity android:name="com.bgs.dheket.SelectHashtagActivity"/>
-        <activity android:name="com.bgs.dheket.SearchLocationByCategoryActivity"/>
+        <activity android:name="com.bgs.dheket.SelectCategoryActivity" android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name="com.bgs.dheket.SelectHashtagActivity" android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name="com.bgs.dheket.SearchLocationByCategoryActivity" android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name="com.bgs.flowLayout.CategoryActivity"/>
         <activity android:name="com.bgs.dheket.MapViewActivity"/>
         <activity android:name="com.bgs.dheket.MapViewWithListActivity"/>

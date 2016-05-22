@@ -5,6 +5,16 @@
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
     </style>
+
+    <!-- Theme without ActionBar shadow (inherits main theme) -->
+    <style name="MyAppTheme" parent="Theme.AppCompat.Light">
+        <item name="actionBarStyle">@style/MyActionBarTheme</item>
+    </style>
+
+    <style name="MyActionBarTheme" parent="Base.Widget.AppCompat.Light.ActionBar.Solid">
+        <item name="elevation">0dp</item>
+    </style>
+
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
@@ -20,6 +30,12 @@
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar.Select" parent="Theme.AppCompat.NoActionBar">
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        ...
     </style>
 
 </resources>

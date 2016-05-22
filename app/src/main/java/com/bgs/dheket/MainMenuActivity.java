@@ -558,6 +558,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 myLocationManager.removeUpdates(MainMenuActivity.this);
                 myLocationManager = null;
                 Bundle paket = new Bundle();
+                paket.putString("email",email);
                 paket.putDouble("radius",radius);
                 paket.putDouble("latitude",latitude);
                 paket.putDouble("longitude",longitude);

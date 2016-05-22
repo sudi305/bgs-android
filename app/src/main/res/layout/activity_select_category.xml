@@ -4,38 +4,88 @@
     xmlns:zhy="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <EditText
+    android:layout_height="match_parent"
+    android:background="@drawable/d_bg_copy_search">
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/editText_search_select_category"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="5dp"
-        android:drawableLeft="@drawable/ic_search_24dp"
-        android:drawableTint="@color/colorAccent"
-        android:hint="What matters to you?" />
+        android:theme="@style/AppTheme.AppBarOverlay"
+        android:background="#00FFFFFF"
+        app:elevation="@null">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#00FFFFFF"
+            app:popupTheme="@style/AppTheme.AppBarOverlay"
+            android:elevation="@null" />
+
+    </android.support.design.widget.AppBarLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:layout_marginTop="13dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="#80021820">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:id="@+id/imageView61"
+                android:src="@drawable/d_search_hint"
+                android:tint="#f6f7f8"
+                android:background="#80021820"
+                android:paddingLeft="15dp"
+                android:paddingRight="10dp" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:id="@+id/editText_search_select_category"
+                android:layout_gravity="center_horizontal"
+                android:hint="What matters to you?"
+                android:textColorHint="#859297"
+                android:background="#80021820"
+                android:textColor="#ffffff" />
+        </LinearLayout>
+
+    </LinearLayout>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="3dp"
+        android:background="#051d26"
+        android:alpha="0.5"
+        android:elevation="3dp"/>
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:id="@+id/ll_sc_search"
-        android:visibility="gone"
-        android:background="#b149bcdd">
+        android:visibility="gone">
 
         <ScrollView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             android:id="@+id/scrollView5" >
 
             <com.zhy.view.flowlayout.TagFlowLayout
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/tfl_sc_search"
                 app:gravity="center"
                 zhy:max_select="1">
-                </com.zhy.view.flowlayout.TagFlowLayout>
+            </com.zhy.view.flowlayout.TagFlowLayout>
         </ScrollView>
     </LinearLayout>
 
@@ -43,14 +93,14 @@
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:id="@+id/ll_sc_result_cat"
-        android:background="#b149bcdd">
+        android:id="@+id/ll_sc_result_cat">
 
         <ScrollView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:id="@+id/scrollView4"
-            android:visibility="visible">
+            android:visibility="visible"
+            android:fillViewport="false">
 
             <com.zhy.view.flowlayout.TagFlowLayout
                 android:layout_width="fill_parent"
@@ -58,7 +108,7 @@
                 android:id="@+id/tfl_sc_result_cat"
                 app:gravity="center"
                 zhy:max_select="1">
-                </com.zhy.view.flowlayout.TagFlowLayout>
+            </com.zhy.view.flowlayout.TagFlowLayout>
         </ScrollView>
     </LinearLayout>
 

@@ -88,7 +88,7 @@ public class SplashScreenActivity extends AppCompatActivity{
             String message = "";
             message="Your GPS is turn off! Please turn on your GPS for the best location!";
             builder.setMessage(message)
-                    .setCancelable(true)
+                    .setCancelable(false)
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                                     /*LoginManager.getInstance().logOut();*/
