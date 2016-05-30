@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -65,6 +66,8 @@ import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -95,10 +98,11 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     LinearLayout buble_cat1, buble_cat2, buble_cat3, buble_cat4, buble_cat5;
     Button btn_buble_cat1, btn_buble_cat2, btn_buble_cat3, btn_buble_cat4, btn_buble_cat5, btn_search;
     TextView txt_tot_cat1, txt_tot_cat2, txt_tot_cat3, txt_tot_cat4, txt_tot_cat5;
-    TextView txt_promo_cat1, txt_promo_cat2, txt_promo_cat3, txt_promo_cat4, txt_promo_cat5, txt_mapView;
-    ImageView imVi_usrPro;
+    TextView txt_promo_cat1, txt_promo_cat2, txt_promo_cat3, txt_promo_cat4, txt_promo_cat5, txt_mapView, txt_nav_name, txt_nav_email;
+    ImageView imVi_usrPro, imVi_nav_usrPro;
     ProfilePictureView_viaFB view_usrPro;
     Menu menu;
+    Picasso picasso;
     CallbackManager callbackManager;
     //Dialog details_dialog;
     TextView details_txt, textView_usrNm, textView_usrEmail;
@@ -156,14 +160,19 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 //        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
         actionBar.setSubtitle(Html.fromHtml("<font color='#ff9800' size='10'>Radius " + formatNumber.changeFormatNumber(radius) + " Km</font>"));
 
-        /*DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
-        toggle.syncState();*/
+        toggle.syncState();
 
-        /*NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);*/
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        navigationView.getMenu().getItem(0).setChecked(true);
+        View header=navigationView.getHeaderView(0);
+        txt_nav_name = (TextView)header.findViewById(R.id.nav_hm_textview_name);
+        txt_nav_email = (TextView)header.findViewById(R.id.nav_hm_textView_email);
+        imVi_nav_usrPro = (ImageView)header.findViewById(R.id.nav_hm_imageView);
 
         FacebookSdk.sdkInitialize(getApplicationContext());
 
@@ -450,7 +459,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         dialog.setCancelable(true);
 
         details_txt = (TextView) v.findViewById(R.id.details);
-        details_txt.setText(Html.fromHtml(detailUser));
+        if (!detailUser.isEmpty()) details_txt.setText(Html.fromHtml(detailUser));
+        else details_txt.setText("Name : -\n\nGender : -\n\ne-Mail : -");
         imageButton_close = (ImageButton) v.findViewById(R.id.imageButton_close_dialog);
         imageButton_close.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -499,13 +509,22 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 JSONObject json = response.getJSONObject();
                 try {
                     if (json != null) {
-                        String text = "<b>Name :</b> " + json.getString("name") + "<br><br><b>Email :</b> " + json.getString("email") + "<br><br><b>Profile link :</b> " + json.getString("link");
+                        Log.e("json fb", json.toString());
+                        String text = "<b>Name :</b> " + json.getString("name")  + "<br><br><b>Gender :</b> " + json.getString("gender") + "<br><br><b>e-Mail :</b> " + json.getString("email");
+                        String imageUsr = json.getString("picture");
                         detailUser = text;
                         view_usrPro.setProfileId(json.getString("id"));
                         view_usrPro.setCropped(true);
                         textView_usrNm.setText(json.getString("name"));
                         email = json.getString("email");
-                        getDataCategory(email,latitude,longitude);
+                        txt_nav_name.setText(json.getString("name"));
+                        txt_nav_email.setText(email);
+                        if (json.has("picture")) {
+                            String profilePicUrl = json.getJSONObject("picture").getJSONObject("data").getString("url");
+                            // set profile image to imageview using Picasso or Native methods
+                            picasso.with(getApplicationContext()).load(profilePicUrl).transform(new CircleTransform()).into(imVi_nav_usrPro);
+                        }
+                        getDataCategory(email, latitude, longitude);
                     }
 
                 } catch (JSONException e) {
@@ -514,7 +533,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             }
         });
         Bundle parameters = new Bundle();
-        parameters.putString("fields", "id,name,link,email,picture");
+        parameters.putString("fields", "id,name,link,email,gender,picture.type(large)");
         request.setParameters(parameters);
         request.executeAsync();
     }
@@ -580,13 +599,13 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
     @Override
     public void onBackPressed() {
-       /* DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {*/
+        } else {
             super.onBackPressed();
             finish();
-        /*}*/
+        }
     }
 
     /*public void warningInfo() {
@@ -949,5 +968,40 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             onLocationChanged(location);
         }
         myLocationManager.requestLocationUpdates(provider, 20000, 0, this);
+    }
+
+    public class CircleTransform implements Transformation {
+        @Override
+        public Bitmap transform(Bitmap source) {
+            int size = Math.min(source.getWidth(), source.getHeight());
+
+            int x = (source.getWidth() - size) / 2;
+            int y = (source.getHeight() - size) / 2;
+
+            Bitmap squaredBitmap = Bitmap.createBitmap(source, x, y, size, size);
+            if (squaredBitmap != source) {
+                source.recycle();
+            }
+
+            Bitmap bitmap = Bitmap.createBitmap(size, size, source.getConfig());
+
+            Canvas canvas = new Canvas(bitmap);
+            Paint paint = new Paint();
+            BitmapShader shader = new BitmapShader(squaredBitmap,
+                    BitmapShader.TileMode.CLAMP, BitmapShader.TileMode.CLAMP);
+            paint.setShader(shader);
+            paint.setAntiAlias(true);
+
+            float r = size / 2f;
+            canvas.drawCircle(r, r, r, paint);
+
+            squaredBitmap.recycle();
+            return bitmap;
+        }
+
+        @Override
+        public String key() {
+            return "circle";
+        }
     }
 }
