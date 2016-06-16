@@ -25,6 +25,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bgs.model.UserApp;
 import com.bgs.networkAndSensor.HttpGetOrPost;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -200,15 +201,34 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
                 try {
                     if (json != null) {
                         Log.e("json",""+json.toString());
-                        String text = "<b>Name :</b> " + json.getString("name") + "<br><br><b>Email :</b> " + json.getString("email") + "<br><br><b>Profile link :</b> " + json.getString("link");
-                        email = json.getString("email");
+
+                        String id = json.getString("id");
+                        String name = json.getString("name");
+                        //String gender = json.getString("gender");
+                        String email = json.getString("email");
+                        //String imageUsr = json.getString("picture");
+                        String link = json.getString("link");
+
+                        String text = String.format("<b>Name :</b> %s<br><br><b>Email :</b>%s<br><br><b>Profile link :</b>%s ",name,email,link);
+
                         temp_email = email;
-                        username = json.getString("name");
+                        username = name;
                         password = "123456";
-                        facebook_id = json.getString("id");
+                        facebook_id = id;
                         Log.e("Success", "2");
                         checkExistingUser(email, latitude, longitude);
                         Log.e("Success", "2a");
+
+                        //add by supri 2016/6/16
+                        App app = (App)getApplication();
+                        UserApp userApp = new UserApp();
+                        userApp.setName(name);
+                        userApp.setEmail(email);
+                        userApp.setId(id);
+
+                        app.setUserApp(userApp);
+
+
                     }
 
                 } catch (JSONException e) {

@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '23.0.1'
+    buildToolsVersion '23.0.3'
     defaultConfig {
         applicationId 'com.bgs_du.dheket'
         minSdkVersion 15
@@ -21,6 +21,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    sourceSets.main {
+        jniLibs.srcDir 'libs'
+        jni.srcDirs = [] //disable automatic ndk-build call
+    }
+
     productFlavors {
     }
 }
@@ -36,9 +42,9 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.facebook.android:facebook-android-sdk:4.6.0'
     compile 'com.esri.arcgis.android:arcgis-android:10.2.7'
     compile 'com.android.support:design:23.1.1'
@@ -47,5 +53,12 @@ dependencies {
     compile 'com.makeramen:roundedimageview:2.0.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.rengwuxian.materialedittext:library:2.1.4'
+
+    compile 'com.android.support:support-v4:23.4.0'
+    compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
+    compile ('io.socket:socket.io-client:0.7.0') {
+        exclude group: 'org.json', module: 'json'
+    }
+
     compile project(':flowlayout-lib')
 }

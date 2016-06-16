@@ -54,9 +54,11 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bgs.chat.MainChatActivity;
 import com.bgs.common.Utility;
 import com.bgs.flowLayout.CategoryActivity;
 import com.bgs.imageOrView.MySeekBar;
+import com.bgs.model.UserApp;
 import com.bgs.networkAndSensor.ConfigInternetAndGPS;
 import com.bgs.networkAndSensor.HttpGetOrPost;
 import com.bgs.imageOrView.ProfilePictureView_viaFB;
@@ -510,14 +512,19 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 try {
                     if (json != null) {
                         Log.e("json fb", json.toString());
-                        String text = "<b>Name :</b> " + json.getString("name")  + "<br><br><b>Gender :</b> " + json.getString("gender") + "<br><br><b>e-Mail :</b> " + json.getString("email");
+                        String id = json.getString("id");
+                        String name = json.getString("name");
+                        String gender = json.getString("gender");
+                        String email = json.getString("email");
                         String imageUsr = json.getString("picture");
-                        detailUser = text;
-                        view_usrPro.setProfileId(json.getString("id"));
+
+                        //String text = "<b>Name :</b> " + name  + "<br><br><b>Gender :</b> " + gender + "<br><br><b>e-Mail :</b> " + email;
+                        detailUser = String.format("<b>Name :</b>%s<br><br><b>Gender :</b>%s<br><br><b>e-Mail :</b>%s", name, gender, email);
+                        view_usrPro.setProfileId(id);
                         view_usrPro.setCropped(true);
-                        textView_usrNm.setText(json.getString("name"));
+                        textView_usrNm.setText(name);
                         email = json.getString("email");
-                        txt_nav_name.setText(json.getString("name"));
+                        txt_nav_name.setText(name);
                         txt_nav_email.setText(email);
                         if (json.has("picture")) {
                             String profilePicUrl = json.getJSONObject("picture").getJSONObject("data").getString("url");
@@ -525,6 +532,18 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                             picasso.with(getApplicationContext()).load(profilePicUrl).transform(new CircleTransform()).into(imVi_nav_usrPro);
                         }
                         getDataCategory(email, latitude, longitude);
+
+                        //update user app
+                        //add by supri 2016/6/16
+                        App app = (App)getApplication();
+                        UserApp userApp = new UserApp();
+                        userApp.setName(name);
+                        userApp.setEmail(email);
+                        userApp.setId(id);
+                        userApp.setPicture(imageUsr);
+
+                        app.setUserApp(userApp);
+
                     }
 
                 } catch (JSONException e) {
@@ -663,13 +682,14 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_home) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_profile) {
 
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_chat) {
+            Intent toChat = new Intent(getApplicationContext(), MainChatActivity.class);
+            startActivity(toChat);
+        } else if (id == R.id.nav_setting) {
 
         } /*else if (id == R.id.nav_share) {
 
