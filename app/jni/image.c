@@ -202,7 +202,7 @@ METHODDEF(void) my_error_exit(j_common_ptr cinfo) {
     longjmp(myerr->setjmp_buffer, 1);
 }
 
-JNIEXPORT void Java_in_co_madhur_chatbubblesdemo_AndroidUtilities_blurBitmap(JNIEnv *env, jclass class, jobject bitmap, int radius) {
+JNIEXPORT void Java_com_bgs_common_AndroidUtilities_blurBitmap(JNIEnv *env, jclass class, jobject bitmap, int radius) {
     if (!bitmap) {
         return;
     }
@@ -229,7 +229,7 @@ JNIEXPORT void Java_in_co_madhur_chatbubblesdemo_AndroidUtilities_blurBitmap(JNI
     AndroidBitmap_unlockPixels(env, bitmap);
 }
 
-JNIEXPORT void Java_in_co_madhur_chatbubblesdemo_AndroidUtilities_loadBitmap(JNIEnv *env, jclass class, jstring path, jobject bitmap, int scale, int width, int height, int stride) {
+JNIEXPORT void Java_com_bgs_common_AndroidUtilities_loadBitmap(JNIEnv *env, jclass class, jstring path, jobject bitmap, int scale, int width, int height, int stride) {
     
     AndroidBitmapInfo info;
     int i;

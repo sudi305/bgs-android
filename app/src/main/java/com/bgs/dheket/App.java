@@ -3,6 +3,7 @@ package com.bgs.dheket;
 import android.app.Application;
 import android.os.Handler;
 
+import com.bgs.common.NativeLoader;
 import com.bgs.model.UserApp;
 import com.bgs.common.Constants;
 

@@ -1,6 +1,6 @@
 
 
-package com.bgs.dheket;
+package com.bgs.common;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
