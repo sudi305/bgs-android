@@ -27,12 +27,16 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.text.SpannableString;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -55,6 +59,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bgs.chat.MainChatActivity;
+import com.bgs.chat.fragments.ChatContactFragment;
+import com.bgs.chat.services.ChatService;
+import com.bgs.chat.widgets.CircleBackgroundSpan;
+import com.bgs.chat.widgets.RoundedBackgroundSpan;
+import com.bgs.common.AndroidUtilities;
 import com.bgs.common.Utility;
 import com.bgs.flowLayout.CategoryActivity;
 import com.bgs.imageOrView.MySeekBar;
@@ -91,6 +100,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
+
 /**
  * Created by SND on 20/01/2016.
  */
@@ -103,6 +115,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     TextView txt_promo_cat1, txt_promo_cat2, txt_promo_cat3, txt_promo_cat4, txt_promo_cat5, txt_mapView, txt_nav_name, txt_nav_email;
     ImageView imVi_usrPro, imVi_nav_usrPro;
     ProfilePictureView_viaFB view_usrPro;
+    NavigationView navigationView;
     Menu menu;
     Picasso picasso;
     CallbackManager callbackManager;
@@ -143,6 +156,20 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     RelativeLayout rl;
     RelativeLayout.LayoutParams p;
 
+    //CHATS
+    private Socket socket;
+    private boolean mLogin = false;
+    private boolean mConnect = false;
+
+
+    public boolean isConnect() { return mConnect; }
+    public void setConnect(boolean mConnect) { this.mConnect = mConnect; }
+    public boolean isLogin() { return mLogin; }
+    public void setLogin(boolean mLogin) { this.mLogin = mLogin; }
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -168,9 +195,12 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(0).setChecked(true);
+
+        //++++++++++++++++
+
         View header=navigationView.getHeaderView(0);
         txt_nav_name = (TextView)header.findViewById(R.id.nav_hm_textview_name);
         txt_nav_email = (TextView)header.findViewById(R.id.nav_hm_textView_email);
@@ -311,14 +341,57 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                     paket.putIntArray("id_cat",id_kategori);
                     paket.putDouble("radius", radius);
                     toMap.putExtras(paket);
-                    myLocationManager.removeUpdates(MainMenuActivity.this);
-                    myLocationManager = null;
+                    //myLocationManager.removeUpdates(MainMenuActivity.this);
+                    //myLocationManager = null;
+                    removeUpdateLocationManager();
                     startActivity(toMap);
                     finish();
                 }
             }
         });
+
+        //CHAT SOCKET
+        App app = (App) getApplication();
+        /*if ( app.getUserApp() == null ) {
+            String id = AndroidUtilities.getDeviceUniqueID(getContentResolver());
+            app.setUserApp(new UserApp(id, id, "", id + "@zmail.com", ""));
+        }*/
+
+        socket = app.getSocket();
+        socket.on(Socket.EVENT_CONNECT, onConnect);
+        socket.on(Socket.EVENT_DISCONNECT, onDisconnect);
+        socket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
+        socket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
+        socket.on("login", onLogin);
+        socket.on("new message", onNewMessage);
+
+        socket.connect();
+
+        updateNewMessageCounter();
+
     }
+
+    /**
+     * update new message counter inline chat menu
+     */
+    private void updateNewMessageCounter() {
+        //update chat meenu item
+        Menu menuNav = navigationView.getMenu();
+        MenuItem element = menuNav.findItem(R.id.nav_chat);
+        String before = element.getTitle().toString();
+
+        String counter = Integer.toString(99);
+        String s = before + " "+counter;
+        SpannableString sColored = new SpannableString( s );
+
+        int textSize = getResources().getDimensionPixelSize(R.dimen.chat_counter);
+        int start = s.length() - (counter.length());
+        sColored.setSpan(new CircleBackgroundSpan(Color.RED, Color.WHITE, textSize, 4, 8), start, s.length(), 0);
+        //sColored.setSpan(new BackgroundColorSpan( Color.GRAY ), s.length()-3, s.length(), 0);
+        //sColored.setSpan(new ForegroundColorSpan( Color.WHITE ), s.length()-3, s.length(), 0);
+        element.setTitle(sColored);
+    }
+
 
     public void preProcessingGetData(){
         actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius ... </font>"));
@@ -485,8 +558,10 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             paket.putDouble("longitude", longitude);
             paket.putString("icon", icon);
             goToScreen.putExtras(paket);
-            myLocationManager.removeUpdates(MainMenuActivity.this);
-            myLocationManager = null;
+            //myLocationManager.removeUpdates(MainMenuActivity.this);
+            //myLocationManager = null;
+            removeUpdateLocationManager();
+
             startActivity(goToScreen);
             finish();
         }
@@ -497,8 +572,10 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         Bundle paket = new Bundle();
         paket.putString("email", email);
         gotoSetting.putExtras(paket);
-        myLocationManager.removeUpdates(MainMenuActivity.this);
-        myLocationManager = null;
+        //myLocationManager.removeUpdates(MainMenuActivity.this);
+        //myLocationManager = null;
+        removeUpdateLocationManager();
+
         startActivity(gotoSetting);
         finish();
     }
@@ -536,14 +613,16 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                         //update user app
                         //add by supri 2016/6/16
                         App app = (App)getApplication();
-                        UserApp userApp = new UserApp();
+                        UserApp userApp = app.getUserApp();
+                        if ( userApp == null) userApp = new UserApp();
                         userApp.setName(name);
                         userApp.setEmail(email);
                         userApp.setId(id);
                         userApp.setPicture(imageUsr);
 
                         app.setUserApp(userApp);
-
+                        //DO LOGIN
+                        attemptLogin();
                     }
 
                 } catch (JSONException e) {
@@ -555,6 +634,26 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         parameters.putString("fields", "id,name,link,email,gender,picture.type(large)");
         request.setParameters(parameters);
         request.executeAsync();
+    }
+
+
+    @TargetApi(23)
+    private void removeUpdateLocationManager() {
+        if (myLocationManager != null) {
+            if ( Build.VERSION.SDK_INT >= 23) {
+                if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                        || checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    myLocationManager.removeUpdates(MainMenuActivity.this);
+                }
+            } else {
+                if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                        || ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    myLocationManager.removeUpdates(MainMenuActivity.this);
+                }
+            }
+
+            myLocationManager = null;
+        }
     }
 
     @Override
@@ -593,8 +692,10 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         if (item.getItemId() == R.id.goto_search) {
             if (real_radius>0){
                 Intent toSearch = new Intent(getApplicationContext(), SearchLocationByCategoryActivity.class);
-                myLocationManager.removeUpdates(MainMenuActivity.this);
-                myLocationManager = null;
+                //myLocationManager.removeUpdates(MainMenuActivity.this);
+                //myLocationManager = null;
+                removeUpdateLocationManager();
+
                 Bundle paket = new Bundle();
                 paket.putString("email",email);
                 paket.putDouble("radius",radius);
@@ -677,6 +778,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         }
 
     }
+
+
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -1023,5 +1126,162 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         public String key() {
             return "circle";
         }
+    }
+
+    //BEGIN SOCKET METHOD BLOCK
+    private void attemptLogin() {
+        if ( isConnect() ) {
+            if (isLogin()) return;
+            UserApp userApp = ((App) getApplication()).getUserApp();
+            if (userApp != null) {
+
+                try {
+                        //String name = AndroidUtilities.getDeviceUniqueID(getContentResolver());
+                    JSONObject user = new JSONObject();
+                    user.put("name", userApp.getName());
+                    user.put("email", userApp.getEmail());
+                    user.put("phone", userApp.getPhone());
+                    socket.emit("do login", user);
+                } catch(JSONException e){
+                    Log.e(getResources().getString(R.string.app_name), e.getMessage(), e);
+                }
+            }
+        }
+    }
+
+    private Emitter.Listener onNewMessage = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    JSONObject data = (JSONObject) args[0];
+                    JSONObject from;
+                    String message;
+                    try {
+                        from = data.getJSONObject("from");
+                        message = data.getString("message");
+
+                        //String id = from.getString("id");
+                        String name = from.getString("name");
+                        String email = from.getString("email");
+                        String phone = from.getString("phone");
+
+                        //Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT );
+                        Log.d(getResources().getString(R.string.app_name), "message2 = " + message);
+                        //update new message count - option menu
+
+                    } catch (JSONException e) {
+                        return;
+                    }
+                }
+            });
+        }
+    };
+
+    private Emitter.Listener onConnect = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if ( !isConnect() ) {
+                        setConnect(true);
+                        Log.d(getResources().getString(R.string.app_name), getResources().getString(R.string.connect));
+                    }
+
+
+                    attemptLogin();
+                    //if(null!=userContact) socket.emit("add user", userContact.getName());
+                    //isLogin = true;
+                }
+            });
+        }
+    };
+
+    private Emitter.Listener onDisconnect = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    setConnect(false);
+                    setLogin(false);
+                    //Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_LONG).show();
+                    Log.d(getResources().getString(R.string.app_name), getResources().getString(R.string.disconnect));
+                    //attemptLogin();
+                    while ( isConnect() == false )
+                        ChatService.startActionKeepConnection(MainMenuActivity.this);
+                }
+            });
+        }
+    };
+
+    private Emitter.Listener onConnectError = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    setConnect(false);
+                    setLogin(false);
+                    //Toast.makeText(getApplicationContext(), R.string.error_connect, Toast.LENGTH_LONG).show();
+                    Log.d(getResources().getString(R.string.app_name), getResources().getString(R.string.error_connect));
+                    //attemptLogin();
+
+                }
+            });
+        }
+    };
+
+    private Emitter.Listener onLogin = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            if ( isLogin() ) return;
+
+            JSONObject data = (JSONObject) args[0];
+            try {
+                setLogin(data.getBoolean("success"));
+                //Toast.makeText(getApplicationContext(), "Login1 " + isLogin, Toast.LENGTH_SHORT).show();
+            } catch (JSONException e) {
+                Log.e(getResources().getString(R.string.app_name), e.getMessage(), e);
+                return;
+            }
+            Log.d(getResources().getString(R.string.app_name), "Login " + isLogin());
+            //Toast.makeText(getApplicationContext(), "Login2 " + isLogin, Toast.LENGTH_SHORT).show();
+
+            //retrive contact
+            if ( isLogin() ) {
+                ChatService.startActionUpdateContact(MainMenuActivity.this);
+                //socket.emit("get contacts");
+            }
+        }
+    };
+
+    //END SOCKET METHOD BLOCK
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if ( socket == null )
+            socket = ((App)getApplication()).getSocket();
+
+        if ( socket.connected() == false)
+            socket.connect();
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        socket.disconnect();
+        socket.off(Socket.EVENT_CONNECT, onConnect);
+        socket.off(Socket.EVENT_DISCONNECT, onDisconnect);
+        socket.off(Socket.EVENT_CONNECT_ERROR, onConnectError);
+        socket.off(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
+        socket.off("login", onLogin);
+        socket.off("new message", onNewMessage);
     }
 }

@@ -36,16 +36,18 @@ import io.socket.emitter.Emitter;
 public class MainChatActivity extends AppCompatActivity {
     ViewPager viewPager;
     private Socket socket;
-    private boolean isLogin = false;
-    private boolean isConnect = false;
+    //private boolean isLogin = false;
+    //private boolean isConnect = false;
 
     private ImageButton goBackButton;
     private ChatTabPagerAdapter pagerAdapter;
     //private App app;
 
+    /*
     public boolean isLogin() {
         return this.isLogin;
     }
+    */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,7 @@ public class MainChatActivity extends AppCompatActivity {
         goBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //onBackPressed();
                 finish();
             }
         });
@@ -95,53 +98,31 @@ public class MainChatActivity extends AppCompatActivity {
             }
         });
 
-
         //Log.d(getResources().getString(R.string.app_name), "count=" + tabsStrip.getChildCount());
 
         App app = (App) getApplication();
+        /*
         if ( app.getUserApp() == null ) {
             String id = AndroidUtilities.getDeviceUniqueID(getContentResolver());
             app.setUserApp(new UserApp(id, id, "", id + "@zmail.com", ""));
         }
+        */
         TextView title = (TextView) findViewById(R.id.user_app);
-        title.setText(title.getText() + " - " + app.getUserApp().getName());
+        String titleText = title.getText() + ( app.getUserApp() == null ? "" : " - " + app.getUserApp().getName());
+        title.setText(titleText);
 
         socket = app.getSocket();
-        socket.on(Socket.EVENT_CONNECT, onConnect);
-        socket.on(Socket.EVENT_DISCONNECT, onDisconnect);
-        socket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
-        socket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
-        socket.on("login", onLogin);
         socket.on("user join", onUserJoin);
         socket.on("list contact", onListContact);
         socket.on("update contact", onUpdateContact);
-        //socket.on("new message", onNewMessage);
-        socket.connect();
+        socket.on("new message", onNewMessage);
 
         //runs background service
-        //ChatAlarmReceiver.startKeepConnectionScheduler(this, 10000);
 
     }
 
     private Activity getActivity() {
         return this;
-    }
-
-    private void attemptLogin() {
-        if ( socket.connected() && !isLogin ) {
-            JSONObject user = new JSONObject();
-            try {
-                String name = AndroidUtilities.getDeviceUniqueID(getContentResolver());
-                UserApp userApp = ((App)getApplication()).getUserApp();
-
-                user.put("name", userApp.getName());
-                user.put("email", userApp.getEmail());
-                user.put("phone", userApp.getPhone());
-                socket.emit("do login", user);
-            } catch (JSONException e) {
-                Log.e(getResources().getString(R.string.app_name), e.getMessage(), e);
-            }
-        }
     }
 
     private Emitter.Listener onNewMessage = new Emitter.Listener() {
@@ -172,7 +153,7 @@ public class MainChatActivity extends AppCompatActivity {
                             contact = new ChatContact(null, name, "", email, phone, ChatContactType.PRIVATE);
                         }
                         if ( contact.getActive() != 1) {
-                            final ChatMessage lastMessage = ChatHelper.createMessage(message, MessageType.REPLY);
+                            final ChatMessage lastMessage = ChatHelper.createMessage(message, MessageType.IN);
                             final ChatContactHistoryFragment fragment1 = (ChatContactHistoryFragment) pagerAdapter.getItem(0);
                             fragment1.updateContactHistory(contact, 1, lastMessage);
                         }
@@ -185,81 +166,6 @@ public class MainChatActivity extends AppCompatActivity {
         }
     };
 
-    private Emitter.Listener onConnect = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if ( !isConnect ) {
-                        isConnect = true;
-                        Log.d(getResources().getString(R.string.app_name), getResources().getString(R.string.connect));
-                    }
-
-                    attemptLogin();
-                        //if(null!=userContact) socket.emit("add user", userContact.getName());
-                        //isLogin = true;
-                }
-            });
-        }
-    };
-
-    private Emitter.Listener onDisconnect = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    isConnect = false;
-                    isLogin = false;
-                    //Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_LONG).show();
-                    Log.d(getResources().getString(R.string.app_name), getResources().getString(R.string.disconnect));
-                    //attemptLogin();
-                }
-            });
-        }
-    };
-
-    private Emitter.Listener onConnectError = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    isConnect = false;
-                    isLogin = false;
-                    //Toast.makeText(getApplicationContext(), R.string.error_connect, Toast.LENGTH_LONG).show();
-                    Log.d(getResources().getString(R.string.app_name), getResources().getString(R.string.error_connect));
-                    //attemptLogin();
-
-                }
-            });
-        }
-    };
-
-    private Emitter.Listener onLogin = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-            if ( isLogin ) return;
-
-            JSONObject data = (JSONObject) args[0];
-            try {
-                isLogin = data.getBoolean("success");
-                //Toast.makeText(getApplicationContext(), "Login1 " + isLogin, Toast.LENGTH_SHORT).show();
-            } catch (JSONException e) {
-                Log.e(getResources().getString(R.string.app_name), e.getMessage(), e);
-                return;
-            }
-            Log.d(getResources().getString(R.string.app_name), "Login " + isLogin);
-            //Toast.makeText(getApplicationContext(), "Login2 " + isLogin, Toast.LENGTH_SHORT).show();
-
-            //retrive contact
-            if ( isLogin ) {
-                ChatService.startActionUpdateContact(getActivity());
-                //socket.emit("get contacts");
-            }
-        }
-    };
 
     private Emitter.Listener onUserJoin = new Emitter.Listener() {
         @Override
@@ -377,12 +283,6 @@ public class MainChatActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        socket.disconnect();
-        socket.off(Socket.EVENT_CONNECT, onConnect);
-        socket.off(Socket.EVENT_DISCONNECT, onDisconnect);
-        socket.off(Socket.EVENT_CONNECT_ERROR, onConnectError);
-        socket.off(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
-        socket.off("login", onLogin);
         socket.off("user join", onUserJoin);
         socket.off("list contact", onListContact);
         socket.off("update contact", onUpdateContact);

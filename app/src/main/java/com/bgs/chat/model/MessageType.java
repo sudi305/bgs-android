@@ -4,7 +4,7 @@ package com.bgs.chat.model;
  * Created by madhur on 17/01/15.
  */
 public enum MessageType {
-    SEND, REPLY;
+    IN, OUT;
 
     public static MessageType parse(int value) {
         for(MessageType item : values()) {

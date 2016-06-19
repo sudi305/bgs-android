@@ -166,7 +166,7 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
 
         chatEditText1.setText("");
 
-        addMessage(ChatHelper.createMessage(message, MessageType.SEND));
+        addMessage(ChatHelper.createMessage(message, MessageType.OUT));
         Log.d(getResources().getString(R.string.app_name), "before send = " + message);
         JSONObject obj = new JSONObject();
         JSONObject user = new JSONObject();
@@ -217,7 +217,7 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
                     //Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT );
                     Log.d(getResources().getString(R.string.app_name),"message = " + message);
                     //removeTyping(username);
-                    addMessage(ChatHelper.createMessage(message, MessageType.REPLY ));
+                    addMessage(ChatHelper.createMessage(message, MessageType.IN ));
                 }
             });
         }

@@ -221,7 +221,8 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
 
                         //add by supri 2016/6/16
                         App app = (App)getApplication();
-                        UserApp userApp = new UserApp();
+                        UserApp userApp = app.getUserApp();
+                        if ( userApp == null) userApp = new UserApp();
                         userApp.setName(name);
                         userApp.setEmail(email);
                         userApp.setId(id);

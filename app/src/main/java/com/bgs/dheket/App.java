@@ -25,9 +25,7 @@ public class App extends Application {
         super.onCreate();
 
         Instance=this;
-
         applicationHandler = new Handler(getInstance().getMainLooper());
-
         NativeLoader.initNativeLibs(App.getInstance());
 
     }
@@ -39,18 +37,14 @@ public class App extends Application {
 
     private Socket mSocket;
     {
-        initSocket();
-        /*
         try {
-            mSocket = IO.socket(Constants.CHAT_SERVER_URL);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }*/
-    }
-
-    public void initSocket(){
-        try {
-            mSocket = IO.socket(Constants.CHAT_SERVER_URL);
+            IO.Options options = new IO.Options();
+            //options.reconnectionAttempts = 1;
+            //options.forceNew = true;
+            options.reconnectionDelay = 1000;
+            options.reconnectionDelayMax = 2000;
+            options.timeout = 1000;
+            mSocket = IO.socket(Constants.CHAT_SERVER_URL, options);
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }

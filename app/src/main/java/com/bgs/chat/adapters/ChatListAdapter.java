@@ -54,7 +54,7 @@ public class ChatListAdapter extends BaseAdapter {
         ChatMessage message = chatMessages.get(position);
         ViewHolderSend sendHolder;
         ViewHolderReply replyHolder;
-        if (message.getMessageType() == MessageType.SEND) {
+        if (message.getMessageType() == MessageType.OUT) {
             if (convertView == null) {
                 v = LayoutInflater.from(context).inflate(R.layout.chat_user_send_item, null, false);
 
@@ -80,7 +80,7 @@ public class ChatListAdapter extends BaseAdapter {
                 sendHolder.messageStatus.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_single_tick));
             }
 
-        } else if (message.getMessageType() == MessageType.REPLY) {
+        } else if (message.getMessageType() == MessageType.IN) {
             boolean grupMessage = (message.getSenderName() == null || "".equalsIgnoreCase(message.getSenderName())) ? false : true;
             if (convertView == null) {
 

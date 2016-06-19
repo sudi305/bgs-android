@@ -61,4 +61,5 @@ dependencies {
     }
 
     compile project(':flowlayout-lib')
+    compile 'org.jetbrains:annotations-java5:15.0'
 }
