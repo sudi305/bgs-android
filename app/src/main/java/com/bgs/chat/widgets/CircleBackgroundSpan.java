@@ -53,6 +53,7 @@ public class CircleBackgroundSpan extends ReplacementSpan
     {
 
         TextPaint textPaint = new TextPaint();
+        textPaint.setFakeBoldText(true);
         textPaint.setColor(mTextColor);
         if ( mTextSize > 0 ) textPaint.setTextSize(mTextSize);
         float width = textPaint.measureText(text.subSequence(start, end).toString());
@@ -69,6 +70,10 @@ public class CircleBackgroundSpan extends ReplacementSpan
 
         RectF bounds = new RectF(x, top - mTop, x + width, bottom - mTop);
         paint.setColor(mBackgroundColor);
+        canvas.drawOval(bounds, paint);
+        paint.setStrokeWidth(1f);
+        paint.setColor(Color.GRAY);
+        paint.setStyle(Paint.Style.STROKE);
         canvas.drawOval(bounds, paint);
         canvas.drawText(text, start, end, bounds.centerX(), bounds.centerY() + textOffset, textPaint);
     }
