@@ -386,7 +386,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
         int textSize = getResources().getDimensionPixelSize(R.dimen.chat_counter);
         int start = s.length() - (counter.length());
-        sColored.setSpan(new CircleBackgroundSpan(Color.RED, Color.WHITE, textSize, 4, 8), start, s.length(), 0);
+        sColored.setSpan(new CircleBackgroundSpan(Color.RED, Color.WHITE, textSize, 2, 8), start, s.length(), 0);
         //sColored.setSpan(new BackgroundColorSpan( Color.GRAY ), s.length()-3, s.length(), 0);
         //sColored.setSpan(new ForegroundColorSpan( Color.WHITE ), s.length()-3, s.length(), 0);
         element.setTitle(sColored);

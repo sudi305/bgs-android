@@ -71,7 +71,7 @@ public class CircleBackgroundSpan extends ReplacementSpan
         RectF bounds = new RectF(x, top - mTop, x + width, bottom - mTop);
         paint.setColor(mBackgroundColor);
         canvas.drawOval(bounds, paint);
-        paint.setStrokeWidth(1f);
+        paint.setStrokeWidth(2f);
         paint.setColor(Color.GRAY);
         paint.setStyle(Paint.Style.STROKE);
         canvas.drawOval(bounds, paint);
