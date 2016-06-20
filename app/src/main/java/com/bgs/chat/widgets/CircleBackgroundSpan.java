@@ -19,27 +19,30 @@ public class CircleBackgroundSpan extends ReplacementSpan
     private int mPadding = 4;
     private int mBackgroundColor;
     private int mTextColor;
+    private int mBorderColor;
     private float mTextSize;
     private int mTop;
 
-    public CircleBackgroundSpan(int backgroundColor, int textColor) {
-        this(backgroundColor, textColor, 0);
+    public CircleBackgroundSpan(int backgroundColor, int borderColor, int textColor) {
+        this(backgroundColor, borderColor, textColor, 0);
     }
 
-    public CircleBackgroundSpan(int backgroundColor, int textColor, float textSize) {
-        this(backgroundColor, textColor, 0, 0, 0);
+    public CircleBackgroundSpan(int backgroundColor, int borderColor, int textColor, float textSize) {
+        this(backgroundColor, borderColor, textColor, 0, 0, 0);
     }
 
-    public CircleBackgroundSpan(int backgroundColor, int textColor, float textSize, int mPadding) {
-        this(backgroundColor, textColor, 0, 0, mPadding);
+    public CircleBackgroundSpan(int backgroundColor, int borderColor, int textColor, float textSize, int mPadding) {
+        this(backgroundColor, borderColor, textColor, 0, 0, mPadding);
     }
 
-    public CircleBackgroundSpan(int backgroundColor, int textColor, float textSize, int top, int padding) {
+    public CircleBackgroundSpan(int backgroundColor, int borderColor, int textColor, float textSize, int top, int padding) {
         super();
         mBackgroundColor = backgroundColor;
+        mBorderColor = borderColor;
+        mBorderColor = mBorderColor;
         mTextColor = textColor;
         mTextSize = textSize;
-        if ( top > 0 ) mTop = top;
+        mTop = top;
         if ( padding > 0) mPadding = padding;
     }
 
@@ -71,10 +74,12 @@ public class CircleBackgroundSpan extends ReplacementSpan
         RectF bounds = new RectF(x, top - mTop, x + width, bottom - mTop);
         paint.setColor(mBackgroundColor);
         canvas.drawOval(bounds, paint);
-        paint.setStrokeWidth(2f);
-        paint.setColor(Color.GRAY);
-        paint.setStyle(Paint.Style.STROKE);
-        canvas.drawOval(bounds, paint);
+        if ( mBorderColor != -1 ) {
+            paint.setStrokeWidth(2f);
+            paint.setColor(mBorderColor);
+            paint.setStyle(Paint.Style.STROKE);
+            canvas.drawOval(bounds, paint);
+        }
         canvas.drawText(text, start, end, bounds.centerX(), bounds.centerY() + textOffset, textPaint);
     }
 }

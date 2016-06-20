@@ -26,11 +26,12 @@ import com.bgs.chat.model.ChatContact;
 import com.bgs.chat.model.ChatHelper;
 import com.bgs.chat.model.ChatMessage;
 import com.bgs.chat.model.MessageType;
+import com.bgs.common.NativeUtilities;
+import com.bgs.common.Utility;
 import com.bgs.model.UserApp;
 import com.bgs.chat.widgets.Emoji;
 import com.bgs.chat.widgets.EmojiView;
 import com.bgs.chat.widgets.SizeNotifierRelativeLayout;
-import com.bgs.common.AndroidUtilities;
 import com.bgs.common.Constants;
 import com.bgs.dheket.App;
 import com.bgs.dheket.R;
@@ -88,7 +89,7 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
         }
         */
 
-        AndroidUtilities.statusBarHeight = getStatusBarHeight();
+        NativeUtilities.statusBarHeight = getStatusBarHeight();
 
         userContactTextView = (TextView) findViewById(R.id.user_contact);
         //get object intent
@@ -171,7 +172,7 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
         JSONObject obj = new JSONObject();
         JSONObject user = new JSONObject();
         try {
-            String name = AndroidUtilities.getDeviceUniqueID(getContentResolver());
+            String name = Utility.getDeviceUniqueID(getContentResolver());
             UserApp userApp = ((App)getApplication()).getUserApp();
             //user.put("id", String.valueOf(System.currentTimeMillis()));
             user.put("name", userApp.getName());
@@ -314,7 +315,7 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
                             i = 0;
                         }
                         try {
-                            CharSequence localCharSequence = Emoji.replaceEmoji(symbol, chatEditText1.getPaint().getFontMetricsInt(), AndroidUtilities.dp(20));
+                            CharSequence localCharSequence = Emoji.replaceEmoji(symbol, chatEditText1.getPaint().getFontMetricsInt(), NativeUtilities.dp(20));
                             chatEditText1.setText(chatEditText1.getText().insert(i, localCharSequence));
                             int j = i + localCharSequence.length();
                             chatEditText1.setSelection(j, j);
@@ -339,14 +340,14 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
             final int currentHeight;
 
             if (keyboardHeight <= 0)
-                keyboardHeight = App.getInstance().getSharedPreferences("emoji", 0).getInt("kbd_height", AndroidUtilities.dp(200));
+                keyboardHeight = App.getInstance().getSharedPreferences("emoji", 0).getInt("kbd_height", NativeUtilities.dp(200));
 
             currentHeight = keyboardHeight;
 
             WindowManager wm = (WindowManager) App.getInstance().getSystemService(Activity.WINDOW_SERVICE);
 
             windowLayoutParams.height = currentHeight;
-            windowLayoutParams.width = AndroidUtilities.displaySize.x;
+            windowLayoutParams.width = NativeUtilities.displaySize.x;
 
             try {
                 if (emojiView.getParent() != null) {
@@ -460,7 +461,7 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
         }
 
 
-        if (height > AndroidUtilities.dp(50) && keyboardVisible) {
+        if (height > NativeUtilities.dp(50) && keyboardVisible) {
             keyboardHeight = height;
             App.getInstance().getSharedPreferences("emoji", 0).edit().putInt("kbd_height", keyboardHeight).commit();
         }
@@ -471,8 +472,8 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
 
             newHeight = keyboardHeight;
 
-            if (windowLayoutParams.width != AndroidUtilities.displaySize.x || windowLayoutParams.height != newHeight) {
-                windowLayoutParams.width = AndroidUtilities.displaySize.x;
+            if (windowLayoutParams.width != NativeUtilities.displaySize.x || windowLayoutParams.height != newHeight) {
+                windowLayoutParams.width = NativeUtilities.displaySize.x;
                 windowLayoutParams.height = newHeight;
 
                 wm.updateViewLayout(emojiView, windowLayoutParams);

@@ -25,7 +25,7 @@ import java.nio.channels.FileChannel;
 /**
  * Created by madhur on 3/1/15.
  */
-public class AndroidUtilities {
+public class NativeUtilities {
 
     public static float density = 1;
     public static int statusBarHeight = 0;
@@ -36,26 +36,10 @@ public class AndroidUtilities {
         checkDisplaySize();
     }
 
-    public static String getDeviceUniqueID(ContentResolver contentResolver){
-        String device_unique_id = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
-        return device_unique_id;
-    }
-
     public static int dp(float value) {
         return (int)Math.ceil(density * value);
     }
 
-    public static void runOnUIThread(Runnable runnable) {
-        runOnUIThread(runnable, 0);
-    }
-
-    public static void runOnUIThread(Runnable runnable, long delay) {
-        if (delay == 0) {
-            App.applicationHandler.post(runnable);
-        } else {
-            App.applicationHandler.postDelayed(runnable, delay);
-        }
-    }
 
     public native static void loadBitmap(String path, Bitmap bitmap, int scale, int width, int height, int stride);
 

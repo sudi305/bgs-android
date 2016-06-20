@@ -17,7 +17,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.bgs.common.AndroidUtilities;
+import com.bgs.common.NativeUtilities;
 import com.bgs.dheket.R;
 
 import java.util.ArrayList;
@@ -95,17 +95,17 @@ public class EmojiView extends LinearLayout {
         setOrientation(LinearLayout.VERTICAL);
         for (int i = 0; i < Emoji.data.length; i++) {
             GridView gridView = new GridView(getContext());
-            //  if (AndroidUtilities.isTablet()) {
-            //     gridView.setColumnWidth(AndroidUtilities.dp(60));
+            //  if (NativeUtilities.isTablet()) {
+            //     gridView.setColumnWidth(NativeUtilities.dp(60));
             // } else {
-            gridView.setColumnWidth(AndroidUtilities.dp(45));
+            gridView.setColumnWidth(NativeUtilities.dp(45));
             // }
             gridView.setNumColumns(-1);
             views.add(gridView);
 
             EmojiGridAdapter localEmojiGridAdapter = new EmojiGridAdapter(Emoji.data[i]);
             gridView.setAdapter(localEmojiGridAdapter);
-            //  AndroidUtilities.setListViewEdgeEffectColor(gridView, 0xff999999);
+            //  NativeUtilities.setListViewEdgeEffectColor(gridView, 0xff999999);
             adapters.add(localEmojiGridAdapter);
         }
 
@@ -116,8 +116,8 @@ public class EmojiView extends LinearLayout {
         tabs.setViewPager(pager);
         tabs.setShouldExpand(true);
         tabs.setIndicatorColor(0xff33b5e5);
-        tabs.setIndicatorHeight(AndroidUtilities.dp(2.0f));
-        tabs.setUnderlineHeight(AndroidUtilities.dp(2.0f));
+        tabs.setIndicatorHeight(NativeUtilities.dp(2.0f));
+        tabs.setUnderlineHeight(NativeUtilities.dp(2.0f));
         tabs.setUnderlineColor(0x66000000);
         tabs.setTabBackground(0);
         LinearLayout localLinearLayout = new LinearLayout(getContext());
@@ -134,7 +134,7 @@ public class EmojiView extends LinearLayout {
                 }
             }
         });
-        localLinearLayout.addView(localImageView, new LayoutParams(AndroidUtilities.dp(61), LayoutParams.MATCH_PARENT));
+        localLinearLayout.addView(localImageView, new LayoutParams(NativeUtilities.dp(61), LayoutParams.MATCH_PARENT));
         recentsWrap = new FrameLayout(getContext());
         recentsWrap.addView(views.get(0));
         TextView localTextView = new TextView(getContext());
@@ -144,7 +144,7 @@ public class EmojiView extends LinearLayout {
         localTextView.setGravity(17);
         recentsWrap.addView(localTextView);
         views.get(0).setEmptyView(localTextView);
-        addView(localLinearLayout, new LayoutParams(-1, AndroidUtilities.dp(48.0f)));
+        addView(localLinearLayout, new LayoutParams(-1, NativeUtilities.dp(48.0f)));
         addView(pager);
         loadRecents();
         if (Emoji.data[0] == null || Emoji.data[0].length == 0) {

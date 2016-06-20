@@ -8,7 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bgs.common.AndroidUtilities;
+import com.bgs.common.NativeUtilities;
 import com.bgs.dheket.R;
 import com.bgs.chat.model.ChatMessage;
 import com.bgs.chat.model.MessageStatus;
@@ -70,7 +70,7 @@ public class ChatListAdapter extends BaseAdapter {
 
             }
 
-            sendHolder.messageTextView.setText(Emoji.replaceEmoji(message.getMessageText(), sendHolder.messageTextView.getPaint().getFontMetricsInt(), AndroidUtilities.dp(16) ));
+            sendHolder.messageTextView.setText(Emoji.replaceEmoji(message.getMessageText(), sendHolder.messageTextView.getPaint().getFontMetricsInt(), NativeUtilities.dp(16) ));
             //holder2.messageTextView.setText(message.getMessageText());
             sendHolder.timeTextView.setText(SIMPLE_DATE_FORMAT.format(message.getMessageTime()));
 
@@ -106,7 +106,7 @@ public class ChatListAdapter extends BaseAdapter {
             if ( grupMessage)
                 replyHolder.senderTextView.setText(message.getSenderName());
 
-            replyHolder.messageTextView.setText(Emoji.replaceEmoji(message.getMessageText(), replyHolder.messageTextView.getPaint().getFontMetricsInt(), AndroidUtilities.dp(16)));
+            replyHolder.messageTextView.setText(Emoji.replaceEmoji(message.getMessageText(), replyHolder.messageTextView.getPaint().getFontMetricsInt(), NativeUtilities.dp(16)));
             replyHolder.timeTextView.setText(SIMPLE_DATE_FORMAT.format(message.getMessageTime()));
 
         }

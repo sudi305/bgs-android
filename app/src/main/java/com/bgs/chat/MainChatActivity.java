@@ -18,9 +18,7 @@ import com.bgs.chat.model.ChatContactType;
 import com.bgs.chat.model.ChatHelper;
 import com.bgs.chat.model.ChatMessage;
 import com.bgs.chat.model.MessageType;
-import com.bgs.model.UserApp;
 import com.bgs.chat.services.ChatService;
-import com.bgs.common.AndroidUtilities;
 import com.bgs.dheket.App;
 import com.bgs.dheket.R;
 
@@ -103,7 +101,7 @@ public class MainChatActivity extends AppCompatActivity {
         App app = (App) getApplication();
         /*
         if ( app.getUserApp() == null ) {
-            String id = AndroidUtilities.getDeviceUniqueID(getContentResolver());
+            String id = NativeUtilities.getDeviceUniqueID(getContentResolver());
             app.setUserApp(new UserApp(id, id, "", id + "@zmail.com", ""));
         }
         */

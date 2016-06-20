@@ -1,6 +1,10 @@
 package com.bgs.common;
 
+import android.content.ContentResolver;
+import android.provider.Settings;
 import android.util.Log;
+
+import com.bgs.dheket.App;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -15,6 +19,23 @@ public class Utility {
 
     public Utility(){
 
+    }
+
+    public static String getDeviceUniqueID(ContentResolver contentResolver){
+        String device_unique_id = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
+        return device_unique_id;
+    }
+
+    public static void runOnUIThread(Runnable runnable, long delay) {
+        if (delay == 0) {
+            App.applicationHandler.post(runnable);
+        } else {
+            App.applicationHandler.postDelayed(runnable, delay);
+        }
+    }
+
+    public static void runOnUIThread(Runnable runnable) {
+        runOnUIThread(runnable, 0);
     }
 
     public String changeFormatNumber(double originNumber){

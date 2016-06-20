@@ -6,7 +6,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -35,8 +34,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.SpannableString;
-import android.text.style.BackgroundColorSpan;
-import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -59,13 +56,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bgs.chat.MainChatActivity;
-import com.bgs.chat.fragments.ChatContactFragment;
 import com.bgs.chat.services.ChatService;
 import com.bgs.chat.widgets.CircleBackgroundSpan;
-import com.bgs.chat.widgets.RoundedBackgroundSpan;
-import com.bgs.common.AndroidUtilities;
+import com.bgs.common.Constants;
+import com.bgs.common.GpsUtils;
 import com.bgs.common.Utility;
-import com.bgs.flowLayout.CategoryActivity;
 import com.bgs.imageOrView.MySeekBar;
 import com.bgs.model.UserApp;
 import com.bgs.networkAndSensor.ConfigInternetAndGPS;
@@ -76,18 +71,14 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
-import com.facebook.login.LoginManager;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -97,8 +88,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
@@ -167,13 +157,16 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     public boolean isLogin() { return mLogin; }
     public void setLogin(boolean mLogin) { this.mLogin = mLogin; }
 
-
-
+    //add by supri
+    private Location currentBestLocation = null;
+    static final long TWO_MINUTES = TimeUnit.MINUTES.toSeconds(2);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
+
+        Log.d(Constants.TAG, "ON CREATE");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -243,12 +236,27 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         textViewLoad = (TextView)findViewById(R.id.textView_cm_load);
 
         rl = (RelativeLayout)findViewById(R.id.rl_main_menu_bubble);
-
         initFormSettingRadius();
         updateData();
         preProcessingGetData();
         getServiceFromGPS();
-
+        Log.d(Constants.TAG, String.format("latitude=%s, longitude=%s",latitude, longitude));
+        if ( latitude == 0 && longitude == 0 ) {
+            latitude = -6.212601;
+            longitude = 106.617825;
+        }
+        /*
+        if ( latitude == 0 && longitude == 0 ) {
+            //get last location
+            Location location = getLastBestLocation();
+            Log.d(Constants.TAG, "location=" + location);
+            if ( location != null ) {
+                Log.d(Constants.TAG, String.format("location=%s",location.getProvider()));
+                latitude = location.getLatitude();
+                longitude = location.getLongitude();
+            }
+        }
+        */
         final Animation animTranslate = AnimationUtils.loadAnimation(this, R.anim.anim_translate);
         final Animation animScale = AnimationUtils.loadAnimation(this, R.anim.anim_scale);
         final Animation animButtonPress = AnimationUtils.loadAnimation(this, R.anim.anim_scale_button_press);
@@ -265,7 +273,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 //        Dialog.show(getFragmentManager(), "tag");
 
         if (AccessToken.getCurrentAccessToken() != null) {
-            Log.e("getdatafrom fb","yes");
+            Log.e(Constants.TAG, "getdatafrom fb yes");
             RequestDataFromFB();
         }
 
@@ -353,7 +361,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         //CHAT SOCKET
         App app = (App) getApplication();
         /*if ( app.getUserApp() == null ) {
-            String id = AndroidUtilities.getDeviceUniqueID(getContentResolver());
+            String id = NativeUtilities.getDeviceUniqueID(getContentResolver());
             app.setUserApp(new UserApp(id, id, "", id + "@zmail.com", ""));
         }*/
 
@@ -386,7 +394,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
         int textSize = getResources().getDimensionPixelSize(R.dimen.chat_counter);
         int start = s.length() - (counter.length());
-        sColored.setSpan(new CircleBackgroundSpan(Color.RED, Color.WHITE, textSize, 2, 8), start, s.length(), 0);
+        sColored.setSpan(new CircleBackgroundSpan(Color.RED, Color.DKGRAY, Color.WHITE, textSize, 2, 8), start, s.length(), 0);
         //sColored.setSpan(new BackgroundColorSpan( Color.GRAY ), s.length()-3, s.length(), 0);
         //sColored.setSpan(new ForegroundColorSpan( Color.WHITE ), s.length()-3, s.length(), 0);
         element.setTitle(sColored);
@@ -588,7 +596,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 JSONObject json = response.getJSONObject();
                 try {
                     if (json != null) {
-                        Log.e("json fb", json.toString());
+                        Log.e(Constants.TAG, "json fb = " + json.toString());
                         String id = json.getString("id");
                         String name = json.getString("name");
                         String gender = json.getString("gender");
@@ -776,10 +784,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 button.setLayoutParams(params);
             }
         }
-
     }
-
-
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -830,7 +835,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
         @Override
         protected String doInBackground(String... urls) {
-            Log.e("Proses 2","Lakukan Pemanggilan WS = " + urls);
+            Log.e(Constants.TAG, "Proses 2 -> Lakukan Pemanggilan WS = " + urls);
             String response = "";
             HttpGetOrPost httpGetOrPost = new HttpGetOrPost();
             response = httpGetOrPost.getRequest(urls[0]);
@@ -842,7 +847,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 real_radius = Double.parseDouble(jObject.getString("rad"));
                 email = jObject.getString("email");
                 radius = (real_radius);
-                Log.e("Proses 3","Try get data dari WS = " + urls + "\nJumlah data dari WS = "+menuItemArray.length());
+                Log.e(Constants.TAG, "Proses 3 -> Try get data dari WS = " + urls + "\nJumlah data dari WS = "+menuItemArray.length());
                 for (int i = 0; i < menuItemArray.length(); i++) {
                     id_kategori[i] = menuItemArray.getJSONObject(i).getInt("id_category");
                     nama_katagori[i] = menuItemArray.getJSONObject(i).getString("category_name").toString();
@@ -852,7 +857,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-                Log.e("Proses 4", "Gagal Panggil WS = " + urls);
+                Log.e(Constants.TAG, "Proses 4 -> Gagal Panggil WS = " + urls);
             }
 
             return response;
@@ -863,7 +868,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             /*if (dialog.isShowing()) {
                 dialog.dismiss();
             }*/
-            Log.e("first_check",""+first_check);
+            Log.e(Constants.TAG, "first_check -> "+first_check);
             /*if (email.equalsIgnoreCase("guest@dheket.co.id")){
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainMenuActivity.this);
                 builder.setMessage("This is Guest account! Are you sure to stay with this account?")
@@ -886,7 +891,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 getDataCategory(email, latitude, longitude);
                 first_check = false;
             }*/
-            Log.e("Proses 5","selesai panggil WS = " + urls);
+            Log.e(Constants.TAG, "Proses 5 -> selesai panggil WS = " + urls);
             updateData();
         }
     }
@@ -963,15 +968,15 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 JSONObject jsonobj = new JSONObject();
                 jsonobj.put("email", email);
                 jsonobj.put("rad", newRadius);
-                Log.e("mainToPost", "mainToPost" + jsonobj.toString());
+                Log.e(Constants.TAG, "mainToPost -> " + jsonobj.toString());
                 httppost.setEntity(new StringEntity(jsonobj.toString())); //json without header {"a"="a","b"=1}
                 // Execute HTTP Post Request
                 HttpResponse response = httpclient.execute(httppost);
                 InputStream inputStream = response.getEntity().getContent();
                 InputStreamToStringExample str = new InputStreamToStringExample();
                 responseServer = str.getStringFromInputStream(inputStream);
-                Log.e("response", "response ----- " + responseServer.toString() + "|");
-                Log.e("response", "response ----- " + responseServer.toString().equalsIgnoreCase("{\"success\":1}") + "|");
+                Log.e(Constants.TAG, "response ----- " + responseServer.toString() + "|");
+                Log.e(Constants.TAG, "response ----- " + responseServer.toString().equalsIgnoreCase("{\"success\":1}") + "|");
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -998,7 +1003,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         CallWebPageTask task = new CallWebPageTask();
         task.applicationContext = getApplicationContext();
         urls = url + "/" + email + "/" + lat + "/" + lng;
-        Log.e("Proses 1","Persiapan Panggil WS = " + urls);
+        Log.e(Constants.TAG, "Proses 1 -> Persiapan Panggil WS = " + urls);
         if (email!=null)task.execute(new String[]{urls});
     }
 
@@ -1048,10 +1053,20 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
     @Override
     public void onLocationChanged(Location location) {
-        latitude = location.getLatitude();
-        longitude = location.getLongitude();
+        makeUseOfNewLocation(location);
+        if(currentBestLocation == null){
+            currentBestLocation = location;
+        }
+        if ( currentBestLocation != null ) {
+            latitude = currentBestLocation.getLatitude();
+            longitude = currentBestLocation.getLongitude();
+        } else {
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+        }
         //Toast.makeText(getApplicationContext(),"lat "+latitude+" | lgt "+longitude, Toast.LENGTH_LONG).show();
-        Log.e("Proses 6","Ada perubahan lokasi maka panggil WS lagi= " + urls);
+        Log.e(Constants.TAG, "Proses 6 -> Ada perubahan lokasi maka panggil WS lagi= " + urls);
+
         getDataCategory(email, latitude, longitude);
     }
 
@@ -1086,11 +1101,13 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
+        //location = getLastBestLocation();
         location = myLocationManager.getLastKnownLocation(provider);
         if (location != null) {
             onLocationChanged(location);
         }
         myLocationManager.requestLocationUpdates(provider, 20000, 0, this);
+
     }
 
     public class CircleTransform implements Transformation {
@@ -1136,14 +1153,14 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             if (userApp != null) {
 
                 try {
-                        //String name = AndroidUtilities.getDeviceUniqueID(getContentResolver());
+                        //String name = NativeUtilities.getDeviceUniqueID(getContentResolver());
                     JSONObject user = new JSONObject();
                     user.put("name", userApp.getName());
                     user.put("email", userApp.getEmail());
                     user.put("phone", userApp.getPhone());
                     socket.emit("do login", user);
                 } catch(JSONException e){
-                    Log.e(getResources().getString(R.string.app_name), e.getMessage(), e);
+                    Log.e(Constants.TAG_CHAT, e.getMessage(), e);
                 }
             }
         }
@@ -1169,7 +1186,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                         String phone = from.getString("phone");
 
                         //Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT );
-                        Log.d(getResources().getString(R.string.app_name), "message2 = " + message);
+                        Log.d(Constants.TAG_CHAT, "message2 = " + message);
                         //update new message count - option menu
 
                     } catch (JSONException e) {
@@ -1188,7 +1205,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 public void run() {
                     if ( !isConnect() ) {
                         setConnect(true);
-                        Log.d(getResources().getString(R.string.app_name), getResources().getString(R.string.connect));
+                        Log.d(Constants.TAG_CHAT, getResources().getString(R.string.connect));
                     }
 
 
@@ -1209,7 +1226,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                     setConnect(false);
                     setLogin(false);
                     //Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_LONG).show();
-                    Log.d(getResources().getString(R.string.app_name), getResources().getString(R.string.disconnect));
+                    Log.d(Constants.TAG_CHAT, getResources().getString(R.string.disconnect));
                     //attemptLogin();
                     while ( isConnect() == false )
                         ChatService.startActionKeepConnection(MainMenuActivity.this);
@@ -1227,7 +1244,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                     setConnect(false);
                     setLogin(false);
                     //Toast.makeText(getApplicationContext(), R.string.error_connect, Toast.LENGTH_LONG).show();
-                    Log.d(getResources().getString(R.string.app_name), getResources().getString(R.string.error_connect));
+                    Log.d(Constants.TAG_CHAT, getResources().getString(R.string.error_connect));
                     //attemptLogin();
 
                 }
@@ -1245,10 +1262,10 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 setLogin(data.getBoolean("success"));
                 //Toast.makeText(getApplicationContext(), "Login1 " + isLogin, Toast.LENGTH_SHORT).show();
             } catch (JSONException e) {
-                Log.e(getResources().getString(R.string.app_name), e.getMessage(), e);
+                Log.e(Constants.TAG_CHAT, e.getMessage(), e);
                 return;
             }
-            Log.d(getResources().getString(R.string.app_name), "Login " + isLogin());
+            Log.d(Constants.TAG_CHAT, "Login " + isLogin());
             //Toast.makeText(getApplicationContext(), "Login2 " + isLogin, Toast.LENGTH_SHORT).show();
 
             //retrive contact
@@ -1258,12 +1275,23 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             }
         }
     };
-
     //END SOCKET METHOD BLOCK
+
+    /**
+     * This method modify the last know good location according to the arguments.
+     *
+     * @param location The possible new location.
+     */
+    void makeUseOfNewLocation(Location location) {
+        if (GpsUtils.isBetterLocation(location, currentBestLocation) ) {
+            currentBestLocation = location;
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();
-
+        Log.d(Constants.TAG, "ON RESUME");
         if ( socket == null )
             socket = ((App)getApplication()).getSocket();
 
