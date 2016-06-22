@@ -29,6 +29,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -62,10 +63,11 @@ import com.bgs.common.Constants;
 import com.bgs.common.GpsUtils;
 import com.bgs.common.Utility;
 import com.bgs.imageOrView.MySeekBar;
+import com.bgs.imageOrView.ProfilePictureView_viaFB;
+import com.bgs.model.Category;
 import com.bgs.model.UserApp;
 import com.bgs.networkAndSensor.ConfigInternetAndGPS;
 import com.bgs.networkAndSensor.HttpGetOrPost;
-import com.bgs.imageOrView.ProfilePictureView_viaFB;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookSdk;
@@ -97,7 +99,7 @@ import io.socket.emitter.Emitter;
  * Created by SND on 20/01/2016.
  */
 
-public class MainMenuActivity extends AppCompatActivity implements LocationListener, NavigationView.OnNavigationItemSelectedListener  {
+public class MainMenuActivity extends AppCompatActivity implements LocationListener, NavigationView.OnNavigationItemSelectedListener {
 
     LinearLayout buble_cat1, buble_cat2, buble_cat3, buble_cat4, buble_cat5;
     Button btn_buble_cat1, btn_buble_cat2, btn_buble_cat3, btn_buble_cat4, btn_buble_cat5, btn_search;
@@ -114,12 +116,12 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     ImageButton imageButton_close;
     ConfigInternetAndGPS checkInternetGPS;
     HttpGetOrPost httpGetOrPost;
-    String responseServer="";
+    String responseServer = "";
 
-    LocationManager myLocationManager;
-    Criteria criteria;
-    String provider;
-    Location location;
+    //LocationManager myLocationManager;
+    //Criteria criteria;
+    //String provider;
+    //Location location;
 
     private JSONObject jObject;
     private String jsonResult = "";
@@ -128,11 +130,11 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     double real_radius = 0.0;
     double radius = 0.0;
     int newRadius = 0;
-    double latitude, longitude;
-    String url = "", urls="";
-    String detailUser,email;
+    //double latitude, longitude;
+    String url = "", urls = "";
+    String detailUser, email;
     boolean first_check = true;
-    android.support.v7.app.ActionBar actionBar;
+    ActionBar actionBar;
     float scale;
 
     Intent goToScreen;
@@ -142,7 +144,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     private TextView textViewRad, textViewLoad;
     Button textViewMore;
     ViewGroup layoutRadiusSlider;
-    LinearLayout formRadius,formRadiusBackground;
+    LinearLayout formRadius, formRadiusBackground;
     RelativeLayout rl;
     RelativeLayout.LayoutParams p;
 
@@ -152,10 +154,21 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     private boolean mConnect = false;
 
 
-    public boolean isConnect() { return mConnect; }
-    public void setConnect(boolean mConnect) { this.mConnect = mConnect; }
-    public boolean isLogin() { return mLogin; }
-    public void setLogin(boolean mLogin) { this.mLogin = mLogin; }
+    public boolean isConnect() {
+        return mConnect;
+    }
+
+    public void setConnect(boolean mConnect) {
+        this.mConnect = mConnect;
+    }
+
+    public boolean isLogin() {
+        return mLogin;
+    }
+
+    public void setLogin(boolean mLogin) {
+        this.mLogin = mLogin;
+    }
 
     //add by supri
     private Location currentBestLocation = null;
@@ -194,10 +207,10 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
         //++++++++++++++++
 
-        View header=navigationView.getHeaderView(0);
-        txt_nav_name = (TextView)header.findViewById(R.id.nav_hm_textview_name);
-        txt_nav_email = (TextView)header.findViewById(R.id.nav_hm_textView_email);
-        imVi_nav_usrPro = (ImageView)header.findViewById(R.id.nav_hm_imageView);
+        View header = navigationView.getHeaderView(0);
+        txt_nav_name = (TextView) header.findViewById(R.id.nav_hm_textview_name);
+        txt_nav_email = (TextView) header.findViewById(R.id.nav_hm_textView_email);
+        imVi_nav_usrPro = (ImageView) header.findViewById(R.id.nav_hm_imageView);
 
         FacebookSdk.sdkInitialize(getApplicationContext());
 
@@ -233,17 +246,17 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         txt_mapView = (TextView) findViewById(R.id.textView_MapView);
         view_usrPro = (ProfilePictureView_viaFB) findViewById(R.id.view_userProfile);
         textView_usrNm = (TextView) findViewById(R.id.textView_usrNm);
-        textViewLoad = (TextView)findViewById(R.id.textView_cm_load);
+        textViewLoad = (TextView) findViewById(R.id.textView_cm_load);
 
-        rl = (RelativeLayout)findViewById(R.id.rl_main_menu_bubble);
+        rl = (RelativeLayout) findViewById(R.id.rl_main_menu_bubble);
         initFormSettingRadius();
         updateData();
         preProcessingGetData();
         getServiceFromGPS();
-        Log.d(Constants.TAG, String.format("latitude=%s, longitude=%s",latitude, longitude));
-        if ( latitude == 0 && longitude == 0 ) {
-            latitude = -6.212601;
-            longitude = 106.617825;
+        if ( currentBestLocation == null ) {
+            //hacked for emu
+            currentBestLocation = Constants.DEMO_LOCATION;
+            Log.d(Constants.TAG, String.format("latitude=%s, longitude=%s", currentBestLocation.getLatitude(), currentBestLocation.getLongitude()));
         }
         /*
         if ( latitude == 0 && longitude == 0 ) {
@@ -297,28 +310,28 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         btn_buble_cat2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toListAndMapScreen(id_kategori[1], real_radius, nama_katagori[1],icon_kategori[1],lokasi[1]);
+                toListAndMapScreen(id_kategori[1], real_radius, nama_katagori[1], icon_kategori[1], lokasi[1]);
             }
         });
 
         btn_buble_cat3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toListAndMapScreen(id_kategori[2], real_radius, nama_katagori[2],icon_kategori[2],lokasi[2]);
+                toListAndMapScreen(id_kategori[2], real_radius, nama_katagori[2], icon_kategori[2], lokasi[2]);
             }
         });
 
         btn_buble_cat4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toListAndMapScreen(id_kategori[3], real_radius, nama_katagori[3],icon_kategori[3],lokasi[3]);
+                toListAndMapScreen(id_kategori[3], real_radius, nama_katagori[3], icon_kategori[3], lokasi[3]);
             }
         });
 
         btn_buble_cat5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toListAndMapScreen(id_kategori[4], real_radius, nama_katagori[4],icon_kategori[4],lokasi[4]);
+                toListAndMapScreen(id_kategori[4], real_radius, nama_katagori[4], icon_kategori[4], lokasi[4]);
             }
         });
 
@@ -339,14 +352,20 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         txt_mapView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (radius!=0) {
-                    Intent toMap = new Intent(getApplicationContext(),MapViewActivity.class);
+                if (radius != 0) {
+                    Intent toMap = new Intent(getApplicationContext(), MapViewActivity.class);
                     Bundle paket = new Bundle();
-                    paket.putString("email",email);
+                    paket.putString("email", email);
+                    double longitude =0, latitude = 0;
+                    if ( currentBestLocation != null ) {
+                        latitude = currentBestLocation.getLatitude();
+                        longitude = currentBestLocation.getLongitude();
+                    }
+
                     paket.putDouble("latitude", latitude);
                     paket.putDouble("longitude", longitude);
                     paket.putStringArray("icon", icon_kategori);
-                    paket.putIntArray("id_cat",id_kategori);
+                    paket.putIntArray("id_cat", id_kategori);
                     paket.putDouble("radius", radius);
                     toMap.putExtras(paket);
                     //myLocationManager.removeUpdates(MainMenuActivity.this);
@@ -376,7 +395,6 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         socket.connect();
 
         updateNewMessageCounter();
-
     }
 
     /**
@@ -389,8 +407,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         String before = element.getTitle().toString();
 
         String counter = Integer.toString(99);
-        String s = before + " "+counter;
-        SpannableString sColored = new SpannableString( s );
+        String s = before + " " + counter;
+        SpannableString sColored = new SpannableString(s);
 
         int textSize = getResources().getDimensionPixelSize(R.dimen.chat_counter);
         int start = s.length() - (counter.length());
@@ -401,7 +419,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     }
 
 
-    public void preProcessingGetData(){
+    public void preProcessingGetData() {
         actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius ... </font>"));
         txt_tot_cat1.setText("...");
         btn_buble_cat1.setText("...");
@@ -424,23 +442,22 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         txt_promo_cat5.setText("Promo: ...");
     }
 
-    public void initFormSettingRadius(){
-        formRadius = (LinearLayout)findViewById(R.id.layout_main_slider_seekbar);
-        formRadiusBackground = (LinearLayout)findViewById(R.id.linearLayout_form_lms_slider);
+    public void initFormSettingRadius() {
+        formRadius = (LinearLayout) findViewById(R.id.layout_main_slider_seekbar);
+        formRadiusBackground = (LinearLayout) findViewById(R.id.linearLayout_form_lms_slider);
         ViewGroup.LayoutParams params = formRadius.getLayoutParams();
         TypedValue tv = new TypedValue();
         int actionBarHeight = 0;
 
-        if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
-        {
+        if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
             actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
         }
 
         params.height = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getHeight()
-                -actionBarHeight-getStatusBarHeight();
+                - actionBarHeight - getStatusBarHeight();
         formRadius.setLayoutParams(params);
-        bar = (MySeekBar)findViewById(R.id.seekBar_lms_radius);
-        bartext = (MySeekBar)findViewById(R.id.seekBar);
+        bar = (MySeekBar) findViewById(R.id.seekBar_lms_radius);
+        bartext = (MySeekBar) findViewById(R.id.seekBar);
         bartext.setEnabled(false);
         textViewRad = (TextView) findViewById(R.id.textView_lms_rad);
         textViewMore = (Button) findViewById(R.id.button_lms_more);
@@ -455,7 +472,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT);
         p.addRule(RelativeLayout.ABOVE, bar.getId());
-        int xpos = bar.getLayoutParams().width - ((bar.getLayoutParams().width/bar.getMax())*(bar.getMax()-bar.getProgress()));
+        int xpos = bar.getLayoutParams().width - ((bar.getLayoutParams().width / bar.getMax()) * (bar.getMax() - bar.getProgress()));
         p.setMargins(xpos - (textViewRad.getWidth() / (int) (2 * scale + 0.5f)), 0, 0, 0);
         textViewRad.setLayoutParams(p);
         /*bar.setThumb(getApplicationContext().getResources().getDrawable(
@@ -491,7 +508,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 textViewRad.setText(String.valueOf(progress + 1) + " Km");
                 bartext.setProgress(progress);
                 bartext.setThumb(writeOnDrawable(R.drawable.transparant, String.valueOf(bar.getProgress() + 1) + " Km"));
-                newRadius = bar.getProgress()+1;
+                newRadius = bar.getProgress() + 1;
                 //textView.setVisibility(View.VISIBLE);
                 //final Animation animationFadeOut = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
                 //textView.startAnimation(animationFadeOut);
@@ -517,7 +534,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         });
     }
 
-    public BitmapDrawable writeOnDrawable(int drawableId, String text){
+    public BitmapDrawable writeOnDrawable(int drawableId, String text) {
         float scale = getResources().getDisplayMetrics().density;
         Bitmap bm = BitmapFactory.decodeResource(getResources(), drawableId).copy(Bitmap.Config.ARGB_8888, true);
 
@@ -554,10 +571,12 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         dialog.show();
     }
 
-    public void toListAndMapScreen(int cat_id, double radius, String kategori, String icon,int lokasi) {
-        if (lokasi!=0){
+    public void toListAndMapScreen(int catId, double radius, String kategori, String icon, int lokasi) {
+        if (lokasi != 0) {
             //goToScreen = new Intent(getApplicationContext(), ListAndMapAllLocActivity.class);
             goToScreen = new Intent(getApplicationContext(), MapViewWithListActivity.class);
+            final Category category = new Category(catId, icon, kategori, radius);
+            /*
             Bundle paket = new Bundle();
             paket.putInt("cat_id", cat_id);
             paket.putString("kategori", kategori);
@@ -565,7 +584,9 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             paket.putDouble("latitude", latitude);
             paket.putDouble("longitude", longitude);
             paket.putString("icon", icon);
-            goToScreen.putExtras(paket);
+            */
+            goToScreen.putExtra("currentBestLocation", currentBestLocation);
+            goToScreen.putExtra("category", category);
             //myLocationManager.removeUpdates(MainMenuActivity.this);
             //myLocationManager = null;
             removeUpdateLocationManager();
@@ -575,7 +596,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         }
     }
 
-    public void toSetting(){
+    public void toSetting() {
         Intent gotoSetting = new Intent(getApplicationContext(), SettingCategoryBubbleActivity.class);
         Bundle paket = new Bundle();
         paket.putString("email", email);
@@ -616,13 +637,18 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                             // set profile image to imageview using Picasso or Native methods
                             picasso.with(getApplicationContext()).load(profilePicUrl).transform(new CircleTransform()).into(imVi_nav_usrPro);
                         }
+                        double longitude =0, latitude = 0;
+                        if ( currentBestLocation != null ) {
+                            latitude = currentBestLocation.getLatitude();
+                            longitude = currentBestLocation.getLongitude();
+                        }
                         getDataCategory(email, latitude, longitude);
 
                         //update user app
                         //add by supri 2016/6/16
-                        App app = (App)getApplication();
+                        App app = (App) getApplication();
                         UserApp userApp = app.getUserApp();
-                        if ( userApp == null) userApp = new UserApp();
+                        if (userApp == null) userApp = new UserApp();
                         userApp.setName(name);
                         userApp.setEmail(email);
                         userApp.setId(id);
@@ -644,23 +670,25 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         request.executeAsync();
     }
 
-
-    @TargetApi(23)
+    /**
+     *
+     */
     private void removeUpdateLocationManager() {
-        if (myLocationManager != null) {
-            if ( Build.VERSION.SDK_INT >= 23) {
+        LocationManager locManager = ((App)getApplication()).getLocationManager();
+        if (locManager != null) {
+            if (Build.VERSION.SDK_INT >= 23) {
                 if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                         || checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    myLocationManager.removeUpdates(MainMenuActivity.this);
+                    locManager.removeUpdates(MainMenuActivity.this);
                 }
             } else {
-                if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                         || ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    myLocationManager.removeUpdates(MainMenuActivity.this);
+                    locManager.removeUpdates(MainMenuActivity.this);
                 }
             }
 
-            myLocationManager = null;
+            locManager = null;
         }
     }
 
@@ -686,7 +714,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
         if (item.getItemId() == R.id.goto_setting) {
             /*if (formRadius.is)*/
-            if (real_radius>0){
+            if (real_radius > 0) {
                 if (formRadius.getVisibility() == View.VISIBLE) {
                     formRadius.setVisibility(View.GONE);
                 } else {
@@ -698,17 +726,22 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         }
 
         if (item.getItemId() == R.id.goto_search) {
-            if (real_radius>0){
+            if (real_radius > 0) {
                 Intent toSearch = new Intent(getApplicationContext(), SearchLocationByCategoryActivity.class);
                 //myLocationManager.removeUpdates(MainMenuActivity.this);
                 //myLocationManager = null;
                 removeUpdateLocationManager();
 
                 Bundle paket = new Bundle();
-                paket.putString("email",email);
-                paket.putDouble("radius",radius);
-                paket.putDouble("latitude",latitude);
-                paket.putDouble("longitude",longitude);
+                paket.putString("email", email);
+                paket.putDouble("radius", radius);
+                double latitude = 0, longitude= 0;
+                if ( currentBestLocation != null ) {
+                    latitude = currentBestLocation.getLatitude();
+                    longitude = currentBestLocation.getLongitude();
+                }
+                paket.putDouble("latitude", latitude);
+                paket.putDouble("longitude", longitude);
                 toSearch.putExtras(paket);
                 startActivity(toSearch);
                 finish();
@@ -847,7 +880,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 real_radius = Double.parseDouble(jObject.getString("rad"));
                 email = jObject.getString("email");
                 radius = (real_radius);
-                Log.e(Constants.TAG, "Proses 3 -> Try get data dari WS = " + urls + "\nJumlah data dari WS = "+menuItemArray.length());
+                Log.e(Constants.TAG, "Proses 3 -> Try get data dari WS = " + urls + "\nJumlah data dari WS = " + menuItemArray.length());
                 for (int i = 0; i < menuItemArray.length(); i++) {
                     id_kategori[i] = menuItemArray.getJSONObject(i).getInt("id_category");
                     nama_katagori[i] = menuItemArray.getJSONObject(i).getString("category_name").toString();
@@ -868,7 +901,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             /*if (dialog.isShowing()) {
                 dialog.dismiss();
             }*/
-            Log.e(Constants.TAG, "first_check -> "+first_check);
+            Log.e(Constants.TAG, "first_check -> " + first_check);
             /*if (email.equalsIgnoreCase("guest@dheket.co.id")){
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainMenuActivity.this);
                 builder.setMessage("This is Guest account! Are you sure to stay with this account?")
@@ -896,12 +929,12 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         }
     }
 
-    public void showDialog(Context context, int x, int y){
+    public void showDialog(Context context, int x, int y) {
         // x -->  X-Cordinate
         // y -->  Y-Cordinate
-        Dialog dialog  = new Dialog(context);
+        Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.setContentView(R.layout.dialog_confirmation);
         dialog.setCanceledOnTouchOutside(true);
 
@@ -987,13 +1020,13 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            if (responseServer!=null && responseServer.equalsIgnoreCase("{\"success\":1}")) {
-                Toast.makeText(getApplicationContext(),"Success!",Toast.LENGTH_SHORT).show();
-                responseServer="";
-                getDataCategory(email, latitude, longitude);
+            if (responseServer != null && responseServer.equalsIgnoreCase("{\"success\":1}")) {
+                Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
+                responseServer = "";
+                getDataCategory(email, currentBestLocation.getLatitude(), currentBestLocation.getLongitude());
             } else {
                 if (responseServer.equalsIgnoreCase("") || responseServer.isEmpty()) {
-                    Toast.makeText(getApplicationContext(), "Ops, Error! Please Try Again!",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Ops, Error! Please Try Again!", Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -1004,12 +1037,12 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         task.applicationContext = getApplicationContext();
         urls = url + "/" + email + "/" + lat + "/" + lng;
         Log.e(Constants.TAG, "Proses 1 -> Persiapan Panggil WS = " + urls);
-        if (email!=null)task.execute(new String[]{urls});
+        if (email != null) task.execute(new String[]{urls});
     }
 
     public void updateData() {
         actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatNumber.changeFormatNumber(radius) + " Km</font>"));
-        if (radius<1) {
+        if (radius < 1) {
             textViewLoad.setVisibility(View.VISIBLE);
         } else {
             textViewLoad.setVisibility(View.GONE);
@@ -1053,21 +1086,18 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
     @Override
     public void onLocationChanged(Location location) {
-        makeUseOfNewLocation(location);
-        if(currentBestLocation == null){
-            currentBestLocation = location;
-        }
         if ( currentBestLocation != null ) {
-            latitude = currentBestLocation.getLatitude();
-            longitude = currentBestLocation.getLongitude();
-        } else {
-            latitude = location.getLatitude();
-            longitude = location.getLongitude();
+            if (GpsUtils.isBetterLocation(location, currentBestLocation)) {
+                currentBestLocation = location;
+            }
+        }
+        else {
+            currentBestLocation = location;
         }
         //Toast.makeText(getApplicationContext(),"lat "+latitude+" | lgt "+longitude, Toast.LENGTH_LONG).show();
         Log.e(Constants.TAG, "Proses 6 -> Ada perubahan lokasi maka panggil WS lagi= " + urls);
 
-        getDataCategory(email, latitude, longitude);
+        getDataCategory(email, currentBestLocation.getLatitude(), currentBestLocation.getLongitude());
     }
 
     @Override
@@ -1088,25 +1118,24 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     }
 
     public void getServiceFromGPS() {
-        myLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        criteria = new Criteria();
-        provider = myLocationManager.getBestProvider(criteria, true);
+        LocationManager locManager = ((App) getApplication()).getLocationManager();
+        locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        //location = getLastBestLocation();
-        location = myLocationManager.getLastKnownLocation(provider);
-        if (location != null) {
-            onLocationChanged(location);
+
+        Criteria criteria = new Criteria();
+        String provider = locManager.getBestProvider(criteria, true);
+        locManager.requestLocationUpdates(provider, 20000, 0, this);
+
+        Log.e(Constants.TAG, "locManager => " + locManager);
+        currentBestLocation = GpsUtils.getLastBestLocation(locManager);//myLocationManager.getLastKnownLocation(provider);
+        Log.e(Constants.TAG, "currentBestLocation => " + currentBestLocation);
+        if (currentBestLocation != null) {
+            onLocationChanged(currentBestLocation);
         }
-        myLocationManager.requestLocationUpdates(provider, 20000, 0, this);
 
     }
 
@@ -1147,19 +1176,19 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
     //BEGIN SOCKET METHOD BLOCK
     private void attemptLogin() {
-        if ( isConnect() ) {
+        if (isConnect()) {
             if (isLogin()) return;
             UserApp userApp = ((App) getApplication()).getUserApp();
             if (userApp != null) {
 
                 try {
-                        //String name = NativeUtilities.getDeviceUniqueID(getContentResolver());
+                    //String name = NativeUtilities.getDeviceUniqueID(getContentResolver());
                     JSONObject user = new JSONObject();
                     user.put("name", userApp.getName());
                     user.put("email", userApp.getEmail());
                     user.put("phone", userApp.getPhone());
                     socket.emit("do login", user);
-                } catch(JSONException e){
+                } catch (JSONException e) {
                     Log.e(Constants.TAG_CHAT, e.getMessage(), e);
                 }
             }
@@ -1203,7 +1232,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if ( !isConnect() ) {
+                    if (!isConnect()) {
                         setConnect(true);
                         Log.d(Constants.TAG_CHAT, getResources().getString(R.string.connect));
                     }
@@ -1228,7 +1257,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                     //Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_LONG).show();
                     Log.d(Constants.TAG_CHAT, getResources().getString(R.string.disconnect));
                     //attemptLogin();
-                    while ( isConnect() == false )
+                    while (isConnect() == false)
                         ChatService.startActionKeepConnection(MainMenuActivity.this);
                 }
             });
@@ -1255,7 +1284,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     private Emitter.Listener onLogin = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            if ( isLogin() ) return;
+            if (isLogin()) return;
 
             JSONObject data = (JSONObject) args[0];
             try {
@@ -1269,7 +1298,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             //Toast.makeText(getApplicationContext(), "Login2 " + isLogin, Toast.LENGTH_SHORT).show();
 
             //retrive contact
-            if ( isLogin() ) {
+            if (isLogin()) {
                 ChatService.startActionUpdateContact(MainMenuActivity.this);
                 //socket.emit("get contacts");
             }
@@ -1277,25 +1306,16 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     };
     //END SOCKET METHOD BLOCK
 
-    /**
-     * This method modify the last know good location according to the arguments.
-     *
-     * @param location The possible new location.
-     */
-    void makeUseOfNewLocation(Location location) {
-        if (GpsUtils.isBetterLocation(location, currentBestLocation) ) {
-            currentBestLocation = location;
-        }
-    }
 
     @Override
     public void onResume() {
         super.onResume();
         Log.d(Constants.TAG, "ON RESUME");
-        if ( socket == null )
-            socket = ((App)getApplication()).getSocket();
+        Log.e(Constants.TAG, "locManager = " + ((App)getApplication()).getLocationManager());
+        if (socket == null)
+            socket = ((App) getApplication()).getSocket();
 
-        if ( socket.connected() == false)
+        if (socket.connected() == false)
             socket.connect();
 
     }

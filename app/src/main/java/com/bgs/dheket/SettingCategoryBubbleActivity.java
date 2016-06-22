@@ -30,6 +30,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bgs.common.Constants;
 import com.bgs.imageOrView.ListViewAdapter;
 import com.bgs.imageOrView.ListViewAdapterSettingBubble;
 import com.bgs.imageOrView.MySeekBar;
@@ -133,7 +134,7 @@ public class SettingCategoryBubbleActivity extends AppCompatActivity {
         CallWebPageTask task = new CallWebPageTask();
         task.applicationContext = getApplicationContext();
         String urls = url+"/"+email;
-        Log.e("Sukses", urls);
+        Log.e(Constants.TAG, "Sukses -> " + urls);
         task.execute(new String[]{urls});
     }
 
@@ -194,7 +195,7 @@ public class SettingCategoryBubbleActivity extends AppCompatActivity {
         adapter = new ListViewAdapterSettingBubble(SettingCategoryBubbleActivity.this, arraylist);
         listView.setAdapter(adapter);
         for (int i = 0; i < arraylist.size(); i++) {
-            Log.e("arraylist", "ke-" + i + " = " + arraylist.get(i));
+            Log.e(Constants.TAG, "arraylist -> ke-" + i + " = " + arraylist.get(i));
         }
     }
 
@@ -260,8 +261,8 @@ public class SettingCategoryBubbleActivity extends AppCompatActivity {
                 InputStream inputStream = response.getEntity().getContent();
                 InputStreamToStringExample str = new InputStreamToStringExample();
                 responseServer = str.getStringFromInputStream(inputStream);
-                Log.e("response", "response ----- " + responseServer.toString() + "|");
-                Log.e("response", "response ----- " + responseServer.toString().equalsIgnoreCase("{\"success\":1}") + "|");
+                Log.e(Constants.TAG, "response ----- " + responseServer.toString() + "|");
+                Log.e(Constants.TAG, "response ----- " + responseServer.toString().equalsIgnoreCase("{\"success\":1}") + "|");
 
             } catch (Exception e) {
                 e.printStackTrace();

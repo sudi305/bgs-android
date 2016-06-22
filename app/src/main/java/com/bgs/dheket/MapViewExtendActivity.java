@@ -115,6 +115,7 @@ public class MapViewExtendActivity extends AppCompatActivity {
         //mMapView.setOnLongPressListener(mapLongPress);
 
         paket = getIntent().getExtras();
+
         latitude = paket.getDouble("latitude");
         cat_id = paket.getInt("cat_id");
         longitude = paket.getDouble("longitude");

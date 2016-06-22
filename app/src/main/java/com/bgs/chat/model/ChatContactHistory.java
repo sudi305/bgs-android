@@ -37,10 +37,10 @@ public class ChatContactHistory implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        if ( this.contact != null )
+        //if ( this.contact != null )
             dest.writeParcelable(this.contact, flags);
         dest.writeInt(this.newMessageCount);
-        if ( this.lastChatMessage != null )
+        //if ( this.lastChatMessage != null )
             dest.writeParcelable(this.lastChatMessage, flags);
     }
 

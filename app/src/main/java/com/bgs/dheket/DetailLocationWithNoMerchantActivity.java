@@ -3,6 +3,7 @@ package com.bgs.dheket;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,8 +17,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bgs.common.Constants;
 import com.bgs.common.Utility;
 import com.bgs.imageOrView.ViewPagerAdapter;
+import com.bgs.model.Category;
+import com.bgs.model.Lokasi;
 import com.bgs.networkAndSensor.HttpGetOrPost;
 
 import org.json.JSONArray;
@@ -39,13 +43,16 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
     String url = "",responseServer="";
     private JSONObject JsonObject, jsonobject;
     ArrayList<HashMap<String, String>> arraylist;
-    double radius, latitude, longitude;
-    int cat_id, id_loc;
-    String email, kategori, icon;
+
+    //store location detail sent via intent
+    private Lokasi lokasi;
+    //double radius, latitude, longitude;
+    //int cat_id, id_loc;
+    //String email, kategori, icon;
 
     Utility formatNumber = new Utility();
 
-    Bundle paket;
+    //private Category category;
 
     TextView textView_namaloc, textView_alamatloc, textView_distanceloc, textView_descriptionloc,
              textView_simpledescloc, textView_pricepromo, textView_gotoloc;
@@ -61,6 +68,7 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
     int[] arraylist_foto = new int[] {R.drawable.default_placeholder};
     String[] icon_cat;
     int[] id_cat;
+    private Location currentBestLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +83,12 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
         actionBar.setHomeButtonEnabled(true);
         actionBar.setTitle("Detail Location");
 //        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
+
+        lokasi = getIntent().getParcelableExtra("lokasi");
+        currentBestLocation = getIntent().getParcelableExtra("currentBestLocation");
+        /*
         paket = getIntent().getExtras();
+
         id_loc = paket.getInt("location_id");
         latitude = paket.getDouble("latitude");
         cat_id = paket.getInt("cat_id");
@@ -83,12 +96,23 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
         email = paket.getString("email");
         kategori = paket.getString("kategori");
         radius = paket.getDouble("radius");
+
         if (kategori.equalsIgnoreCase(" ")){
             icon_cat = paket.getStringArray("icon");
             id_cat = paket.getIntArray("id_cat");
         } else {
             icon = paket.getString("icon");
         }
+        */
+
+        if (" ".equalsIgnoreCase(lokasi.getCategory().getName())){
+            //icon_cat = lokasi.getCategory().getIcon();
+            //id_cat = paket.getIntArray("id_cat");
+        } else {
+            //icon = paket.getString("icon");
+        }
+
+
 
         url = String.format(getResources().getString(R.string.link_getSingleLocationById));
 
@@ -136,13 +160,15 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
     public void toMapScreen(){
         Intent gotoMapSingle = new Intent(getApplicationContext(),MapViewSingleActivity.class);
         Bundle paket = new Bundle();
-        paket.putInt("cat_id", cat_id);
-        paket.putString("kategori", kategori);
-        paket.putDouble("radius", radius);
-        paket.putDouble("latitude", latitude);
-        paket.putDouble("longitude", longitude);
-        paket.putString("icon", icon);
-        paket.putInt("location_id", Integer.parseInt(arraylist.get(0).get("loc_id")));
+        Category category = lokasi.getCategory();
+        paket.putInt("cat_id", category.getId());
+        paket.putString("kategori", category.getName());
+        paket.putDouble("radius", category.getRadius());
+        paket.putDouble("latitude", lokasi.getLatitude());
+        paket.putDouble("longitude", lokasi.getLongitude());
+        paket.putString("icon", category.getIcon());
+        paket.putInt("location_id", lokasi.getId());
+        //paket.putInt("location_id", Integer.parseInt(arraylist.get(0).get("loc_id")));
         gotoMapSingle.putExtras(paket);
         startActivity(gotoMapSingle);
         finish();
@@ -150,7 +176,9 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
 
     public void back_to_previous_screen(){
         Intent intent = new Intent(getApplicationContext(),MapViewWithListActivity.class);
+
         Bundle paket = new Bundle();
+        /*
         if (kategori.equalsIgnoreCase(" ")){
             intent = new Intent(getApplicationContext(),MapViewActivity.class);
             paket.putString("email",email);
@@ -159,13 +187,28 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
         } else {
             paket.putString("icon", icon);
         }
+        */
 
-        paket.putInt("cat_id", cat_id);
-        paket.putString("kategori", kategori);
-        paket.putDouble("radius", radius);
-        paket.putDouble("latitude", latitude);
-        paket.putDouble("longitude", longitude);
+        Category category = lokasi.getCategory();
+        if (" ".equalsIgnoreCase(category.getName())){
+            intent = new Intent(getApplicationContext(),MapViewActivity.class);
+            //paket.putString("email",category.getEmail());
+            paket.putStringArray("icon", icon_cat);
+            paket.putIntArray("id_cat",id_cat);
+        } else {
+            paket.putString("icon", category.getIcon());
+        }
+        /*
+        paket.putInt("cat_id", category.getId());
+        paket.putString("kategori", category.getName());
+        paket.putDouble("radius", category.getRadius());
+        paket.putDouble("latitude", lokasi.getLatitude());
+        paket.putDouble("longitude", lokasi.getLongitude());
         intent.putExtras(paket);
+        */
+
+        intent.putExtra("category", category);
+        intent.putExtra("currentBestLocation", currentBestLocation);
         startActivity(intent);
         finish();
     }
@@ -173,8 +216,9 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
     public void getDetailLocation() {
         CallWebPageTask task = new CallWebPageTask();
         task.applicationContext = getApplicationContext();
-        String urls = url+"/"+latitude+"/"+longitude+"/"+id_loc;
-        Log.e("Sukses", urls);
+        Category category = lokasi.getCategory();
+        String urls = url+"/"+lokasi.getLatitude()+"/"+lokasi.getLongitude()+"/"+ lokasi.getId();
+        Log.e(Constants.TAG, "Get Detail Lokasi url => " + urls);
         task.execute(new String[]{urls});
     }
 
@@ -230,7 +274,7 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
                 for (int i = 0; i < menuItemArray.length(); i++) {
                     map = new HashMap<String, String>();
                     jsonobject = menuItemArray.getJSONObject(i);
-
+                    //Log.e(Constants.TAG, "Lokasi Detail ->" + jsonobject.toString());
                     map.put("loc_id", jsonobject.getString("id_location"));
                     map.put("loc_name", jsonobject.getString("location_name"));
                     map.put("loc_address", jsonobject.getString("location_address"));
@@ -265,6 +309,7 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
         Log.e("size arraylist", "" + arraylist.size());
         if (arraylist.size()!=0){
             setReference();
+
             textView_namaloc.setText(arraylist.get(0).get("loc_name"));
             actionBar.setTitle(textView_namaloc.getText());
             textView_alamatloc.setText("@"+arraylist.get(0).get("loc_address"));

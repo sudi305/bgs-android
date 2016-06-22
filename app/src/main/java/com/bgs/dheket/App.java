@@ -1,11 +1,12 @@
 package com.bgs.dheket;
 
 import android.app.Application;
+import android.location.LocationManager;
 import android.os.Handler;
 
+import com.bgs.common.Constants;
 import com.bgs.common.NativeLoader;
 import com.bgs.model.UserApp;
-import com.bgs.common.Constants;
 
 import java.net.URISyntaxException;
 
@@ -16,7 +17,9 @@ import io.socket.client.Socket;
  * Created by madhur on 3/1/15.
  */
 public class App extends Application {
+
     private UserApp userApp;
+    LocationManager locationManager;
     private static App Instance;
     public static volatile Handler applicationHandler = null;
 
@@ -59,4 +62,5 @@ public class App extends Application {
     public UserApp getUserApp() {
         return userApp;
     }
+    public LocationManager getLocationManager() {return locationManager;}
 }

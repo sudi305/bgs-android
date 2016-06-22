@@ -67,6 +67,7 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
         <receiver android:name="com.bgs.chat.services.ChatAlarmReceiver" android:process=":remote" android:enabled="true" />
         <service android:name="com.bgs.chat.services.ChatService" android:enabled="true" android:exported="false" />
+
     </application>
 
 </manifest>

@@ -26,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bgs.common.Constants;
 import com.bgs.common.Utility;
 import com.bgs.networkAndSensor.Compass;
 import com.bgs.networkAndSensor.HttpGetOrPost;
@@ -126,12 +127,14 @@ public class MapViewActivity extends AppCompatActivity {
         //mMapView.setOnLongPressListener(mapLongPress);
 
         paket = getIntent().getExtras();
+
         latitude = paket.getDouble("latitude");
         longitude = paket.getDouble("longitude");
         email = paket.getString("email");
         icon_cat = paket.getStringArray("icon");
         id_cat = paket.getIntArray("id_cat");
         radius = paket.getDouble("radius");
+
         madd = new PictureMarkerSymbol[id_cat.length];
         for (int i = 0; i < id_cat.length; i++) {
             PictureMarkerSymbol a = new PictureMarkerSymbol();
@@ -216,7 +219,7 @@ public class MapViewActivity extends AppCompatActivity {
         task = new CallWebPageTask();
         task.applicationContext = getApplicationContext();
         parameters = urls + (email) + "/" + latitude + "/" + longitude;
-        Log.e("OK Connecting Sukses", "" + parameters);
+        Log.e(Constants.TAG, "OK Connecting Sukses -> " + parameters);
         //Log.e("Sukses", parameters);
         task.execute(new String[]{parameters});
     }
@@ -249,7 +252,7 @@ public class MapViewActivity extends AppCompatActivity {
 
                 // Use the graphic attributes to update the information views.
                 Graphic gr = mResultsLayer.getGraphic(graphicIDs[0]);
-                Log.e("atrribut", "" + gr.getAttributes());
+                Log.e(Constants.TAG, "atrribut -> " + gr.getAttributes());
 
                 if (gr.getAttributes().isEmpty()) {
                     Toast.makeText(getApplicationContext(), "No Attribute for this location!", Toast.LENGTH_SHORT).show();
@@ -307,7 +310,7 @@ public class MapViewActivity extends AppCompatActivity {
                 public void onLocationChanged(Location loc) {
                     if (!locationChanged) {
                         locationChanged = true;
-                        Log.e("sukses location ", "lat " + loc.getLatitude() + " | lng " + loc.getLongitude() + " | point " + getAsPoint(loc));
+                        Log.e(Constants.TAG, "sukses location -> lat " + loc.getLatitude() + " | lng " + loc.getLongitude() + " | point " + getAsPoint(loc));
                         location = loc;
                         locationTouch = location;
                         // After zooming, turn on the Location pan mode to show the location
@@ -492,7 +495,7 @@ public class MapViewActivity extends AppCompatActivity {
                 jObject = new JSONObject(response);
                 menuItemArray = jObject.getJSONArray("tag_cat");
                 arraylist = new ArrayList<HashMap<String, String>>();
-                Log.e("Data dari server", "" + menuItemArray.length());
+                Log.e(Constants.TAG, "Data dari server -> " + menuItemArray.length());
                 for (int i = 0; i < menuItemArray.length(); i++) {
                     HashMap<String, String> map = new HashMap<String, String>();
                     map.put("id_loc",menuItemArray.getJSONObject(i).getString("id_location"));
@@ -507,7 +510,7 @@ public class MapViewActivity extends AppCompatActivity {
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-                Log.e("cek 2", "error" + e);
+                Log.e(Constants.TAG, "cek 2 -> error" + e);
             }
 
             return response;

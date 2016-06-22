@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.PermissionChecker;
 import android.util.Log;
 
 import java.util.concurrent.TimeUnit;
@@ -20,17 +21,21 @@ public class GpsUtils {
     /**
      * @return the last know best location
      */
-    public static Location getLastBestLocation(Context context, LocationManager locationManager) {
+    @SuppressWarnings("MissingPermission")
+    public static Location getLastBestLocation(LocationManager locationManager) {
+
         if ( locationManager == null ) return null;
 
         Location locationGPS = null;
         Location locationNet = null;
-        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            Log.e(Constants.TAG, "GET LOCATION");
-            locationGPS = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            locationNet = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        }
+        //if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        //        || ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        Log.e(Constants.TAG, "GET LOCATION");
+        locationGPS = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        Log.e(Constants.TAG, "locationGPS => " + locationGPS);
+        locationNet = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        Log.e(Constants.TAG, "locationNet => " + locationNet);
+        //}
         long GPSLocationTime = 0;
         if (null != locationGPS) { GPSLocationTime = locationGPS.getTime(); }
 

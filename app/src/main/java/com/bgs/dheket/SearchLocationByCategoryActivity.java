@@ -24,6 +24,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bgs.common.Constants;
 import com.bgs.networkAndSensor.HttpGetOrPost;
 import com.zhy.view.flowlayout.FlowLayout;
 import com.zhy.view.flowlayout.TagAdapter;
@@ -178,7 +179,7 @@ public class SearchLocationByCategoryActivity extends AppCompatActivity implemen
         CallWebPageTask task = new CallWebPageTask();
         task.applicationContext = getApplicationContext();
         String urls = url;
-        Log.e("Sukses", urls);
+        Log.e(Constants.TAG, "Sukses -> " + urls);
         task.execute(new String[]{urls});
     }
 
@@ -299,13 +300,13 @@ public class SearchLocationByCategoryActivity extends AppCompatActivity implemen
     public void filterItems(CharSequence text) {
         int countNotFound = 0;
         filteredList.clear();
-        Log.e("masuk", "" + text);
+        Log.e(Constants.TAG, "masuk -> " + text);
         if (TextUtils.isEmpty(text)) {
             Collections.addAll(filteredList, newDataAfterRemove);
             ll_sc_result.setVisibility(View.VISIBLE);
             ll_sc_search.setVisibility(View.GONE);
             changeViewSearch();
-            Log.e("kosong","iya");
+            Log.e(Constants.TAG, "kosong -> iya");
         } else {
             ll_sc_result.setVisibility(View.GONE);
             ll_sc_search.setVisibility(View.VISIBLE);
@@ -358,7 +359,7 @@ public class SearchLocationByCategoryActivity extends AppCompatActivity implemen
                         //mAdapter.setSingleSelected(i,categorys[i]);
                         //Log.e("selected",""+mAdapter.setSingleSelected(i,categorys[i])+" | "+categorys[i]);
                         mAdapter.setSingleSelected(i);
-                        Log.e("mAdapter", "" + mAdapter.getItem(i).toString());
+                        Log.e(Constants.TAG, "mAdapter -> " + mAdapter.getItem(i).toString());
                         /*ll_sc_search.setVisibility(View.GONE);
                         ll_sc_result.setVisibility(View.VISIBLE);*/
                         for (int j = 0; j < catarraylist.size() ; j++) {
