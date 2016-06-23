@@ -20,7 +20,11 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bgs.common.Constants;
+import com.bgs.common.GpsUtils;
 import com.bgs.common.Utility;
+import com.bgs.model.Category;
+import com.bgs.model.Lokasi;
 import com.bgs.networkAndSensor.Compass;
 import com.bgs.networkAndSensor.HttpGetOrPost;
 import com.esri.android.map.GraphicsLayer;
@@ -69,7 +73,7 @@ public class MapViewSingleActivity extends AppCompatActivity {
 
     Locator mLocator;
     Location locationTouch;
-    Location location;
+    //Location location;
     ArrayList<String> mFindOutFields = new ArrayList<>();
 
     LocationDisplayManager mLDM;
@@ -79,11 +83,12 @@ public class MapViewSingleActivity extends AppCompatActivity {
 
     private JSONObject jObject;
     private String jsonResult = "";
-    double radius = 0.0;
-    double latitude, longitude;
+    //double radius = 0.0;
+    //double latitude, longitude;
     String urls = "";
-    String parameters, email, icon, category;
-    int cat_id, looping = 0, loc_id;
+    String parameters;//, email, icon, category;
+    //int cat_id;
+    int looping = 0;//, loc_id;
     ViewGroup placeLayout;
 
     ArrayList<HashMap<String, String>> arraylist;
@@ -93,7 +98,11 @@ public class MapViewSingleActivity extends AppCompatActivity {
 
     boolean isFirst = true, maxView = true, minView = true;
     CallWebPageTask task;
-    Bundle paket;
+    //Bundle paket;
+
+    //store location detail sent via intent
+    private Lokasi lokasi;
+    private Location currentBestLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +122,10 @@ public class MapViewSingleActivity extends AppCompatActivity {
         mMapView.setOnSingleTapListener(mapTapCallback);
         //mMapView.setOnLongPressListener(mapLongPress);
 
+        lokasi = getIntent().getParcelableExtra("lokasi");
+        currentBestLocation = getIntent().getParcelableExtra("currentBestLocation");
+
+        /*
         paket = getIntent().getExtras();
         loc_id = paket.getInt("location_id");
         latitude = paket.getDouble("latitude");
@@ -121,18 +134,20 @@ public class MapViewSingleActivity extends AppCompatActivity {
         email = paket.getString("email");
         //kategori = paket.getString("kategori");
         radius = paket.getDouble("radius");
-        /*if (kategori.equalsIgnoreCase(" ")){
+        if (kategori.equalsIgnoreCase(" ")){
             icon_cat = paket.getStringArray("icon");
             id_cat = paket.getIntArray("id_cat");
-        } else {*/
+        } else {
             icon = paket.getString("icon");
-        /*}*/
-
+        }
+        */
         urls = String.format(getResources().getString(R.string.link_getSingleLocationById));
 
-        actionBar.setTitle(category);
+
+        Category category = lokasi.getCategory();
+        actionBar.setTitle(category.getName());
 //        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
-        actionBar.setSubtitle(Html.fromHtml("<font color='#ff9800' size='10'>Radius " + formatNumber.changeFormatNumber(radius) + " Km</font>"));
+        actionBar.setSubtitle(Html.fromHtml("<font color='#ff9800' size='10'>Radius " + formatNumber.changeFormatNumber(category.getRadius()) + " Km</font>"));
 
         textView_id_loc = (TextView) findViewById(R.id.textView_map_id);
         textView_loc_name = (TextView) findViewById(R.id.textView_map_nama_lokasi);
@@ -142,18 +157,21 @@ public class MapViewSingleActivity extends AppCompatActivity {
         placeLayout = (ViewGroup) findViewById(R.id.placeLayout_single);
         placeLayout.setVisibility(View.GONE);
 
-        if (!icon.isEmpty() && (!icon.equalsIgnoreCase("null") || !icon.equalsIgnoreCase(""))){
+        if (!category.getIcon().isEmpty() && (!category.getIcon().equalsIgnoreCase("null") || !category.getIcon().equalsIgnoreCase(""))){
             mcat= new PictureMarkerSymbol();
-            mcat.setUrl(icon);
+            mcat.setUrl(category.getIcon());
         } else {
             mcat= new PictureMarkerSymbol(getApplicationContext(), ContextCompat.getDrawable(getApplicationContext(), R.drawable.pin_blue));
-            Log.e("icon kosong","["+icon+"]");
+            Log.e("icon kosong","["+category.getIcon()+"]");
         }
 
         placeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent goToScreen = new Intent(getApplicationContext(), DetailLocationWithNoMerchantActivity.class);
+                goToScreen.putExtra("lokasi", lokasi);
+                goToScreen.putExtra("currentBestLocation", currentBestLocation);
+                /*
                 Bundle paket = new Bundle();
                 paket.putInt("location_id", Integer.parseInt(textView_id_loc.getText().toString()));
                 paket.putInt("cat_id", cat_id);
@@ -163,6 +181,8 @@ public class MapViewSingleActivity extends AppCompatActivity {
                 paket.putDouble("longitude", longitude);
                 paket.putString("icon", icon);
                 goToScreen.putExtras(paket);
+                */
+
                 startActivity(goToScreen);
                 finish();
             }
@@ -202,7 +222,12 @@ public class MapViewSingleActivity extends AppCompatActivity {
     public void getDataFromServer() {
         task = new CallWebPageTask();
         task.applicationContext = getApplicationContext();
-        parameters = urls + "/" + latitude + "/" + longitude + "/" + loc_id;
+        double latitude =0, longitude = 0;
+        if ( currentBestLocation != null) {
+            latitude = currentBestLocation.getLatitude();
+            longitude = currentBestLocation.getLongitude();
+        }
+        parameters = urls + "/" + latitude + "/" + longitude + "/" + lokasi.getId();
         Log.e("OK Connecting Sukses", "" + parameters);
         //Log.e("Sukses", parameters);
         task.execute(new String[]{parameters});
@@ -295,15 +320,22 @@ public class MapViewSingleActivity extends AppCompatActivity {
                     if (!locationChanged) {
                         locationChanged = true;
                         Log.e("sukses location ", "lat " + loc.getLatitude() + " | lng " + loc.getLongitude() + " | point " + getAsPoint(loc));
-                        location = loc;
-                        locationTouch = location;
+
+                        if ( currentBestLocation != null ) {
+                            if (GpsUtils.isBetterLocation(loc, currentBestLocation)) {
+                                currentBestLocation = loc;
+                            }
+                        } else { currentBestLocation = loc; }
+
+                        locationTouch = currentBestLocation;
                         // After zooming, turn on the Location pan mode to show the location
                         // symbol. This will disable as soon as you interact with the map.
+                        /*
                         if (!isFirst) {
                             latitude = loc.getLatitude();
                             longitude = loc.getLongitude();
                         }
-
+                        */
                         getDataFromServer();
                         /*Toast.makeText(getApplicationContext(), "location change " + (looping++), Toast.LENGTH_SHORT).show();*/
                         mLDM.setAutoPanMode(LocationDisplayManager.AutoPanMode.LOCATION);
@@ -387,6 +419,9 @@ public class MapViewSingleActivity extends AppCompatActivity {
 
     public void toDetailLoc(){
         Intent toDetail = new Intent(getApplicationContext(),DetailLocationWithNoMerchantActivity.class);
+        toDetail.putExtra("lokasi", lokasi);
+        toDetail.putExtra("currentBestLocation", currentBestLocation);
+        /*
         Bundle paket = new Bundle();
         paket.putInt("location_id", Integer.parseInt(textView_id_loc.getText().toString()));
         paket.putInt("cat_id", cat_id);
@@ -396,6 +431,7 @@ public class MapViewSingleActivity extends AppCompatActivity {
         paket.putDouble("longitude", longitude);
         paket.putString("icon", icon);
         toDetail.putExtras(paket);
+        */
         startActivity(toDetail);
         finish();
     }
@@ -524,7 +560,7 @@ public class MapViewSingleActivity extends AppCompatActivity {
             mResultsLayer.removeAll();
             clearCurrentResults();
             for (int i = 0; i < arraylist.size() ; i++) {
-                Location locationPin = location;
+                Location locationPin = Constants.DEMO_LOCATION;
                 locationPin.setLatitude(Double.parseDouble(arraylist.get(i).get("loc_lat").toString()));
                 locationPin.setLongitude(Double.parseDouble(arraylist.get(i).get("loc_lng").toString()));
                 Point point = getAsPoint(locationPin);
@@ -560,7 +596,7 @@ public class MapViewSingleActivity extends AppCompatActivity {
             if (arraylist.size() < 2) {
                 if ((mLDM != null) && (mLDM.getLocation() != null)) {
                     // Keep current scale and go to current location, if there is one.
-                    zoomToLocation(location);
+                    zoomToLocation(currentBestLocation);
                     mLDM.setAutoPanMode(LocationDisplayManager.AutoPanMode.LOCATION);
                 }
             }

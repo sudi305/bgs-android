@@ -543,13 +543,17 @@ public class MapViewWithListActivity extends AppCompatActivity {
             mResultsLayer.removeAll();
             clearCurrentResults();
             for (final Lokasi lokasi : locationList) {
-                //Log.e(Constants.TAG, data.toString());
-                if ( currentBestLocation == null ) {
-                    //dev mode
-                    currentBestLocation= Constants.DEMO_LOCATION;
-                }
-
+                /*
                 Location locationPin = currentBestLocation;
+                //Log.e(Constants.TAG, data.toString());
+                if ( locationPin == null ) {
+                    //dev mode
+                    locationPin = Constants.DEMO_LOCATION;
+                } else {
+                    locationPin = currentBestLocation;
+                }
+                */
+                Location locationPin = Constants.DEMO_LOCATION;
                 locationPin.setLatitude(lokasi.getLatitude());
                 locationPin.setLongitude(lokasi.getLongitude());
                 Point point = getAsPoint(locationPin);
@@ -590,7 +594,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
                         } else {
                             goToScreen = new Intent(getApplicationContext(), DetailLocationWithNoMerchantActivity.class);
                         }
-                        goToScreen.putExtra("lokasi", (Lokasi)v.getTag());
+                        goToScreen.putExtra("lokasi", _lokasi);
                         goToScreen.putExtra("currentBestLocation", currentBestLocation);
                         startActivity(goToScreen);
                         finish();

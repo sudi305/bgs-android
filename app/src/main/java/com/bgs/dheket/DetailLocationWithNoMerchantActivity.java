@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bgs.common.Constants;
@@ -46,6 +47,7 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
 
     //store location detail sent via intent
     private Lokasi lokasi;
+    private Location currentBestLocation;
     //double radius, latitude, longitude;
     //int cat_id, id_loc;
     //String email, kategori, icon;
@@ -68,14 +70,18 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
     int[] arraylist_foto = new int[] {R.drawable.default_placeholder};
     String[] icon_cat;
     int[] id_cat;
-    private Location currentBestLocation;
+
+    private ProgressBar spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_loc_no_merchant);
-        actionBar = getSupportActionBar();
 
+        spinner = (ProgressBar)findViewById(R.id.progressBar);
+        spinner.setVisibility(View.VISIBLE);
+
+        actionBar = getSupportActionBar();
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeAsUpIndicator(getResources().getDrawable(R.drawable.d_ic_back));
@@ -86,24 +92,6 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
 
         lokasi = getIntent().getParcelableExtra("lokasi");
         currentBestLocation = getIntent().getParcelableExtra("currentBestLocation");
-        /*
-        paket = getIntent().getExtras();
-
-        id_loc = paket.getInt("location_id");
-        latitude = paket.getDouble("latitude");
-        cat_id = paket.getInt("cat_id");
-        longitude = paket.getDouble("longitude");
-        email = paket.getString("email");
-        kategori = paket.getString("kategori");
-        radius = paket.getDouble("radius");
-
-        if (kategori.equalsIgnoreCase(" ")){
-            icon_cat = paket.getStringArray("icon");
-            id_cat = paket.getIntArray("id_cat");
-        } else {
-            icon = paket.getString("icon");
-        }
-        */
 
         if (" ".equalsIgnoreCase(lokasi.getCategory().getName())){
             //icon_cat = lokasi.getCategory().getIcon();
@@ -111,8 +99,6 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
         } else {
             //icon = paket.getString("icon");
         }
-
-
 
         url = String.format(getResources().getString(R.string.link_getSingleLocationById));
 
@@ -159,6 +145,10 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
 
     public void toMapScreen(){
         Intent gotoMapSingle = new Intent(getApplicationContext(),MapViewSingleActivity.class);
+
+        gotoMapSingle.putExtra("lokasi", lokasi);
+        gotoMapSingle.putExtra("currentBestLocation", currentBestLocation);
+        /*
         Bundle paket = new Bundle();
         Category category = lokasi.getCategory();
         paket.putInt("cat_id", category.getId());
@@ -170,6 +160,7 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
         paket.putInt("location_id", lokasi.getId());
         //paket.putInt("location_id", Integer.parseInt(arraylist.get(0).get("loc_id")));
         gotoMapSingle.putExtras(paket);
+        */
         startActivity(gotoMapSingle);
         finish();
     }
@@ -217,7 +208,7 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
         CallWebPageTask task = new CallWebPageTask();
         task.applicationContext = getApplicationContext();
         Category category = lokasi.getCategory();
-        String urls = url+"/"+lokasi.getLatitude()+"/"+lokasi.getLongitude()+"/"+ lokasi.getId();
+        String urls = url + "/" + lokasi.getLatitude() + "/" + lokasi.getLongitude() + "/" + lokasi.getId();
         Log.e(Constants.TAG, "Get Detail Lokasi url => " + urls);
         task.execute(new String[]{urls});
     }
@@ -251,13 +242,10 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
     }
 
     private class CallWebPageTask extends AsyncTask<String, Void, String> {
-
-        private ProgressDialog dialog;
         protected Context applicationContext;
 
         @Override
         protected void onPreExecute() {
-            //this.dialog = ProgressDialog.show(applicationContext, "Login Process", "Please Wait...", true);
         }
 
         @Override
@@ -274,7 +262,7 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
                 for (int i = 0; i < menuItemArray.length(); i++) {
                     map = new HashMap<String, String>();
                     jsonobject = menuItemArray.getJSONObject(i);
-                    //Log.e(Constants.TAG, "Lokasi Detail ->" + jsonobject.toString());
+                    Log.e(Constants.TAG, "Lokasi Detail ->" + jsonobject.toString());
                     map.put("loc_id", jsonobject.getString("id_location"));
                     map.put("loc_name", jsonobject.getString("location_name"));
                     map.put("loc_address", jsonobject.getString("location_address"));
@@ -283,7 +271,7 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
                     map.put("loc_cat_id", jsonobject.getString("category_id"));
                     map.put("loc_phone", jsonobject.getString("phone"));
                     map.put("loc_ispromo", jsonobject.getString("isPromo"));
-                    map.put("loc_photo", jsonobject.getString("photo"));
+                    //map.put("loc_photo", jsonobject.getString("photo"));
                     map.put("loc_here_id", jsonobject.getString("id_location_here"));
                     map.put("loc_description", jsonobject.getString("description"));
                     map.put("loc_tag", jsonobject.getString("location_tag"));
@@ -293,7 +281,7 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
                     arraylist.add(map);
                 }
             } catch (JSONException e) {
-                e.printStackTrace();
+                Log.e(Constants.TAG, e.getMessage(), e);
             }
 
             return response;
@@ -302,12 +290,13 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
         @Override
         protected void onPostExecute(String result) {
             updateData();
+            spinner.setVisibility(View.GONE);
         }
     }
 
     public void updateData() {
-        Log.e("size arraylist", "" + arraylist.size());
-        if (arraylist.size()!=0){
+        Log.e(Constants.TAG, "size arraylist => " + arraylist.size());
+        if (arraylist.size() > 0){
             setReference();
 
             textView_namaloc.setText(arraylist.get(0).get("loc_name"));
@@ -332,7 +321,7 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
 
     public void setReference() {
         mAdapter = new ViewPagerAdapter(getApplicationContext(), arraylist_foto);
-        Log.e("foto", ""+arraylist_foto.toString());
+        Log.e(Constants.TAG, "foto => "+arraylist_foto.toString());
         intro_images.setAdapter(mAdapter);
         intro_images.setCurrentItem(0);
         intro_images.setOnPageChangeListener(this);

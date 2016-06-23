@@ -8,32 +8,28 @@ import android.location.LocationListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bgs.common.Constants;
+import com.bgs.common.GpsUtils;
 import com.bgs.common.Utility;
+import com.bgs.model.Lokasi;
+import com.bgs.model.UserApp;
 import com.bgs.networkAndSensor.Compass;
 import com.bgs.networkAndSensor.HttpGetOrPost;
 import com.esri.android.map.GraphicsLayer;
 import com.esri.android.map.LocationDisplayManager;
 import com.esri.android.map.MapView;
-import com.esri.android.map.event.OnLongPressListener;
 import com.esri.android.map.event.OnSingleTapListener;
 import com.esri.android.map.event.OnStatusChangedListener;
 import com.esri.core.geometry.Envelope;
@@ -80,7 +76,7 @@ public class MapViewActivity extends AppCompatActivity {
 
     Locator mLocator;
     Location locationTouch;
-    Location location;
+    //Location location;
     ArrayList<String> mFindOutFields = new ArrayList<>();
 
     LocationDisplayManager mLDM;
@@ -88,13 +84,18 @@ public class MapViewActivity extends AppCompatActivity {
     Compass mCompass;
     Utility formatNumber = new Utility();
 
+    //store location detail sent via intent
+    private Lokasi lokasi;
+    private Location currentBestLocation;
+
     private JSONObject jObject;
     private String jsonResult = "";
-    double radius = 0.0;
-    double latitude, longitude;
+    //double radius = 0.0;
+    //double latitude, longitude;
     String urls = "";
-    String parameters, email, icon;
-    int cat_id, looping = 0;
+    String parameters;//, email, icon;
+    //int cat_id;
+    int looping = 0;
     ViewGroup placeLayout;
 
     ArrayList<HashMap<String, String>> arraylist;
@@ -104,7 +105,7 @@ public class MapViewActivity extends AppCompatActivity {
 
     boolean isFirst = true, maxView = true, minView = true;
     CallWebPageTask task;
-    Bundle paket;
+    //Bundle paket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,14 +127,19 @@ public class MapViewActivity extends AppCompatActivity {
         mMapView.setOnSingleTapListener(mapTapCallback);
         //mMapView.setOnLongPressListener(mapLongPress);
 
-        paket = getIntent().getExtras();
+        lokasi = getIntent().getParcelableExtra("lokasi");
+        currentBestLocation = getIntent().getParcelableExtra("currentBestLocation");
 
+        /*
+        paket = getIntent().getExtras();
         latitude = paket.getDouble("latitude");
         longitude = paket.getDouble("longitude");
         email = paket.getString("email");
         icon_cat = paket.getStringArray("icon");
         id_cat = paket.getIntArray("id_cat");
         radius = paket.getDouble("radius");
+        */
+
 
         madd = new PictureMarkerSymbol[id_cat.length];
         for (int i = 0; i < id_cat.length; i++) {
@@ -142,6 +148,7 @@ public class MapViewActivity extends AppCompatActivity {
             madd[i]=a;
         }
 
+        double radius = lokasi.getCategory().getRadius();
         actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatNumber.changeFormatNumber(radius) + " Km</font>"));
 
         urls = String.format(getResources().getString(R.string.link_getLocUserConfig));//"http://dheket.esy.es/getLocationByCategory.php"
@@ -159,6 +166,9 @@ public class MapViewActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent goToScreen = new Intent(getApplicationContext(), DetailLocationWithNoMerchantActivity.class);
+                goToScreen.putExtra("lokasi", lokasi);
+                goToScreen.putExtra("currentBestLocation", currentBestLocation);
+                /*
                 Bundle paket = new Bundle();
                 paket.putInt("location_id", Integer.parseInt(textView_id_loc.getText().toString()));
                 paket.putInt("cat_id", cat_id);
@@ -167,9 +177,11 @@ public class MapViewActivity extends AppCompatActivity {
                 paket.putDouble("latitude", latitude);
                 paket.putDouble("longitude", longitude);
                 paket.putString("email",email);
+
                 paket.putStringArray("icon", icon_cat);
                 paket.putIntArray("id_cat",id_cat);
                 goToScreen.putExtras(paket);
+                */
                 startActivity(goToScreen);
                 finish();
             }
@@ -218,7 +230,8 @@ public class MapViewActivity extends AppCompatActivity {
     public void getDataFromServer() {
         task = new CallWebPageTask();
         task.applicationContext = getApplicationContext();
-        parameters = urls + (email) + "/" + latitude + "/" + longitude;
+        UserApp user = ((App)getApplication()).getUserApp();
+        parameters = urls + (user.getEmail()) + "/" + lokasi.getLatitude() + "/" + lokasi.getLongitude();
         Log.e(Constants.TAG, "OK Connecting Sukses -> " + parameters);
         //Log.e("Sukses", parameters);
         task.execute(new String[]{parameters});
@@ -311,15 +324,23 @@ public class MapViewActivity extends AppCompatActivity {
                     if (!locationChanged) {
                         locationChanged = true;
                         Log.e(Constants.TAG, "sukses location -> lat " + loc.getLatitude() + " | lng " + loc.getLongitude() + " | point " + getAsPoint(loc));
-                        location = loc;
-                        locationTouch = location;
+
+                        if ( currentBestLocation != null ) {
+                            if (GpsUtils.isBetterLocation(loc, currentBestLocation)) {
+                                currentBestLocation = loc;
+                            }
+                        } else { currentBestLocation = loc; }
+
+                        locationTouch = currentBestLocation;
+
                         // After zooming, turn on the Location pan mode to show the location
                         // symbol. This will disable as soon as you interact with the map.
+                        /*
                         if (!isFirst) {
                             latitude = loc.getLatitude();
                             longitude = loc.getLongitude();
                         }
-
+                        */
                         getDataFromServer();
                         /*Toast.makeText(getApplicationContext(), "location change " + (looping++), Toast.LENGTH_SHORT).show();*/
                         mLDM.setAutoPanMode(LocationDisplayManager.AutoPanMode.LOCATION);
@@ -531,7 +552,7 @@ public class MapViewActivity extends AppCompatActivity {
             mResultsLayer.removeAll();
             clearCurrentResults();
             for (int i = 0; i < arraylist.size() ; i++) {
-                Location locationPin = location;
+                Location locationPin = Constants.DEMO_LOCATION;
                 locationPin.setLatitude(Double.parseDouble(arraylist.get(i).get("loc_lat").toString()));
                 locationPin.setLongitude(Double.parseDouble(arraylist.get(i).get("loc_lng").toString()));
                 Point point = getAsPoint(locationPin);
@@ -574,7 +595,7 @@ public class MapViewActivity extends AppCompatActivity {
             if (arraylist.size() < 2) {
                 if ((mLDM != null) && (mLDM.getLocation() != null)) {
                     // Keep current scale and go to current location, if there is one.
-                    zoomToLocation(location);
+                    zoomToLocation(currentBestLocation);
                     mLDM.setAutoPanMode(LocationDisplayManager.AutoPanMode.LOCATION);
                 }
             }
