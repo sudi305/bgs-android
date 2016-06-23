@@ -4,6 +4,7 @@
     android:layout_height="match_parent">
 
     <RelativeLayout
+        android:id="@+id/top_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -113,7 +114,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="55dp"
                     android:text="GO TO LOCATION"
-                    android:id="@+id/button4"
+                    android:id="@+id/goto_location"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginLeft="10dp"
                     android:layout_marginTop="10dp"
@@ -148,7 +149,7 @@
                 android:drawableLeft="@drawable/ic_question_answer_24dp"
                 android:drawableTint="#ffffff"
                 android:text="  CHAT TO MERCHANT"
-                android:id="@+id/textView60"
+                android:id="@+id/textView_dl_wm_loc_gochat"
                 android:layout_gravity="center_horizontal"
                 android:gravity="center"
                 android:textColor="#ffffff" />

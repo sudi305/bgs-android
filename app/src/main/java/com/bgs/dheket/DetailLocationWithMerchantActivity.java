@@ -24,6 +24,7 @@ import com.bgs.common.Utility;
 import com.bgs.imageOrView.ViewPagerAdapter;
 import com.bgs.model.Category;
 import com.bgs.model.Lokasi;
+import com.bgs.model.Merchant;
 import com.bgs.networkAndSensor.HttpGetOrPost;
 
 import org.json.JSONArray;
@@ -38,7 +39,7 @@ import java.util.TimerTask;
 /**
  * Created by SND on 28/03/2016.
  */
-public class DetailLocationWithNoMerchantActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener{
+public class DetailLocationWithMerchantActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener{
 
     android.support.v7.app.ActionBar actionBar;
 
@@ -58,9 +59,9 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
     //private Category category;
 
     TextView textView_namaloc, textView_alamatloc, textView_distanceloc, textView_descriptionloc,
-             textView_simpledescloc, textView_pricepromo, textView_gotoloc;
+            textView_simpledescloc, textView_pricepromo, textView_gochat;
 
-    private ViewPager intro_images;
+    //private ViewPager intro_images;
     private LinearLayout pager_indicator;
     private RelativeLayout topLayout;
     private LinearLayout gotoLayout;
@@ -77,7 +78,7 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail_loc_no_merchant);
+        setContentView(R.layout.activity_detail_loc_with_merchant);
 
         actionBar = getSupportActionBar();
         actionBar.setDisplayShowHomeEnabled(true);
@@ -101,20 +102,25 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
         url = String.format(getResources().getString(R.string.link_getSingleLocationById));
 
         topLayout = (RelativeLayout)findViewById(R.id.top_layout);
-        gotoLayout = (LinearLayout)findViewById(R.id.linearLayout_dl_nm_loc_goto);
-        textView_namaloc = (TextView)findViewById(R.id.textView_dl_nm_loc_name);
-        textView_alamatloc = (TextView)findViewById(R.id.textView_dl_nm_loc_address);
-        textView_distanceloc = (TextView)findViewById(R.id.textView_dl_nm_loc_distance);
-        textView_descriptionloc = (TextView)findViewById(R.id.textView_dl_nm_loc_description);
-        textView_simpledescloc = (TextView)findViewById(R.id.textView_dl_nm_loc_simple_description);
-        textView_pricepromo = (TextView)findViewById(R.id.textView_dl_nm_loc_pricepromo);
-        textView_gotoloc = (TextView)findViewById(R.id.textView_dl_nm_loc_goto);
-        intro_images = (ViewPager) findViewById(R.id.viewPager_dl_nm_loc_logo);
-        pager_indicator = (LinearLayout) findViewById(R.id.viewPagerCountDots);
+        gotoLayout = (LinearLayout)findViewById(R.id.linearLayout_dl_wm_loc_chat);
+        textView_namaloc = (TextView)findViewById(R.id.textView_dl_wm_loc_name);
+        textView_alamatloc = (TextView)findViewById(R.id.textView_dl_wm_loc_address);
+        textView_distanceloc = (TextView)findViewById(R.id.textView_dl_wm_loc_distance);
+        textView_descriptionloc = (TextView)findViewById(R.id.textView_dl_wm_loc_description);
+        textView_simpledescloc = (TextView)findViewById(R.id.textView_dl_wm_loc_simple_description);
+        textView_pricepromo = (TextView)findViewById(R.id.textView_dl_wm_loc_pricepromo);
+        textView_gochat = (TextView)findViewById(R.id.textView_dl_wm_loc_gochat);
+        textView_gochat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(Constants.TAG, "GOTO CHAT");
 
+            }
+        });
+        //intro_images = (ViewPager) findViewById(R.id.viewPager_dl_wm_loc_logo);
+        pager_indicator = (LinearLayout) findViewById(R.id.viewPagerCountDots);
         getDetailLocation();
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -256,6 +262,7 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
             this.dialog.show();
         }
 
+
         @Override
         protected String doInBackground(String... urls) {
             String response = "";
@@ -267,6 +274,7 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
                 JSONArray menuItemArray = null;
                 JsonObject = new JSONObject(response);
                 menuItemArray = JsonObject.getJSONArray("dheket_singleLoc");
+                
                 for (int i = 0; i < menuItemArray.length(); i++) {
                     map = new HashMap<String, String>();
                     jsonobject = menuItemArray.getJSONObject(i);
@@ -298,7 +306,6 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
         @Override
         protected void onPostExecute(String result) {
             updateData();
-
             if ( this.dialog.isShowing())
                 this.dialog.dismiss();
         }
@@ -307,7 +314,7 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
     public void updateData() {
         Log.e(Constants.TAG, "size arraylist => " + arraylist.size());
         if (arraylist.size() > 0){
-            setReference();
+            //setReference();
 
             textView_namaloc.setText(arraylist.get(0).get("loc_name"));
             actionBar.setTitle(textView_namaloc.getText());
@@ -324,7 +331,9 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
             textView_descriptionloc.setText(arraylist.get(0).get("loc_description"));
             //textView_simpledescloc = (TextView)findViewById(R.id.textView_dl_nm_loc_simple_description);
             //textView_pricepromo = (TextView)findViewById(R.id.textView_dl_nm_loc_pricepromo);
-            textView_gotoloc.setText("GO TO "+arraylist.get(0).get("loc_name").toUpperCase()+"  ");
+            Merchant merchant = lokasi.getMerchant();
+            String name = merchant != null ? merchant.getUserName() : "";
+            textView_gochat.setText("CHAT TO MERCHANT " + name);
         }
 
     }
@@ -332,6 +341,7 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
     public void setReference() {
         mAdapter = new ViewPagerAdapter(getApplicationContext(), arraylist_foto);
         Log.e(Constants.TAG, "foto => "+arraylist_foto.toString());
+        /*
         intro_images.setAdapter(mAdapter);
         intro_images.setCurrentItem(0);
         intro_images.setOnPageChangeListener(this);
@@ -341,7 +351,7 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
 
             }
         });
-
+        */
         setUiPageViewController();
 
         NUM_PAGES = arraylist_foto.length;
@@ -352,7 +362,7 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
                 if (currentPage == NUM_PAGES) {
                     currentPage = 0;
                 }
-                intro_images.setCurrentItem(currentPage++, true);
+                //intro_images.setCurrentItem(currentPage++, true);
             }
         };
         Timer swipeTimer = new Timer();

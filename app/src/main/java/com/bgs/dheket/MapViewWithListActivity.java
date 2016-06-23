@@ -15,8 +15,12 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.bgs.common.Constants;
@@ -87,6 +91,12 @@ public class MapViewWithListActivity extends AppCompatActivity {
     String urls = "";
     String parameters;
     LinearLayout linearLayout_contentlist;
+    private ScrollView contentView;
+
+    AlphaAnimation inAnimation;
+    AlphaAnimation outAnimation;
+
+    //FrameLayout progressBarHolder;
 
     /*String[] loc_name, loc_address, loc_pic;
     int[] loc_promo, id_loc;
@@ -94,6 +104,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
 
     boolean isFirst = true, maxView = true, minView = true;
     CallWebPageTask task;
+
     //Bundle paket;
 
     @Override
@@ -102,6 +113,9 @@ public class MapViewWithListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_list_map_loc);
 
         Log.e(Constants.TAG, "MapViewWithListActivity -> onCreate");
+        //progressBarHolder = (FrameLayout) findViewById(R.id.progressBarHolder);
+        //contentView = (ScrollView) findViewById(R.id.scrollView9);
+        //showProgresBar();
 
         actionBar = getSupportActionBar();
         actionBar.setDisplayShowHomeEnabled(true);
@@ -109,6 +123,8 @@ public class MapViewWithListActivity extends AppCompatActivity {
         actionBar.setHomeAsUpIndicator(getResources().getDrawable(R.drawable.d_ic_back));
         //actionBar.setHomeAsUpIndicator(R.drawable.logo);
         actionBar.setHomeButtonEnabled(true);
+
+
 
         //Retrieve the map and initial extent from XML layout
         mMapView = (MapView) findViewById(R.id.map_single);
@@ -119,15 +135,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
         //get category from bundle
         category = getIntent().getParcelableExtra("category");
         currentBestLocation = getIntent().getParcelableExtra("currentBestLocation");
-        /*
-        latitude = paket.getDouble("latitude");
-        cat_id = paket.getInt("cat_id");
-        longitude = paket.getDouble("longitude");
-        email = paket.getString("email");
-        icon = paket.getString("icon");
-        category = paket.getString("kategori");
-        radius = paket.getDouble("radius");
-        */
+
         actionBar.setTitle(category.getName());
 //        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
         actionBar.setSubtitle(Html.fromHtml("<font color='#ff9800' size='10'>Radius " + formatNumber.changeFormatNumber(category.getRadius()) + " Km</font>"));
@@ -151,6 +159,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
         }
         //mAdd = new PictureMarkerSymbol(rootView.getContext().getApplicationContext(), ContextCompat.getDrawable(rootView.getContext().getApplicationContext(), R.drawable.pin_add));
         linearLayout_contentlist = (LinearLayout)findViewById(R.id.linearLayout_result_lm);
+
         setupLocator();
         setupLocationListener();
 
@@ -158,9 +167,18 @@ public class MapViewWithListActivity extends AppCompatActivity {
         getDataFromServer();
     }
 
+    /*
+    private void showProgresBar() {
+        inAnimation = new AlphaAnimation(0f, 1f);
+        inAnimation.setDuration(200);
+        progressBarHolder.setAnimation(inAnimation);
+        progressBarHolder.setVisibility(View.VISIBLE);
+        contentView.setVisibility(View.GONE);
+    }
+    */
+
     public void getDataFromServer() {
-        task = new CallWebPageTask();
-        task.applicationContext = getApplicationContext();
+        task = new CallWebPageTask(this);
         /*getlocationbycategoryid/{rad}/{center_lat}/{center_lng}/{cat}*/
         double latitude =0, longitude = 0;
         if ( currentBestLocation != null) {
@@ -440,16 +458,19 @@ public class MapViewWithListActivity extends AppCompatActivity {
     }
 
     private class CallWebPageTask extends AsyncTask<String, Void, String> {
-
-        private ProgressDialog dialog;
-        protected Context applicationContext;
+        private Context context;
         private ArrayList<Lokasi> locationList;
+        private ProgressDialog dialog;
+
+        public CallWebPageTask(Context context) {
+            this.context = context;
+            this.dialog = new ProgressDialog(context);
+        }
 
         @Override
         protected void onPreExecute() {
-            /*if (isFirst==true){
-                this.dialog = ProgressDialog.show(applicationContext, "Retrieving Data", "Please Wait...", true);
-            }*/
+            //this.dialog.setMessage("Loading");
+            this.dialog.show();
         }
 
         @Override
@@ -512,10 +533,10 @@ public class MapViewWithListActivity extends AppCompatActivity {
                                     "", 0, 0, "", "", Double.parseDouble(data.getString("distance")), category, merchantMap.get(merchId));
 
                             locationList.add(lokasi);
+
                         } catch (JSONException e) {
                             Log.e(Constants.TAG, e.getMessage(), e);
                         }
-
                     }
                 }
 
@@ -530,6 +551,9 @@ public class MapViewWithListActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             updateData(locationList);
+
+            if (dialog.isShowing())
+                dialog.dismiss();
         }
     }
 
@@ -565,6 +589,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
                 attr.put("loc_distance", lokasi.getDistance());
                 mResultsLayer.addGraphic(new Graphic(point, symbol, attr));
                 fullExtent.add(point);
+
                 LayoutInflater inflater = (LayoutInflater) getSystemService( Context.LAYOUT_INFLATER_SERVICE );
                 final View viewItem = inflater.inflate(R.layout.item_listmod, null);
                 final TextView id = (TextView)viewItem.findViewById(R.id.textView_il_id);
@@ -575,7 +600,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
                 TextView alamat = (TextView)viewItem.findViewById(R.id.textView_il_alamat);
                 alamat.setText(lokasi.getAddress());
                 TextView jarak = (TextView)viewItem.findViewById(R.id.textView_il_jarak);
-                jarak.setText(lokasi.getDistance()+" Km");
+                jarak.setText(formatNumber.changeFormatNumber(lokasi.getDistance()) +" Km");
                 ImageView foto = (ImageView)viewItem.findViewById(R.id.imageView_il_foto);
                 viewItem.setTag(lokasi);
                 linearLayout_contentlist.addView(viewItem);
@@ -590,7 +615,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
                         Lokasi _lokasi =  (Lokasi)v.getTag();
                         if ( _lokasi.getMerchant() != null ) {
                             Log.e(Constants.TAG, "call listItem->setOnClickListener()=>merchant=" + _lokasi.getMerchant().getName() );
-                            return;
+                            goToScreen = new Intent(getApplicationContext(), DetailLocationWithMerchantActivity.class);
                         } else {
                             goToScreen = new Intent(getApplicationContext(), DetailLocationWithNoMerchantActivity.class);
                         }
@@ -626,6 +651,5 @@ public class MapViewWithListActivity extends AppCompatActivity {
             }
         }
     }
-
 
 }

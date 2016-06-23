@@ -56,6 +56,7 @@
         <activity android:name="com.bgs.dheket.MapViewExtendActivity"/>
         <activity android:name="com.bgs.dheket.MapViewSingleActivity"/>
         <activity android:name="com.bgs.dheket.DetailLocationWithNoMerchantActivity"/>
+        <activity android:name="com.bgs.dheket.DetailLocationWithMerchantActivity"/>
 
         <activity
             android:name="com.bgs.chat.ChatPageActivity"
