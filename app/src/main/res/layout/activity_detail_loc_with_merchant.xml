@@ -142,17 +142,30 @@
             android:background="@drawable/roundedbutton_nosquare1"
             android:id="@+id/linearLayout_dl_wm_loc_chat">
 
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|center_vertical">
+
+
+            <ImageView
+                android:id="@+id/chat_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:src="@drawable/ic_question_answer_24dp"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:drawableLeft="@drawable/ic_question_answer_24dp"
                 android:drawableTint="#ffffff"
                 android:text="  CHAT TO MERCHANT"
-                android:id="@+id/textView_dl_wm_loc_gochat"
-                android:layout_gravity="center_horizontal"
-                android:gravity="center"
+                android:id="@+id/model"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:layout_toRightOf="@+id/chat_icon"
+                android:clickable="true"
                 android:textColor="#ffffff" />
+            </RelativeLayout>
         </LinearLayout>
 
     </RelativeLayout>

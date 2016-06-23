@@ -46,7 +46,7 @@ public class App extends Application {
             //options.forceNew = true;
             options.reconnectionDelay = 1000;
             options.reconnectionDelayMax = 2000;
-            options.timeout = 1000;
+            options.timeout = 5000;
             mSocket = IO.socket(Constants.CHAT_SERVER_URL, options);
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);

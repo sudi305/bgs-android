@@ -1,6 +1,7 @@
 package com.bgs.dheket;
 
-import android.app.ProgressDialog;
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -15,10 +16,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bgs.chat.ChatPageActivity;
+import com.bgs.chat.model.ChatContact;
+import com.bgs.chat.model.ChatContactType;
 import com.bgs.common.Constants;
 import com.bgs.common.Utility;
 import com.bgs.imageOrView.ViewPagerAdapter;
@@ -26,6 +29,7 @@ import com.bgs.model.Category;
 import com.bgs.model.Lokasi;
 import com.bgs.model.Merchant;
 import com.bgs.networkAndSensor.HttpGetOrPost;
+import com.bgs.common.DialogUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -109,11 +113,19 @@ public class DetailLocationWithMerchantActivity extends AppCompatActivity implem
         textView_descriptionloc = (TextView)findViewById(R.id.textView_dl_wm_loc_description);
         textView_simpledescloc = (TextView)findViewById(R.id.textView_dl_wm_loc_simple_description);
         textView_pricepromo = (TextView)findViewById(R.id.textView_dl_wm_loc_pricepromo);
-        textView_gochat = (TextView)findViewById(R.id.textView_dl_wm_loc_gochat);
+        textView_gochat = (TextView)findViewById(R.id.model);
         textView_gochat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(Constants.TAG, "GOTO CHAT");
+                try {
+                    Merchant merchant = lokasi.getMerchant();
+                    ChatContact chatContact = new ChatContact(String.valueOf(merchant.getId()), merchant.getName(), merchant.getFacebookPhoto(), merchant.getEmail(), merchant.getPhone(), ChatContactType.PRIVATE);
+                    ChatPageActivity.startChatFromLocation(getActivity(), chatContact, lokasi, currentBestLocation);
+                    //finish();
+                } catch (Exception e) {
+                    Log.e(Constants.TAG_CHAT, e.getMessage(), e);
+                }
 
             }
         });
@@ -122,6 +134,9 @@ public class DetailLocationWithMerchantActivity extends AppCompatActivity implem
         getDetailLocation();
     }
 
+    private Activity getActivity() {
+        return this;
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -216,7 +231,7 @@ public class DetailLocationWithMerchantActivity extends AppCompatActivity implem
         CallWebPageTask task = new CallWebPageTask(this);
         Category category = lokasi.getCategory();
         String urls = url + "/" + lokasi.getLatitude() + "/" + lokasi.getLongitude() + "/" + lokasi.getId();
-        Log.e(Constants.TAG, "Get Detail Lokasi url => " + urls);
+        Log.d(Constants.TAG, "Get Detail Lokasi url => " + urls);
         task.execute(new String[]{urls});
     }
 
@@ -250,11 +265,11 @@ public class DetailLocationWithMerchantActivity extends AppCompatActivity implem
 
     private class CallWebPageTask extends AsyncTask<String, Void, String> {
         protected Context context;
-        private ProgressDialog dialog;
+        private Dialog dialog;
 
         public CallWebPageTask(Context context) {
             this.context = context;
-            this.dialog = new ProgressDialog(context);
+            this.dialog = DialogUtils.LoadingSpinner(context);
         }
 
         @Override
@@ -274,11 +289,11 @@ public class DetailLocationWithMerchantActivity extends AppCompatActivity implem
                 JSONArray menuItemArray = null;
                 JsonObject = new JSONObject(response);
                 menuItemArray = JsonObject.getJSONArray("dheket_singleLoc");
-                
+
                 for (int i = 0; i < menuItemArray.length(); i++) {
                     map = new HashMap<String, String>();
                     jsonobject = menuItemArray.getJSONObject(i);
-                    Log.e(Constants.TAG, "Lokasi Detail ->" + jsonobject.toString());
+                    Log.d(Constants.TAG, "Lokasi Detail ->" + jsonobject.toString());
                     map.put("loc_id", jsonobject.getString("id_location"));
                     map.put("loc_name", jsonobject.getString("location_name"));
                     map.put("loc_address", jsonobject.getString("location_address"));
@@ -312,7 +327,7 @@ public class DetailLocationWithMerchantActivity extends AppCompatActivity implem
     }
 
     public void updateData() {
-        Log.e(Constants.TAG, "size arraylist => " + arraylist.size());
+        Log.d(Constants.TAG, "size arraylist => " + arraylist.size());
         if (arraylist.size() > 0){
             //setReference();
 
@@ -333,14 +348,14 @@ public class DetailLocationWithMerchantActivity extends AppCompatActivity implem
             //textView_pricepromo = (TextView)findViewById(R.id.textView_dl_nm_loc_pricepromo);
             Merchant merchant = lokasi.getMerchant();
             String name = merchant != null ? merchant.getUserName() : "";
-            textView_gochat.setText("CHAT TO MERCHANT " + name);
+            //textView_gochat.setText(" CHAT TO MERCHANT");
         }
 
     }
 
     public void setReference() {
         mAdapter = new ViewPagerAdapter(getApplicationContext(), arraylist_foto);
-        Log.e(Constants.TAG, "foto => "+arraylist_foto.toString());
+        Log.d(Constants.TAG, "foto => "+arraylist_foto.toString());
         /*
         intro_images.setAdapter(mAdapter);
         intro_images.setCurrentItem(0);

@@ -68,12 +68,14 @@ public class ChatContactHistoryFragment extends Fragment {
         contactHistoryListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getActivity(), ChatPageActivity.class);
+
+                //Intent intent = new Intent(getActivity(), ChatPageActivity.class);
                 ChatContact contact = (chatContactHistories.get((int)id)).getContact();
                 //Toast.makeText(getActivity(), contact.getName(), Toast.LENGTH_LONG).show();
                 contact.setActive(1);
-                intent.putExtra("chatContact", contact);
-                getActivity().startActivity(intent);
+                ChatPageActivity.startChatFromHistory(getActivity(), contact);
+                //intent.putExtra("chatContact", contact);
+                //getActivity().startActivity(intent);
             }
         });
 

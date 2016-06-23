@@ -1,5 +1,6 @@
 package com.bgs.dheket;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +21,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bgs.common.Constants;
+import com.bgs.common.DialogUtils;
 import com.bgs.common.Utility;
 import com.bgs.imageOrView.ViewPagerAdapter;
 import com.bgs.model.Category;
@@ -210,7 +212,7 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
         CallWebPageTask task = new CallWebPageTask(this);
         Category category = lokasi.getCategory();
         String urls = url + "/" + lokasi.getLatitude() + "/" + lokasi.getLongitude() + "/" + lokasi.getId();
-        Log.e(Constants.TAG, "Get Detail Lokasi url => " + urls);
+        Log.d(Constants.TAG, "Get Detail Lokasi url => " + urls);
         task.execute(new String[]{urls});
     }
 
@@ -244,11 +246,11 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
 
     private class CallWebPageTask extends AsyncTask<String, Void, String> {
         protected Context context;
-        private ProgressDialog dialog;
+        private Dialog dialog;
 
         public CallWebPageTask(Context context) {
             this.context = context;
-            this.dialog = new ProgressDialog(context);
+            this.dialog = DialogUtils.LoadingSpinner(context);
         }
 
         @Override
@@ -270,7 +272,7 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
                 for (int i = 0; i < menuItemArray.length(); i++) {
                     map = new HashMap<String, String>();
                     jsonobject = menuItemArray.getJSONObject(i);
-                    Log.e(Constants.TAG, "Lokasi Detail ->" + jsonobject.toString());
+                    Log.d(Constants.TAG, "Lokasi Detail ->" + jsonobject.toString());
                     map.put("loc_id", jsonobject.getString("id_location"));
                     map.put("loc_name", jsonobject.getString("location_name"));
                     map.put("loc_address", jsonobject.getString("location_address"));
@@ -305,7 +307,7 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
     }
 
     public void updateData() {
-        Log.e(Constants.TAG, "size arraylist => " + arraylist.size());
+        Log.d(Constants.TAG, "size arraylist => " + arraylist.size());
         if (arraylist.size() > 0){
             setReference();
 
@@ -331,7 +333,7 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
 
     public void setReference() {
         mAdapter = new ViewPagerAdapter(getApplicationContext(), arraylist_foto);
-        Log.e(Constants.TAG, "foto => "+arraylist_foto.toString());
+        Log.d(Constants.TAG, "foto => "+arraylist_foto.toString());
         intro_images.setAdapter(mAdapter);
         intro_images.setCurrentItem(0);
         intro_images.setOnPageChangeListener(this);

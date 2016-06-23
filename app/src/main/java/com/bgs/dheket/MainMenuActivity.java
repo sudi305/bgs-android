@@ -286,7 +286,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 //        Dialog.show(getFragmentManager(), "tag");
 
         if (AccessToken.getCurrentAccessToken() != null) {
-            Log.e(Constants.TAG, "getdatafrom fb yes");
+            Log.d(Constants.TAG, "getdatafrom fb yes");
             RequestDataFromFB();
         }
 
@@ -294,7 +294,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             @Override
             public void onClick(View v) {
                 /*menu.getItem(0).setIcon(getResources().getDrawable(R.drawable.ic_error_red_24dp));
-                Log.e("menu size",""+menu.size());
+                Log.d("menu size",""+menu.size());
                 menu.getItem(2).setVisible(false);*/
                 showDialogDetail();
             }
@@ -617,7 +617,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 JSONObject json = response.getJSONObject();
                 try {
                     if (json != null) {
-                        Log.e(Constants.TAG, "json fb = " + json.toString());
+                        Log.d(Constants.TAG, "json fb = " + json.toString());
                         String id = json.getString("id");
                         String name = json.getString("name");
                         String gender = json.getString("gender");
@@ -800,7 +800,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         else if (lokasi > 5 && lokasi < 11) lokasi = (int) (((lokasi - 1) * 10) * scale + 0.5f);
         else if (lokasi > 10) lokasi = (int) (90 * scale + 0.5f);
         ViewGroup.LayoutParams params = button.getLayoutParams();
-        //Log.e("data params",""+params.height+" | "+params.width);
+        //Log.d("data params",""+params.height+" | "+params.width);
         int parwid = params.width;
         int parhei = params.height;
         button.setLayoutParams(params);
@@ -868,7 +868,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
         @Override
         protected String doInBackground(String... urls) {
-            Log.e(Constants.TAG, "Proses 2 -> Lakukan Pemanggilan WS = " + urls);
+            Log.d(Constants.TAG, "Proses 2 -> Lakukan Pemanggilan WS = " + urls);
             String response = "";
             HttpGetOrPost httpGetOrPost = new HttpGetOrPost();
             response = httpGetOrPost.getRequest(urls[0]);
@@ -880,7 +880,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 real_radius = Double.parseDouble(jObject.getString("rad"));
                 email = jObject.getString("email");
                 radius = (real_radius);
-                Log.e(Constants.TAG, "Proses 3 -> Try get data dari WS = " + urls + "\nJumlah data dari WS = " + menuItemArray.length());
+                Log.d(Constants.TAG, "Proses 3 -> Try get data dari WS = " + urls + "\nJumlah data dari WS = " + menuItemArray.length());
                 for (int i = 0; i < menuItemArray.length(); i++) {
                     id_kategori[i] = menuItemArray.getJSONObject(i).getInt("id_category");
                     nama_katagori[i] = menuItemArray.getJSONObject(i).getString("category_name").toString();
@@ -901,7 +901,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             /*if (dialog.isShowing()) {
                 dialog.dismiss();
             }*/
-            Log.e(Constants.TAG, "first_check -> " + first_check);
+            Log.d(Constants.TAG, "first_check -> " + first_check);
             /*if (email.equalsIgnoreCase("guest@dheket.co.id")){
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainMenuActivity.this);
                 builder.setMessage("This is Guest account! Are you sure to stay with this account?")
@@ -919,12 +919,12 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                         .setNegativeButton("Yes", null);
                 builder.create().show();
             } else if (first_check){
-                Log.e("");
+                Log.d("");
                 url = String.format(getResources().getString(R.string.link_getDataUser));
                 getDataCategory(email, latitude, longitude);
                 first_check = false;
             }*/
-            Log.e(Constants.TAG, "Proses 5 -> selesai panggil WS = " + urls);
+            Log.d(Constants.TAG, "Proses 5 -> selesai panggil WS = " + urls);
             updateData();
         }
     }
@@ -1001,15 +1001,15 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 JSONObject jsonobj = new JSONObject();
                 jsonobj.put("email", email);
                 jsonobj.put("rad", newRadius);
-                Log.e(Constants.TAG, "mainToPost -> " + jsonobj.toString());
+                Log.d(Constants.TAG, "mainToPost -> " + jsonobj.toString());
                 httppost.setEntity(new StringEntity(jsonobj.toString())); //json without header {"a"="a","b"=1}
                 // Execute HTTP Post Request
                 HttpResponse response = httpclient.execute(httppost);
                 InputStream inputStream = response.getEntity().getContent();
                 InputStreamToStringExample str = new InputStreamToStringExample();
                 responseServer = str.getStringFromInputStream(inputStream);
-                Log.e(Constants.TAG, "response ----- " + responseServer.toString() + "|");
-                Log.e(Constants.TAG, "response ----- " + responseServer.toString().equalsIgnoreCase("{\"success\":1}") + "|");
+                Log.d(Constants.TAG, "response ----- " + responseServer.toString() + "|");
+                Log.d(Constants.TAG, "response ----- " + responseServer.toString().equalsIgnoreCase("{\"success\":1}") + "|");
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -1036,7 +1036,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         CallWebPageTask task = new CallWebPageTask();
         task.applicationContext = getApplicationContext();
         urls = url + "/" + email + "/" + lat + "/" + lng;
-        Log.e(Constants.TAG, "Proses 1 -> Persiapan Panggil WS = " + urls);
+        Log.d(Constants.TAG, "Proses 1 -> Persiapan Panggil WS = " + urls);
         if (email != null) task.execute(new String[]{urls});
     }
 
@@ -1095,7 +1095,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             currentBestLocation = location;
         }
         //Toast.makeText(getApplicationContext(),"lat "+latitude+" | lgt "+longitude, Toast.LENGTH_LONG).show();
-        Log.e(Constants.TAG, "Proses 6 -> Ada perubahan lokasi maka panggil WS lagi= " + urls);
+        Log.d(Constants.TAG, "Proses 6 -> Ada perubahan lokasi maka panggil WS lagi= " + urls);
 
         getDataCategory(email, currentBestLocation.getLatitude(), currentBestLocation.getLongitude());
     }
@@ -1130,9 +1130,9 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         String provider = locManager.getBestProvider(criteria, true);
         locManager.requestLocationUpdates(provider, 20000, 0, this);
 
-        Log.e(Constants.TAG, "locManager => " + locManager);
+        Log.d(Constants.TAG, "locManager => " + locManager);
         currentBestLocation = GpsUtils.getLastBestLocation(locManager);//myLocationManager.getLastKnownLocation(provider);
-        Log.e(Constants.TAG, "currentBestLocation => " + currentBestLocation);
+        Log.d(Constants.TAG, "currentBestLocation => " + currentBestLocation);
         if (currentBestLocation != null) {
             onLocationChanged(currentBestLocation);
         }
@@ -1311,7 +1311,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     public void onResume() {
         super.onResume();
         Log.d(Constants.TAG, "ON RESUME");
-        Log.e(Constants.TAG, "locManager = " + ((App)getApplication()).getLocationManager());
+        Log.d(Constants.TAG, "locManager = " + ((App)getApplication()).getLocationManager());
         if (socket == null)
             socket = ((App) getApplication()).getSocket();
 

@@ -1,5 +1,6 @@
 package com.bgs.dheket;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -24,6 +25,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.bgs.common.Constants;
+import com.bgs.common.DialogUtils;
 import com.bgs.common.GpsUtils;
 import com.bgs.common.Utility;
 import com.bgs.model.Category;
@@ -112,7 +114,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_map_loc);
 
-        Log.e(Constants.TAG, "MapViewWithListActivity -> onCreate");
+        Log.d(Constants.TAG, "MapViewWithListActivity -> onCreate");
         //progressBarHolder = (FrameLayout) findViewById(R.id.progressBarHolder);
         //contentView = (ScrollView) findViewById(R.id.scrollView9);
         //showProgresBar();
@@ -155,7 +157,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
             mcat.setUrl(icon);
         } else {
             mcat= new PictureMarkerSymbol(getApplicationContext(), ContextCompat.getDrawable(getApplicationContext(), R.drawable.pin_blue));
-            Log.e(Constants.TAG, "icon kosong -> ["+icon+"]");
+            Log.d(Constants.TAG, "icon kosong -> ["+icon+"]");
         }
         //mAdd = new PictureMarkerSymbol(rootView.getContext().getApplicationContext(), ContextCompat.getDrawable(rootView.getContext().getApplicationContext(), R.drawable.pin_add));
         linearLayout_contentlist = (LinearLayout)findViewById(R.id.linearLayout_result_lm);
@@ -167,15 +169,6 @@ public class MapViewWithListActivity extends AppCompatActivity {
         getDataFromServer();
     }
 
-    /*
-    private void showProgresBar() {
-        inAnimation = new AlphaAnimation(0f, 1f);
-        inAnimation.setDuration(200);
-        progressBarHolder.setAnimation(inAnimation);
-        progressBarHolder.setVisibility(View.VISIBLE);
-        contentView.setVisibility(View.GONE);
-    }
-    */
 
     public void getDataFromServer() {
         task = new CallWebPageTask(this);
@@ -186,8 +179,8 @@ public class MapViewWithListActivity extends AppCompatActivity {
             longitude = currentBestLocation.getLongitude();
         }
         parameters = urls +"/"+ category.getRadius() + "/" + latitude  + "/" + longitude  + "/" + category.getId();
-        Log.e(Constants.TAG, "OK Connecting Sukses -> " + parameters);
-        //Log.e("Sukses", parameters);
+        Log.d(Constants.TAG, "OK Connecting Sukses -> " + parameters);
+        //Log.d("Sukses", parameters);
         task.execute(new String[]{parameters});
     }
 
@@ -234,7 +227,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
 
                 // Use the graphic attributes to update the information views.
                 Graphic gr = mResultsLayer.getGraphic(graphicIDs[0]);
-                Log.e("atrribut", "" + gr.getAttributes());
+                Log.d("atrribut", "" + gr.getAttributes());
 
                 if (gr.getAttributes().isEmpty()) {
                     Toast.makeText(getApplicationContext(), "No Attribute for this location!", Toast.LENGTH_SHORT).show();
@@ -278,7 +271,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
     }
 
     private void setupLocationListener() {
-        Log.e(Constants.TAG, mMapView + " -> isLoaded " + (mMapView != null ? mMapView.isLoaded() : false) );
+        Log.d(Constants.TAG, mMapView + " -> isLoaded " + (mMapView != null ? mMapView.isLoaded() : false) );
         if ((mMapView != null) && (mMapView.isLoaded())) {
             mLDM = mMapView.getLocationDisplayManager();
             mLDM.setLocationListener(new LocationListener() {
@@ -289,7 +282,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
                     if (!locationChanged) {
                         locationChanged = true;
 
-                        Log.e(Constants.TAG, "sukses location -> lat " + loc.getLatitude() + " | lng " + loc.getLongitude() + " | point " + getAsPoint(loc));
+                        Log.d(Constants.TAG, "sukses location -> lat " + loc.getLatitude() + " | lng " + loc.getLongitude() + " | point " + getAsPoint(loc));
 
                         if ( currentBestLocation != null ) {
                             if (GpsUtils.isBetterLocation(loc, currentBestLocation)) {
@@ -440,7 +433,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        Log.e(Constants.TAG, "MapViewWithListActivity -> onResume");
+        Log.d(Constants.TAG, "MapViewWithListActivity -> onResume");
         mMapView.unpause();
         if (mLDM != null) {
             mLDM.resume();
@@ -460,11 +453,11 @@ public class MapViewWithListActivity extends AppCompatActivity {
     private class CallWebPageTask extends AsyncTask<String, Void, String> {
         private Context context;
         private ArrayList<Lokasi> locationList;
-        private ProgressDialog dialog;
+        private Dialog dialog;
 
         public CallWebPageTask(Context context) {
             this.context = context;
-            this.dialog = new ProgressDialog(context);
+            this.dialog = DialogUtils.LoadingSpinner(context);
         }
 
         @Override
@@ -491,7 +484,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
                 //get merchant
                 if ( !joResponse.isNull("merchants") ) {
                     merchantArray = joResponse.getJSONArray("merchants");
-                    Log.e(Constants.TAG, "Data merchant dari server -> " + merchantArray.length());
+                    Log.d(Constants.TAG, "Data merchant dari server -> " + merchantArray.length());
                     Merchant merchant = null;
                     for (int i = 0; i < merchantArray.length(); i++) {
                         try {
@@ -512,12 +505,12 @@ public class MapViewWithListActivity extends AppCompatActivity {
                 //get locations
                 if ( !joResponse.isNull("locations")) {
                     locationArray = joResponse.getJSONArray("locations");
-                    Log.e(Constants.TAG, "Data lokasi dari server -> " + locationArray.length());
+                    Log.d(Constants.TAG, "Data lokasi dari server -> " + locationArray.length());
                     double locDistance = 0;
                     Lokasi lokasi = null;
                     for (int i = 0; i < locationArray.length(); i++) {
                         try {
-                            //Log.e(Constants.TAG, "data => " + locationArray.getJSONObject(i).toString());
+                            //Log.d(Constants.TAG, "data => " + locationArray.getJSONObject(i).toString());
                             data = locationArray.getJSONObject(i);
                             merchId = data.getString("merchant_id");
                         /*
@@ -558,7 +551,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
     }
 
     public void updateData(ArrayList<Lokasi> locationList) {
-        Log.e(Constants.TAG, "call updateData()");
+        Log.d(Constants.TAG, "call updateData()");
         MultiPoint fullExtent = new MultiPoint();
         Symbol symbol = null;
         //-6.21267000, 106.61778566
@@ -569,7 +562,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
             for (final Lokasi lokasi : locationList) {
                 /*
                 Location locationPin = currentBestLocation;
-                //Log.e(Constants.TAG, data.toString());
+                //Log.d(Constants.TAG, data.toString());
                 if ( locationPin == null ) {
                     //dev mode
                     locationPin = Constants.DEMO_LOCATION;
@@ -608,13 +601,13 @@ public class MapViewWithListActivity extends AppCompatActivity {
                 viewItem.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Log.e(Constants.TAG, "call listItem->setOnClickListener()");
+                        Log.d(Constants.TAG, "call listItem->setOnClickListener()");
                         //Toast.makeText(ll.getContext().getApplicationContext(),nama.getText().toString(),Toast.LENGTH_SHORT).show();
 
                         Intent goToScreen = null;
                         Lokasi _lokasi =  (Lokasi)v.getTag();
                         if ( _lokasi.getMerchant() != null ) {
-                            Log.e(Constants.TAG, "call listItem->setOnClickListener()=>merchant=" + _lokasi.getMerchant().getName() );
+                            Log.d(Constants.TAG, "call listItem->setOnClickListener()=>merchant=" + _lokasi.getMerchant().getName() );
                             goToScreen = new Intent(getApplicationContext(), DetailLocationWithMerchantActivity.class);
                         } else {
                             goToScreen = new Intent(getApplicationContext(), DetailLocationWithNoMerchantActivity.class);

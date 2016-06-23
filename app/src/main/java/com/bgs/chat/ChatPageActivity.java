@@ -2,7 +2,9 @@ package com.bgs.chat;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Rect;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -28,6 +30,8 @@ import com.bgs.chat.model.ChatMessage;
 import com.bgs.chat.model.MessageType;
 import com.bgs.common.NativeUtilities;
 import com.bgs.common.Utility;
+import com.bgs.dheket.DetailLocationWithMerchantActivity;
+import com.bgs.model.Lokasi;
 import com.bgs.model.UserApp;
 import com.bgs.chat.widgets.Emoji;
 import com.bgs.chat.widgets.EmojiView;
@@ -49,6 +53,13 @@ import io.socket.emitter.Emitter;
  * status bar and navigation/system bar) with user interaction.
  */
 public class ChatPageActivity extends AppCompatActivity implements SizeNotifierRelativeLayout.SizeNotifierRelativeLayoutDelegate, NotificationCenter.NotificationCenterDelegate {
+    private static final String ACTION_CHAT_FROM_CONTACT = "com.bgs.chat.action.CHAT_FROM_CONTACT";
+    private static final String ACTION_CHAT_FROM_HISTORY = "com.bgs.chat.action.CHAT_FROM_HISTORY";
+    private static final String ACTION_CHAT_FROM_LOCATION = "com.bgs.chat.action.FROM_LOCATION";
+
+    private static final String EXTRA_PARAM1 = "com.bgs.chat.extra.PARAM1";
+    private static final String EXTRA_PARAM2 = "com.bgs.chat.extra.PARAM2";
+    private static final String EXTRA_PARAM3 = "com.bgs.chat.extra.PARAM3";
 
     private TextView userContactTextView;
     private ListView chatListView;
@@ -68,9 +79,43 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
     private Socket socket;
     private Boolean isConnected = true;
     private ChatContact chatContact;
+    private Lokasi lokasi;
+    private Location currentBestLocation;
+
     //private App app;
     private Activity getActivity() {
         return ChatPageActivity.this;
+    }
+
+    public static void startChatFromContact(Context context, ChatContact param1) {
+        startChatActivity(context, ACTION_CHAT_FROM_CONTACT, param1, null, null);
+    }
+
+    public static void startChatFromHistory(Context context, ChatContact param1) {
+        startChatActivity(context, ACTION_CHAT_FROM_HISTORY, param1, null, null);
+    }
+
+    /**
+     *
+     * @param context
+     * @param param1 chat contact
+     * @param param2 lokasi data
+     * @param param3 lokasi gps
+     */
+    public static void startChatFromLocation(Context context, ChatContact param1, Lokasi param2, Location param3) {
+        startChatActivity(context, ACTION_CHAT_FROM_LOCATION, param1, param2, param3);
+    }
+
+    private static void startChatActivity(Context context, String action, ChatContact param1, Lokasi param2, Location param3) {
+        Intent intent = new Intent(context, ChatPageActivity.class);
+        intent.setAction(action);
+        intent.putExtra(EXTRA_PARAM1, param1);
+        if ( param2 != null )
+            intent.putExtra(EXTRA_PARAM2, param2);
+        if ( param3 != null )
+            intent.putExtra(EXTRA_PARAM3, param3);
+
+        context.startActivity(intent);
     }
 
     @Override
@@ -89,11 +134,17 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
         }
         */
 
+        //get object intent
+        chatContact =  (ChatContact)getIntent().getParcelableExtra(EXTRA_PARAM1);
+        if (getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_LOCATION)) {
+            lokasi = (Lokasi) getIntent().getParcelableExtra(EXTRA_PARAM2);
+            currentBestLocation = (Location) getIntent().getParcelableExtra(EXTRA_PARAM3);
+        }
+
         NativeUtilities.statusBarHeight = getStatusBarHeight();
 
         userContactTextView = (TextView) findViewById(R.id.user_contact);
-        //get object intent
-        chatContact =  (ChatContact)getIntent().getParcelableExtra("chatContact");
+
         userContactTextView.setText(chatContact != null ? chatContact.getName() : "");
 
         chatMessages = new ArrayList<>();
@@ -116,6 +167,11 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
         goBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_LOCATION)) {
+                    Intent intent = new Intent(getApplicationContext(), DetailLocationWithMerchantActivity.class);
+                    intent.putExtra(EXTRA_PARAM2, lokasi);
+                    intent.putExtra(EXTRA_PARAM2, currentBestLocation);
+                }
                 finish();
             }
         });
