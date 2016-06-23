@@ -27,6 +27,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
@@ -46,6 +48,8 @@ public class MainChatActivity extends AppCompatActivity {
         return this.isLogin;
     }
     */
+
+    private static Map<String, Emitter.Listener> CHAT_EVENT_LISTENERS = new LinkedHashMap<String, Emitter.Listener>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,13 +113,13 @@ public class MainChatActivity extends AppCompatActivity {
         String titleText = title.getText() + ( app.getUserApp() == null ? "" : " - " + app.getUserApp().getName());
         title.setText(titleText);
 
-        socket = app.getSocket();
-        socket.on("user join", onUserJoin);
-        socket.on("list contact", onListContact);
-        socket.on("update contact", onUpdateContact);
-        socket.on("new message", onNewMessage);
-
-        //runs background service
+        CHAT_EVENT_LISTENERS.putAll(new LinkedHashMap<String, Emitter.Listener>(){{
+            put(App.SOCKET_EVENT_USER_JOIN, onUserJoin);
+            put(App.SOCKET_EVENT_LIST_CONTACT, onListContact);
+            put(App.SOCKET_EVENT_UPDATE_CONTACT, onUpdateContact);
+            put(App.SOCKET_EVENT_NEW_MESSAGE, onNewMessage);
+        }});
+        socket = app.startChatSocket(CHAT_EVENT_LISTENERS);
 
     }
 
@@ -266,13 +270,8 @@ public class MainChatActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
-        if ( socket == null )
-            socket = ((App)getApplication()).getSocket();
-
-        if ( socket.connected() == false)
-            socket.connect();
-
+        App app = (App)getApplication();
+        socket = app.resumeChatSocket();
         //retrive contact
         ChatService.startActionUpdateContact(getActivity());
     }
@@ -280,11 +279,8 @@ public class MainChatActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        socket.off("user join", onUserJoin);
-        socket.off("list contact", onListContact);
-        socket.off("update contact", onUpdateContact);
-        socket.off("new message", onNewMessage);
+        App app = (App)getApplication();
+        app.stopChatSocket(CHAT_EVENT_LISTENERS);
     }
 
 

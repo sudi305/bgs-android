@@ -44,6 +44,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
@@ -81,6 +83,7 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
     private ChatContact chatContact;
     private Lokasi lokasi;
     private Location currentBestLocation;
+    private static Map<String, Emitter.Listener> CHAT_EVENT_LISTENERS = new LinkedHashMap<String, Emitter.Listener>();
 
     //private App app;
     private Activity getActivity() {
@@ -199,9 +202,12 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
         chatEditText1.clearFocus();
         chatListView.requestFocus();
 
-        App app = (App) getActivity().getApplication();
-        socket = app.getSocket();
-        socket.on("new message", onNewMessage);
+        App app = (App) getApplication();
+        CHAT_EVENT_LISTENERS.putAll(new LinkedHashMap<String, Emitter.Listener>(){{
+            put(App.SOCKET_EVENT_NEW_MESSAGE, onNewMessage);
+        }});
+        socket = app.startChatSocket(CHAT_EVENT_LISTENERS);
+        //TODO
         //socket.on("user joined", onUserJoined);
         //socket.on("user left", onUserLeft);
         //socket.on("typing", onTyping);
@@ -593,25 +599,21 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
     public void onResume() {
         super.onResume();
 
-        if ( socket == null )
-            socket = ((App) getActivity().getApplication()).getSocket();
+        App app = (App)getApplication();
+        socket = app.resumeChatSocket();
 
-        if ( socket.connected() == false)
-            socket.connect();
-
-        //chatEditText1.clearFocus();
-        //chatListView.requestFocus();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        socket.off("new message", onNewMessage);
+
+        App app = (App)getApplication();
+        app.stopChatSocket(CHAT_EVENT_LISTENERS);;
         //socket.off("user joined", onUserJoined);
         //socket.off("user left", onUserLeft);
         //socket.off("typing", onTyping);
         //socket.off("stop typing", onStopTyping);
-
 
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.emojiDidLoaded);
 

@@ -90,6 +90,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.socket.client.Socket;
@@ -173,6 +175,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     //add by supri
     private Location currentBestLocation = null;
     static final long TWO_MINUTES = TimeUnit.MINUTES.toSeconds(2);
+
+    private static Map<String, Emitter.Listener> CHAT_EVENT_LISTENERS = new LinkedHashMap<String, Emitter.Listener>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -379,20 +383,11 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
         //CHAT SOCKET
         App app = (App) getApplication();
-        /*if ( app.getUserApp() == null ) {
-            String id = NativeUtilities.getDeviceUniqueID(getContentResolver());
-            app.setUserApp(new UserApp(id, id, "", id + "@zmail.com", ""));
-        }*/
-
-        socket = app.getSocket();
-        socket.on(Socket.EVENT_CONNECT, onConnect);
-        socket.on(Socket.EVENT_DISCONNECT, onDisconnect);
-        socket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
-        socket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
-        socket.on("login", onLogin);
-        socket.on("new message", onNewMessage);
-
-        socket.connect();
+        CHAT_EVENT_LISTENERS.putAll(new LinkedHashMap<String, Emitter.Listener>(){{
+            put(App.SOCKET_EVENT_LOGIN, onLogin);
+            put(App.SOCKET_EVENT_NEW_MESSAGE, onNewMessage);
+        }});
+        socket = app.startChatSocket(CHAT_EVENT_LISTENERS);
 
         updateNewMessageCounter();
     }
@@ -576,21 +571,11 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             //goToScreen = new Intent(getApplicationContext(), ListAndMapAllLocActivity.class);
             goToScreen = new Intent(getApplicationContext(), MapViewWithListActivity.class);
             final Category category = new Category(catId, icon, kategori, radius);
-            /*
-            Bundle paket = new Bundle();
-            paket.putInt("cat_id", cat_id);
-            paket.putString("kategori", kategori);
-            paket.putDouble("radius", radius);
-            paket.putDouble("latitude", latitude);
-            paket.putDouble("longitude", longitude);
-            paket.putString("icon", icon);
-            */
+
             goToScreen.putExtra("currentBestLocation", currentBestLocation);
             goToScreen.putExtra("category", category);
-            //myLocationManager.removeUpdates(MainMenuActivity.this);
-            //myLocationManager = null;
-            removeUpdateLocationManager();
 
+            removeUpdateLocationManager();
             startActivity(goToScreen);
             finish();
         }
@@ -1312,24 +1297,15 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         super.onResume();
         Log.d(Constants.TAG, "ON RESUME");
         Log.d(Constants.TAG, "locManager = " + ((App)getApplication()).getLocationManager());
-        if (socket == null)
-            socket = ((App) getApplication()).getSocket();
-
-        if (socket.connected() == false)
-            socket.connect();
+        App app = (App)getApplication();
+        socket = app.resumeChatSocket();
 
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        socket.disconnect();
-        socket.off(Socket.EVENT_CONNECT, onConnect);
-        socket.off(Socket.EVENT_DISCONNECT, onDisconnect);
-        socket.off(Socket.EVENT_CONNECT_ERROR, onConnectError);
-        socket.off(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
-        socket.off("login", onLogin);
-        socket.off("new message", onNewMessage);
+        App app = (App)getApplication();
+        app.stopChatSocket(CHAT_EVENT_LISTENERS);;
     }
 }

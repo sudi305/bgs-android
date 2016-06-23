@@ -9,9 +9,11 @@ import com.bgs.common.NativeLoader;
 import com.bgs.model.UserApp;
 
 import java.net.URISyntaxException;
+import java.util.Map;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 
 /**
  * Created by madhur on 3/1/15.
@@ -63,4 +65,45 @@ public class App extends Application {
         return userApp;
     }
     public LocationManager getLocationManager() {return locationManager;}
+
+    public final static String SOCKET_EVENT_LOGIN = "login";
+    public final static String SOCKET_EVENT_USER_JOIN = "user join";
+    public final static String SOCKET_EVENT_USER_LEFT = "user left";
+    public final static String SOCKET_EVENT_NEW_MESSAGE = "new message";
+    public final static String SOCKET_EVENT_TYPING = "typing";
+    public final static String SOCKET_EVENT_STOP_TYPING = "stop typing";
+    public final static String SOCKET_EVENT_LIST_CONTACT  = "list contact";
+    public final static String SOCKET_EVENT_UPDATE_CONTACT = "update contact";
+
+    private String[] SOCKET_EVENTS = {Socket.EVENT_CONNECT,  Socket.EVENT_DISCONNECT,
+                                        Socket.EVENT_CONNECT_ERROR, Socket.EVENT_CONNECT_TIMEOUT,
+                                        SOCKET_EVENT_LOGIN, SOCKET_EVENT_USER_JOIN,
+                                        SOCKET_EVENT_USER_LEFT, SOCKET_EVENT_NEW_MESSAGE,
+                                        SOCKET_EVENT_TYPING, SOCKET_EVENT_STOP_TYPING,
+                                        SOCKET_EVENT_LIST_CONTACT, SOCKET_EVENT_UPDATE_CONTACT
+                                };
+
+    public Socket startChatSocket(Map<String, Emitter.Listener> listener) {
+        for(String event : listener.keySet() ) {
+            mSocket.on(event, listener.get(event));
+        }
+        if (mSocket.connected() == false)
+            mSocket.connect();
+
+        return mSocket;
+    }
+
+    public Socket resumeChatSocket() {
+        if (mSocket.connected() == false)
+            mSocket.connect();
+
+        return mSocket;
+    }
+
+    public void stopChatSocket(Map<String, Emitter.Listener> listener) {
+        mSocket.disconnect();
+        for(String event : listener.keySet() ) {
+            mSocket.off(event, listener.get(event));
+        }
+    }
 }
