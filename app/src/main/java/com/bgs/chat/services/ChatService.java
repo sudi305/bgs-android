@@ -84,7 +84,7 @@ public class ChatService extends IntentService {
             socket = app.getSocket();
             //Log.d("DHEKET", "IS LOGIN "+ ((MainChatActivity)getApplicationContext()).isLogin());
             //Log.d("DHEKET", "run background services get contacts...");
-            if ( socket.connected() ) socket.emit("get contacts");
+            if ( socket.connected() ) socket.emit(App.SOCKET_EVENT_GET_CONTACTS);
 
         }catch (Exception e) {
             Log.e("DHEKET",e.getMessage(), e);

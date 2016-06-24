@@ -28,6 +28,7 @@ import com.bgs.chat.model.ChatContact;
 import com.bgs.chat.model.ChatHelper;
 import com.bgs.chat.model.ChatMessage;
 import com.bgs.chat.model.MessageType;
+import com.bgs.chat.services.ChatService;
 import com.bgs.common.NativeUtilities;
 import com.bgs.common.Utility;
 import com.bgs.dheket.DetailLocationWithMerchantActivity;
@@ -83,13 +84,28 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
     private ChatContact chatContact;
     private Lokasi lokasi;
     private Location currentBestLocation;
+
     private static Map<String, Emitter.Listener> CHAT_EVENT_LISTENERS = new LinkedHashMap<String, Emitter.Listener>();
+    private boolean mLogin = false;
+    private boolean mConnect = false;
+
+    public boolean isConnect() {
+        return mConnect;
+    }
+    public void setConnect(boolean mConnect) {
+        this.mConnect = mConnect;
+    }
+    public boolean isLogin() {
+        return mLogin;
+    }
+    public void setLogin(boolean mLogin) {
+        this.mLogin = mLogin;
+    }
 
     //private App app;
     private Activity getActivity() {
         return ChatPageActivity.this;
     }
-
     public static void startChatFromContact(Context context, ChatContact param1) {
         startChatActivity(context, ACTION_CHAT_FROM_CONTACT, param1, null, null);
     }
@@ -174,6 +190,10 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
                     Intent intent = new Intent(getApplicationContext(), DetailLocationWithMerchantActivity.class);
                     intent.putExtra(EXTRA_PARAM2, lokasi);
                     intent.putExtra(EXTRA_PARAM2, currentBestLocation);
+                } else if ( getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_CONTACT)
+                            || getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_HISTORY)) {
+                    Intent toChat = new Intent(getApplicationContext(), MainChatActivity.class);
+                    startActivity(toChat);
                 }
                 finish();
             }
@@ -249,7 +269,7 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
         }
         //message = String.format("{to:'%s',msg:'%s'}",userContact.getName(), message);
         // perform the sending message attempt.
-        socket.emit("new message", obj);
+        socket.emit(App.SOCKET_EVENT_NEW_MESSAGE, obj);
 
     }
 
@@ -609,7 +629,7 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
         super.onDestroy();
 
         App app = (App)getApplication();
-        app.stopChatSocket(CHAT_EVENT_LISTENERS);;
+        app.stopChatSocket(CHAT_EVENT_LISTENERS, false);;
         //socket.off("user joined", onUserJoined);
         //socket.off("user left", onUserLeft);
         //socket.off("typing", onTyping);

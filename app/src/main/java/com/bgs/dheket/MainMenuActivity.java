@@ -155,19 +155,15 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     private boolean mLogin = false;
     private boolean mConnect = false;
 
-
     public boolean isConnect() {
         return mConnect;
     }
-
     public void setConnect(boolean mConnect) {
         this.mConnect = mConnect;
     }
-
     public boolean isLogin() {
         return mLogin;
     }
-
     public void setLogin(boolean mLogin) {
         this.mLogin = mLogin;
     }
@@ -384,6 +380,10 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         //CHAT SOCKET
         App app = (App) getApplication();
         CHAT_EVENT_LISTENERS.putAll(new LinkedHashMap<String, Emitter.Listener>(){{
+            put(Socket.EVENT_CONNECT, onConnect);
+            put(Socket.EVENT_DISCONNECT, onDisconnect);
+            put(Socket.EVENT_CONNECT_ERROR, onConnectError);
+            put(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
             put(App.SOCKET_EVENT_LOGIN, onLogin);
             put(App.SOCKET_EVENT_NEW_MESSAGE, onNewMessage);
         }});
@@ -815,6 +815,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         } else if (id == R.id.nav_chat) {
             Intent toChat = new Intent(getApplicationContext(), MainChatActivity.class);
             startActivity(toChat);
+            finish();
         } else if (id == R.id.nav_setting) {
 
         } /*else if (id == R.id.nav_share) {
@@ -1172,7 +1173,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                     user.put("name", userApp.getName());
                     user.put("email", userApp.getEmail());
                     user.put("phone", userApp.getPhone());
-                    socket.emit("do login", user);
+                    socket.emit(App.SOCKET_EVENT_DO_LOGIN, user);
                 } catch (JSONException e) {
                     Log.e(Constants.TAG_CHAT, e.getMessage(), e);
                 }
@@ -1306,6 +1307,6 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     public void onDestroy() {
         super.onDestroy();
         App app = (App)getApplication();
-        app.stopChatSocket(CHAT_EVENT_LISTENERS);;
+        app.stopChatSocket(CHAT_EVENT_LISTENERS, false);;
     }
 }

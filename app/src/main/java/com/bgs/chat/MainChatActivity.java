@@ -1,6 +1,7 @@
 package com.bgs.chat;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -19,8 +20,11 @@ import com.bgs.chat.model.ChatHelper;
 import com.bgs.chat.model.ChatMessage;
 import com.bgs.chat.model.MessageType;
 import com.bgs.chat.services.ChatService;
+import com.bgs.common.Constants;
 import com.bgs.dheket.App;
+import com.bgs.dheket.MainMenuActivity;
 import com.bgs.dheket.R;
+import com.bgs.model.UserApp;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,6 +54,22 @@ public class MainChatActivity extends AppCompatActivity {
     */
 
     private static Map<String, Emitter.Listener> CHAT_EVENT_LISTENERS = new LinkedHashMap<String, Emitter.Listener>();
+    private boolean mLogin = false;
+    private boolean mConnect = false;
+
+    public boolean isConnect() {
+        return mConnect;
+    }
+    public void setConnect(boolean mConnect) {
+        this.mConnect = mConnect;
+    }
+    public boolean isLogin() {
+        return mLogin;
+    }
+    public void setLogin(boolean mLogin) {
+        this.mLogin = mLogin;
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +80,7 @@ public class MainChatActivity extends AppCompatActivity {
         goBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //onBackPressed();
+                toMainMenu();
                 finish();
             }
         });
@@ -114,6 +134,11 @@ public class MainChatActivity extends AppCompatActivity {
         title.setText(titleText);
 
         CHAT_EVENT_LISTENERS.putAll(new LinkedHashMap<String, Emitter.Listener>(){{
+            put(Socket.EVENT_CONNECT, onConnect);
+            put(Socket.EVENT_DISCONNECT, onDisconnect);
+            put(Socket.EVENT_CONNECT_ERROR, onConnectError);
+            put(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
+            put(App.SOCKET_EVENT_LOGIN, onLogin);
             put(App.SOCKET_EVENT_USER_JOIN, onUserJoin);
             put(App.SOCKET_EVENT_LIST_CONTACT, onListContact);
             put(App.SOCKET_EVENT_UPDATE_CONTACT, onUpdateContact);
@@ -123,9 +148,115 @@ public class MainChatActivity extends AppCompatActivity {
 
     }
 
+    public void toMainMenu(){
+        Intent mainMenu = new Intent(getApplicationContext(),MainMenuActivity.class);
+        startActivity(mainMenu);
+        finish();
+    }
+
     private Activity getActivity() {
         return this;
     }
+
+    private void attemptLogin() {
+        if (isConnect()) {
+            if (isLogin()) return;
+            UserApp userApp = ((App) getApplication()).getUserApp();
+            if (userApp != null) {
+
+                try {
+                    //String name = NativeUtilities.getDeviceUniqueID(getContentResolver());
+                    JSONObject user = new JSONObject();
+                    user.put("name", userApp.getName());
+                    user.put("email", userApp.getEmail());
+                    user.put("phone", userApp.getPhone());
+                    socket.emit(App.SOCKET_EVENT_DO_LOGIN, user);
+                } catch (JSONException e) {
+                    Log.e(Constants.TAG_CHAT, e.getMessage(), e);
+                }
+            }
+        }
+    }
+
+    private Emitter.Listener onConnect = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (!isConnect()) {
+                        setConnect(true);
+                        Log.d(Constants.TAG_CHAT, getResources().getString(R.string.connect));
+                    }
+
+
+                    attemptLogin();
+                    //if(null!=userContact) socket.emit("add user", userContact.getName());
+                    //isLogin = true;
+                }
+            });
+        }
+    };
+
+    private Emitter.Listener onDisconnect = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    setConnect(false);
+                    setLogin(false);
+                    //Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_LONG).show();
+                    Log.d(Constants.TAG_CHAT, getResources().getString(R.string.disconnect));
+                    //attemptLogin();
+                    while (isConnect() == false)
+                        ChatService.startActionKeepConnection(getActivity());
+                }
+            });
+        }
+    };
+
+    private Emitter.Listener onConnectError = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    setConnect(false);
+                    setLogin(false);
+                    //Toast.makeText(getApplicationContext(), R.string.error_connect, Toast.LENGTH_LONG).show();
+                    Log.d(Constants.TAG_CHAT, getResources().getString(R.string.error_connect));
+                    //attemptLogin();
+
+                }
+            });
+        }
+    };
+
+    private Emitter.Listener onLogin = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            if (isLogin()) return;
+
+            JSONObject data = (JSONObject) args[0];
+            try {
+                setLogin(data.getBoolean("success"));
+                //Toast.makeText(getApplicationContext(), "Login1 " + isLogin, Toast.LENGTH_SHORT).show();
+            } catch (JSONException e) {
+                Log.e(Constants.TAG_CHAT, e.getMessage(), e);
+                return;
+            }
+            Log.d(Constants.TAG_CHAT, "Login " + isLogin());
+            //Toast.makeText(getApplicationContext(), "Login2 " + isLogin, Toast.LENGTH_SHORT).show();
+
+            //retrive contact
+            if (isLogin()) {
+                ChatService.startActionUpdateContact(getActivity());
+                //socket.emit("get contacts");
+            }
+        }
+    };
+    //END SOCKET METHOD BLOCK
 
     private Emitter.Listener onNewMessage = new Emitter.Listener() {
         @Override
@@ -270,6 +401,11 @@ public class MainChatActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d(Constants.TAG_CHAT, "OnResume");
+        //reset page adapter
+        //pagerAdapter = new ChatTabPagerAdapter(getSupportFragmentManager());
+        //viewPager.setAdapter(pagerAdapter);
+
         App app = (App)getApplication();
         socket = app.resumeChatSocket();
         //retrive contact
@@ -280,7 +416,7 @@ public class MainChatActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         App app = (App)getApplication();
-        app.stopChatSocket(CHAT_EVENT_LISTENERS);
+        app.stopChatSocket(CHAT_EVENT_LISTENERS, false);
     }
 
 

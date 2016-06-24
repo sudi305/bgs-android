@@ -74,6 +74,9 @@ public class App extends Application {
     public final static String SOCKET_EVENT_STOP_TYPING = "stop typing";
     public final static String SOCKET_EVENT_LIST_CONTACT  = "list contact";
     public final static String SOCKET_EVENT_UPDATE_CONTACT = "update contact";
+    //EVENT OUT
+    public final static String SOCKET_EVENT_DO_LOGIN = "do login";
+    public final static String SOCKET_EVENT_GET_CONTACTS = "get contacts";
 
     private String[] SOCKET_EVENTS = {Socket.EVENT_CONNECT,  Socket.EVENT_DISCONNECT,
                                         Socket.EVENT_CONNECT_ERROR, Socket.EVENT_CONNECT_TIMEOUT,
@@ -100,8 +103,10 @@ public class App extends Application {
         return mSocket;
     }
 
-    public void stopChatSocket(Map<String, Emitter.Listener> listener) {
-        mSocket.disconnect();
+    public void stopChatSocket(Map<String, Emitter.Listener> listener, boolean disconnect) {
+        if ( disconnect )
+            mSocket.disconnect();
+
         for(String event : listener.keySet() ) {
             mSocket.off(event, listener.get(event));
         }

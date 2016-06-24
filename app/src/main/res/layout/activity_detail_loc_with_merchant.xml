@@ -145,26 +145,27 @@
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center_vertical|center_horizontal"
                 android:layout_gravity="center_horizontal|center_vertical">
 
 
-            <ImageView
-                android:id="@+id/chat_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal|center_vertical"
-                android:src="@drawable/ic_question_answer_24dp"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:drawableTint="#ffffff"
-                android:text="  CHAT TO MERCHANT"
-                android:id="@+id/model"
-                android:layout_gravity="center_horizontal|center_vertical"
-                android:layout_toRightOf="@+id/chat_icon"
-                android:clickable="true"
-                android:textColor="#ffffff" />
+                <ImageView
+                    android:id="@+id/chat_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/ic_question_answer_24dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:drawableTint="#ffffff"
+                    android:text="  CHAT TO MERCHANT"
+                    android:id="@+id/model"
+                    android:layout_gravity="center_vertical"
+                    android:layout_toRightOf="@+id/chat_icon"
+                    android:clickable="true"
+                    android:textColor="#ffffff" />
             </RelativeLayout>
         </LinearLayout>
 
