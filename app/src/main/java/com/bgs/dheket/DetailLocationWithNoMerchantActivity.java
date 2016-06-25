@@ -37,6 +37,8 @@ import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import okhttp3.internal.Util;
+
 /**
  * Created by SND on 28/03/2016.
  */
@@ -155,12 +157,12 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
     }
 
     public void back_to_previous_screen(){
-        Intent intent = new Intent(getApplicationContext(), MapViewWithListActivity.class);
+        Intent intent = new Intent(this, MapViewWithListActivity.class);
 
 
         Category category = lokasi.getCategory();
         if (" ".equalsIgnoreCase(category.getName())){
-            intent = new Intent(getApplicationContext(),MapViewActivity.class);
+            intent = new Intent(this,MapViewActivity.class);
             //paket.putString("email",category.getEmail());
             //paket.putStringArray("icon", icon_cat);
             //paket.putIntArray("id_cat",id_cat);
@@ -176,8 +178,12 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
 
     public void getDetailLocation() {
         CallWebPageTask task = new CallWebPageTask(this);
-        Category category = lokasi.getCategory();
-        String urls = url + "/" + lokasi.getLatitude() + "/" + lokasi.getLongitude() + "/" + lokasi.getId();
+        double latitude =0, longitude = 0;
+        if ( currentBestLocation != null) {
+            latitude = currentBestLocation.getLatitude();
+            longitude = currentBestLocation.getLongitude();
+        }
+        String urls = url + "/" + latitude + "/" + longitude + "/" + lokasi.getId();
         Log.d(Constants.TAG, "Get Detail Lokasi url => " + urls);
         task.execute(new String[]{urls});
     }
@@ -281,14 +287,10 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
             textView_namaloc.setText(lokasiDetail.getName());
             actionBar.setTitle(textView_namaloc.getText());
             textView_alamatloc.setText("@"+lokasiDetail.getAddress());
-            double distance = lokasiDetail.getDistance(); //Double.parseDouble(formatNumber.changeFormatNumber(lokasiDetail.getDistance()));
-            int formatDistance = 0;
-            if (distance < 1){
-                formatDistance = (int) (distance*1000);
-                textView_distanceloc.setText(""+formatDistance+" M");
-            } else {
-                textView_distanceloc.setText(""+distance+" Km");
-            }
+            Log.d(Constants.TAG, "D1 => " + lokasiDetail.getDistance());
+            Log.d(Constants.TAG, "D2 => " + Utility.changeFormatNumber(lokasiDetail.getDistance()));
+            double distance = lokasiDetail.getDistance();
+            textView_distanceloc.setText(Utility.andjustDistanceUnit(distance));
 
             textView_descriptionloc.setText(lokasiDetail.getDescription());
             //textView_simpledescloc = (TextView)findViewById(R.id.textView_dl_nm_loc_simple_description);

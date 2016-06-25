@@ -81,7 +81,6 @@ public class MainChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 toMainMenu();
-                finish();
             }
         });
 
@@ -149,7 +148,7 @@ public class MainChatActivity extends AppCompatActivity {
     }
 
     public void toMainMenu(){
-        Intent mainMenu = new Intent(getApplicationContext(),MainMenuActivity.class);
+        Intent mainMenu = new Intent(this,MainMenuActivity.class);
         startActivity(mainMenu);
         finish();
     }
@@ -256,7 +255,7 @@ public class MainChatActivity extends AppCompatActivity {
             }
         }
     };
-    //END SOCKET METHOD BLOCK
+
 
     private Emitter.Listener onNewMessage = new Emitter.Listener() {
         @Override
@@ -397,6 +396,8 @@ public class MainChatActivity extends AppCompatActivity {
 
         }
     };
+
+    //END SOCKET METHOD BLOCK
 
     @Override
     protected void onResume() {

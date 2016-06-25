@@ -214,8 +214,12 @@ public class DetailLocationWithMerchantActivity extends AppCompatActivity implem
 
     public void getDetailLocation() {
         CallWebPageTask task = new CallWebPageTask(this);
-        Category category = lokasi.getCategory();
-        String urls = url + "/" + lokasi.getLatitude() + "/" + lokasi.getLongitude() + "/" + lokasi.getId();
+        double latitude =0, longitude = 0;
+        if ( currentBestLocation != null) {
+            latitude = currentBestLocation.getLatitude();
+            longitude = currentBestLocation.getLongitude();
+        }
+        String urls = url + "/" + latitude + "/" + longitude + "/" + lokasi.getId();
         Log.d(Constants.TAG, "Get Detail Lokasi url => " + urls);
         task.execute(new String[]{urls});
     }
@@ -319,16 +323,9 @@ public class DetailLocationWithMerchantActivity extends AppCompatActivity implem
             actionBar.setTitle(textView_namaloc.getText());
             textView_alamatloc.setText("@"+lokasiDetail.getAddress());
             Log.d(Constants.TAG, "D1 => " + lokasiDetail.getDistance());
-            Log.d(Constants.TAG, "D2 => " + formatNumber.changeFormatNumber(lokasiDetail.getDistance()));
-            double distance = lokasiDetail.getDistance();//Double.parseDouble(formatNumber.changeFormatNumber(lokasiDetail.getDistance()));
-            Log.d(Constants.TAG, "D3 => " + distance);
-            int formatDistance = 0;
-            if (distance < 1){
-                formatDistance = (int) (distance*1000);
-                textView_distanceloc.setText(""+formatDistance+" M");
-            } else {
-                textView_distanceloc.setText(""+distance+" Km");
-            }
+            Log.d(Constants.TAG, "D2 => " + Utility.changeFormatNumber(lokasiDetail.getDistance()));
+            double distance = lokasiDetail.getDistance();
+            textView_distanceloc.setText(Utility.andjustDistanceUnit(distance));
 
             textView_descriptionloc.setText(lokasiDetail.getDescription());
             //textView_simpledescloc = (TextView)findViewById(R.id.textView_dl_nm_loc_simple_description);

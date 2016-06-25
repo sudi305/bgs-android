@@ -83,7 +83,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
 
     LocationDisplayManager mLDM;
 
-    Utility formatNumber = new Utility();
+    //Utility formatNumber = new Utility();
 
     private String jsonResult = "";
 
@@ -140,7 +140,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
 
         actionBar.setTitle(category.getName());
 //        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
-        actionBar.setSubtitle(Html.fromHtml("<font color='#ff9800' size='10'>Radius " + formatNumber.changeFormatNumber(category.getRadius()) + " Km</font>"));
+        actionBar.setSubtitle(Html.fromHtml("<font color='#ff9800' size='10'>Radius " + Utility.changeFormatNumber(category.getRadius()) + " Km</font>"));
 
         urls = String.format(getResources().getString(R.string.link_getLocationAndMerchByCategory));//"http://dheket.esy.es/getLocationByCategory.php"
 
@@ -191,7 +191,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
         @Override
         public void onSingleTap(float x, float y) {
             // Find out if we tapped on a Graphic
-            Intent gotoMapExtend = new Intent(getApplicationContext(),MapViewExtendActivity.class);
+            Intent gotoMapExtend = new Intent(MapViewWithListActivity.this,MapViewExtendActivity.class);
             Bundle paket = new Bundle();
             paket.putInt("cat_id", category.getId());
             paket.putString("kategori", category.getName());
@@ -382,7 +382,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
     }
 
     public void toMainMenu(){
-        Intent toMainMenu = new Intent(getApplicationContext(),MainMenuActivity.class);
+        Intent toMainMenu = new Intent(this,MainMenuActivity.class);
         startActivity(toMainMenu);
         finish();
     }
@@ -605,7 +605,8 @@ public class MapViewWithListActivity extends AppCompatActivity {
                 TextView alamat = (TextView)viewItem.findViewById(R.id.textView_il_alamat);
                 alamat.setText(lokasi.getAddress());
                 TextView jarak = (TextView)viewItem.findViewById(R.id.textView_il_jarak);
-                jarak.setText(formatNumber.changeFormatNumber(lokasi.getDistance()) +" Km");
+
+                jarak.setText(Utility.andjustDistanceUnit(lokasi.getDistance()));
                 ImageView foto = (ImageView)viewItem.findViewById(R.id.imageView_il_foto);
                 viewItem.setTag(lokasi);
                 linearLayout_contentlist.addView(viewItem);
@@ -620,9 +621,9 @@ public class MapViewWithListActivity extends AppCompatActivity {
                         Lokasi _lokasi =  (Lokasi)v.getTag();
                         if ( _lokasi.getMerchant() != null ) {
                             Log.d(Constants.TAG, "call listItem->setOnClickListener()=>merchant=" + _lokasi.getMerchant().getName() );
-                            goToScreen = new Intent(getApplicationContext(), DetailLocationWithMerchantActivity.class);
+                            goToScreen = new Intent(MapViewWithListActivity.this, DetailLocationWithMerchantActivity.class);
                         } else {
-                            goToScreen = new Intent(getApplicationContext(), DetailLocationWithNoMerchantActivity.class);
+                            goToScreen = new Intent(MapViewWithListActivity.this, DetailLocationWithNoMerchantActivity.class);
                         }
                         goToScreen.putExtra("lokasi", _lokasi);
                         goToScreen.putExtra("currentBestLocation", currentBestLocation);

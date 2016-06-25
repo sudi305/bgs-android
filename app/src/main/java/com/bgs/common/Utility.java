@@ -13,7 +13,6 @@ import java.text.NumberFormat;
  * Created by SND on 29/01/2016.
  */
 public class Utility {
-    NumberFormat formatter;
     String doubleToString;
     double originNumber;
 
@@ -38,8 +37,8 @@ public class Utility {
         runOnUIThread(runnable, 0);
     }
 
-    public String changeFormatNumber(double originNumber){
-        formatter = new DecimalFormat("#0.0");
+    public static String changeFormatNumber(double originNumber){
+        NumberFormat formatter = new DecimalFormat("#0.0");
         String doubleToString = String.valueOf(originNumber);
         String numberMod = "", setNumber = "", replace = "";
         double stringToDouble;
@@ -66,6 +65,15 @@ public class Utility {
         stringToDouble = Double.parseDouble(replace);
 
         return String.valueOf(stringToDouble);
+    }
+
+    public static String andjustDistanceUnit(Double distance) {
+        if (distance < 1){
+            double formatDistance = distance*1000;
+            return changeFormatNumber((int)formatDistance) + " M";
+        } else {
+            return changeFormatNumber(distance) + " Km";
+        }
     }
 
 }

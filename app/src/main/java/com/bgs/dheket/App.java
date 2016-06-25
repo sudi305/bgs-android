@@ -64,6 +64,7 @@ public class App extends Application {
     public UserApp getUserApp() {
         return userApp;
     }
+    public void setLocationManager(LocationManager locationManager) {this.locationManager=locationManager;}
     public LocationManager getLocationManager() {return locationManager;}
 
     public final static String SOCKET_EVENT_LOGIN = "login";

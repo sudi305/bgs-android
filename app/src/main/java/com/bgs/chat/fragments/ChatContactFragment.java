@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bgs.chat.ChatPageActivity;
+import com.bgs.common.Constants;
 import com.bgs.dheket.R;
 import com.bgs.chat.adapters.ChatContactListAdapter;
 import com.bgs.chat.model.ChatContact;
@@ -132,6 +134,8 @@ public class ChatContactFragment extends Fragment {
      * @param contactList
      */
     public void updateContact(final ArrayList<ChatContact> contactList) {
+        Log.d(Constants.TAG_CHAT, "getActivity()==" + getActivity());
+        if ( getActivity() == null ) return;
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -164,6 +168,8 @@ public class ChatContactFragment extends Fragment {
      * @param contact
      */
     public void updateContact(final ChatContact contact) {
+        Log.d(Constants.TAG_CHAT, "getActivity()==" + getActivity());
+        if ( getActivity() == null ) return;
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -194,6 +200,8 @@ public class ChatContactFragment extends Fragment {
      * @param contactEmail
      */
     public void removeContact(final String contactEmail) {
+        Log.d(Constants.TAG_CHAT, "getActivity()==" + getActivity());
+        if ( getActivity() == null ) return;
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {

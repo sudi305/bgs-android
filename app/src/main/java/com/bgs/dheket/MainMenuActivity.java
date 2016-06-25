@@ -250,27 +250,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         textViewLoad = (TextView) findViewById(R.id.textView_cm_load);
 
         rl = (RelativeLayout) findViewById(R.id.rl_main_menu_bubble);
-        initFormSettingRadius();
-        updateData();
-        preProcessingGetData();
-        getServiceFromGPS();
-        if ( currentBestLocation == null ) {
-            //hacked for emu
-            currentBestLocation = Constants.DEMO_LOCATION;
-            Log.d(Constants.TAG, String.format("latitude=%s, longitude=%s", currentBestLocation.getLatitude(), currentBestLocation.getLongitude()));
-        }
-        /*
-        if ( latitude == 0 && longitude == 0 ) {
-            //get last location
-            Location location = getLastBestLocation();
-            Log.d(Constants.TAG, "location=" + location);
-            if ( location != null ) {
-                Log.d(Constants.TAG, String.format("location=%s",location.getProvider()));
-                latitude = location.getLatitude();
-                longitude = location.getLongitude();
-            }
-        }
-        */
+        //old place init service gps
+
         final Animation animTranslate = AnimationUtils.loadAnimation(this, R.anim.anim_translate);
         final Animation animScale = AnimationUtils.loadAnimation(this, R.anim.anim_scale);
         final Animation animButtonPress = AnimationUtils.loadAnimation(this, R.anim.anim_scale_button_press);
@@ -286,9 +267,21 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 //        DialogFragment Dialog = Dialogs.newInstance(1);
 //        Dialog.show(getFragmentManager(), "tag");
 
+        initFormSettingRadius();
+        //updateData();
+        preProcessingGetData();
+        getServiceFromGPS();
+        if ( currentBestLocation == null ) {
+            //hacked for emu
+            currentBestLocation = Constants.DEMO_LOCATION;
+            Log.d(Constants.TAG, String.format("latitude=%s, longitude=%s", currentBestLocation.getLatitude(), currentBestLocation.getLongitude()));
+        }
+
         if (AccessToken.getCurrentAccessToken() != null) {
             Log.d(Constants.TAG, "getdatafrom fb yes");
             RequestDataFromFB();
+        } else {
+            //getDataCategory(email);
         }
 
         view_usrPro.setOnClickListener(new View.OnClickListener() {
@@ -574,7 +567,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     public void toListAndMapScreen(int catId, double radius, String kategori, String icon, int lokasi) {
         if (lokasi != 0) {
             //goToScreen = new Intent(getApplicationContext(), ListAndMapAllLocActivity.class);
-            goToScreen = new Intent(getApplicationContext(), MapViewWithListActivity.class);
+            goToScreen = new Intent(this, MapViewWithListActivity.class);
             final Category category = new Category(catId, icon, kategori, radius);
 
             goToScreen.putExtra("currentBestLocation", currentBestLocation);
@@ -587,7 +580,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     }
 
     public void toSetting() {
-        Intent gotoSetting = new Intent(getApplicationContext(), SettingCategoryBubbleActivity.class);
+        Intent gotoSetting = new Intent(this, SettingCategoryBubbleActivity.class);
         Bundle paket = new Bundle();
         paket.putString("email", email);
         gotoSetting.putExtras(paket);
@@ -627,12 +620,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                             // set profile image to imageview using Picasso or Native methods
                             picasso.with(getApplicationContext()).load(profilePicUrl).transform(new CircleTransform()).into(imVi_nav_usrPro);
                         }
-                        double longitude =0, latitude = 0;
-                        if ( currentBestLocation != null ) {
-                            latitude = currentBestLocation.getLatitude();
-                            longitude = currentBestLocation.getLongitude();
-                        }
-                        getDataCategory(email, latitude, longitude);
+                        getDataCategory(email);
 
                         //update user app
                         //add by supri 2016/6/16
@@ -717,7 +705,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
         if (item.getItemId() == R.id.goto_search) {
             if (real_radius > 0) {
-                Intent toSearch = new Intent(getApplicationContext(), SearchLocationByCategoryActivity.class);
+                Intent toSearch = new Intent(this, SearchLocationByCategoryActivity.class);
                 //myLocationManager.removeUpdates(MainMenuActivity.this);
                 //myLocationManager = null;
                 removeUpdateLocationManager();
@@ -818,7 +806,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         } else if (id == R.id.nav_profile) {
 
         } else if (id == R.id.nav_chat) {
-            Intent toChat = new Intent(getApplicationContext(), MainChatActivity.class);
+            Intent toChat = new Intent(this, MainChatActivity.class);
             startActivity(toChat);
             finish();
         } else if (id == R.id.nav_setting) {
@@ -862,6 +850,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             Log.d(Constants.TAG, "Proses 2 -> Lakukan Pemanggilan WS = " + urls);
             String response = "";
             HttpGetOrPost httpGetOrPost = new HttpGetOrPost();
+
             response = httpGetOrPost.getRequest(urls[0]);
             try {
                 //simpan data dari web ke dalam array
@@ -872,7 +861,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 email = jObject.getString("email");
                 radius = (real_radius);
                 categories = new Category[menuItemArray.length()];
-                Log.d(Constants.TAG, "Proses 3 -> Try get data dari WS = " + urls + "\nJumlah data dari WS = " + menuItemArray.length());
+                Log.d(Constants.TAG, "Proses 3 -> Try get data dari WS = " + urls[0] + "\nJumlah data dari WS = " + menuItemArray.length());
                 for (int i = 0; i < menuItemArray.length(); i++) {
                     id_kategori[i] = menuItemArray.getJSONObject(i).getInt("id_category");
                     nama_katagori[i] = menuItemArray.getJSONObject(i).getString("category_name").toString();
@@ -890,8 +879,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                     categories[i] = category;
                 }
             } catch (JSONException e) {
-                e.printStackTrace();
-                Log.e(Constants.TAG, "Proses 4 -> Gagal Panggil WS = " + urls);
+                Log.e(Constants.TAG, "Proses 4 -> Gagal Panggil WS = " + urls[0], e);
             }
 
             return response;
@@ -1024,7 +1012,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             if (responseServer != null && responseServer.equalsIgnoreCase("{\"success\":1}")) {
                 Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
                 responseServer = "";
-                getDataCategory(email, currentBestLocation.getLatitude(), currentBestLocation.getLongitude());
+                getDataCategory(email);
             } else {
                 if (responseServer.equalsIgnoreCase("") || responseServer.isEmpty()) {
                     Toast.makeText(getApplicationContext(), "Ops, Error! Please Try Again!", Toast.LENGTH_SHORT).show();
@@ -1033,10 +1021,15 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         }
     }
 
-    public void getDataCategory(String email, double lat, double lng) {
+    public void getDataCategory(String email) {
         CallWebPageTask task = new CallWebPageTask();
         task.applicationContext = getApplicationContext();
-        urls = url + "/" + email + "/" + lat + "/" + lng;
+        double longitude =0, latitude = 0;
+        if ( currentBestLocation != null ) {
+            latitude = currentBestLocation.getLatitude();
+            longitude = currentBestLocation.getLongitude();
+        }
+        urls = url + "/" + email + "/" + latitude + "/" + longitude;
         Log.d(Constants.TAG, "Proses 1 -> Persiapan Panggil WS = " + urls);
         if (email != null) task.execute(new String[]{urls});
     }
@@ -1098,7 +1091,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         //Toast.makeText(getApplicationContext(),"lat "+latitude+" | lgt "+longitude, Toast.LENGTH_LONG).show();
         Log.d(Constants.TAG, "Proses 6 -> Ada perubahan lokasi maka panggil WS lagi= " + urls);
 
-        getDataCategory(email, currentBestLocation.getLatitude(), currentBestLocation.getLongitude());
+        getDataCategory(email);
     }
 
     @Override
@@ -1120,8 +1113,10 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
     public void getServiceFromGPS() {
         LocationManager locManager = ((App) getApplication()).getLocationManager();
-        locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
+        if ( locManager == null) {
+            locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            ((App) getApplication()).setLocationManager(locManager);
+        }
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             return;
@@ -1129,14 +1124,17 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
         Criteria criteria = new Criteria();
         String provider = locManager.getBestProvider(criteria, true);
-        locManager.requestLocationUpdates(provider, 20000, 0, this);
 
         Log.d(Constants.TAG, "locManager => " + locManager);
-        currentBestLocation = GpsUtils.getLastBestLocation(locManager);//myLocationManager.getLastKnownLocation(provider);
+        currentBestLocation = locManager.getLastKnownLocation(provider);
         Log.d(Constants.TAG, "currentBestLocation => " + currentBestLocation);
+
+        /*
         if (currentBestLocation != null) {
             onLocationChanged(currentBestLocation);
         }
+        */
+        locManager.requestLocationUpdates(provider, 20000, 0, this);
 
     }
 
@@ -1312,9 +1310,9 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     public void onResume() {
         super.onResume();
         Log.d(Constants.TAG, "ON RESUME");
-        Log.d(Constants.TAG, "locManager = " + ((App)getApplication()).getLocationManager());
         App app = (App)getApplication();
         socket = app.resumeChatSocket();
+        Log.d(Constants.TAG, "locManager = " + app.getLocationManager());
 
     }
 

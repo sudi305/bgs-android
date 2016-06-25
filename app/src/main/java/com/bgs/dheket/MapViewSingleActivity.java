@@ -198,9 +198,9 @@ public class MapViewSingleActivity extends AppCompatActivity {
 
                 Intent goToScreen = null;
                 if ( getIntent().getAction().equalsIgnoreCase(ACTION_CALL_FROM_LOC_NOMERCHANT)) {
-                    goToScreen = new Intent(getApplicationContext(), DetailLocationWithNoMerchantActivity.class);
+                    goToScreen = new Intent(MapViewSingleActivity.this, DetailLocationWithNoMerchantActivity.class);
                 } else if ( getIntent().getAction().equalsIgnoreCase(ACTION_CALL_FROM_LOC_WITHMERCHANT)) {
-                    goToScreen = new Intent(getApplicationContext(), DetailLocationWithMerchantActivity.class);
+                    goToScreen = new Intent(MapViewSingleActivity.this, DetailLocationWithMerchantActivity.class);
                 }
                 goToScreen.putExtra("lokasi", lokasi);
                 goToScreen.putExtra("currentBestLocation", currentBestLocation);
@@ -442,9 +442,9 @@ public class MapViewSingleActivity extends AppCompatActivity {
     public void toDetailLoc(){
         Intent toDetail = null;
         if ( getIntent().getAction().equalsIgnoreCase(ACTION_CALL_FROM_LOC_NOMERCHANT)) {
-            toDetail = new Intent(getApplicationContext(), DetailLocationWithNoMerchantActivity.class);
+            toDetail = new Intent(this, DetailLocationWithNoMerchantActivity.class);
         } else if ( getIntent().getAction().equalsIgnoreCase(ACTION_CALL_FROM_LOC_WITHMERCHANT)) {
-            toDetail = new Intent(getApplicationContext(), DetailLocationWithMerchantActivity.class);
+            toDetail = new Intent(this, DetailLocationWithMerchantActivity.class);
         }
         toDetail.putExtra("lokasi", lokasi);
         toDetail.putExtra("currentBestLocation", currentBestLocation);

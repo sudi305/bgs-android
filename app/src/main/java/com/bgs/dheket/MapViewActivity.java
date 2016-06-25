@@ -158,9 +158,10 @@ public class MapViewActivity extends AppCompatActivity {
         currentBestLocation = getIntent().getParcelableExtra(EXTRA_PARAM_LOCATION);
 
         madd = new PictureMarkerSymbol[categories.length];
+        PictureMarkerSymbol a = null;
         for (int i = 0; i < categories.length; i++) {
             Log.d(Constants.TAG, categories[i].getName());
-            PictureMarkerSymbol a = new PictureMarkerSymbol();
+            a = new PictureMarkerSymbol();
             a.setUrl(categories[i].getIcon());
             madd[i]=a;
         }
@@ -566,16 +567,28 @@ public class MapViewActivity extends AppCompatActivity {
         if (arraylist != null) {
             mResultsLayer.removeAll();
             clearCurrentResults();
+            HashMap<String, String> data = null;
             for (int i = 0; i < arraylist.size() ; i++) {
+                data = arraylist.get(i);
+                //skip null icon
+                if ( "null".equalsIgnoreCase(data.get("loc_icon"))) continue;
+
                 Location locationPin = Constants.DEMO_LOCATION;
-                locationPin.setLatitude(Double.parseDouble(arraylist.get(i).get("loc_lat").toString()));
-                locationPin.setLongitude(Double.parseDouble(arraylist.get(i).get("loc_lng").toString()));
+
+                locationPin.setLatitude(Double.parseDouble(data.get("loc_lat")));
+                locationPin.setLongitude(Double.parseDouble(data.get("loc_lng")));
+
                 Point point = getAsPoint(locationPin);
-                attr.put("id_loc", arraylist.get(i).get("id_loc").toString());
-                attr.put("loc_name", arraylist.get(i).get("loc_name").toString());
-                attr.put("loc_address", arraylist.get(i).get("loc_address").toString());
-                attr.put("loc_icon", arraylist.get(i).get("loc_icon").toString());
-                attr.put("loc_distance", arraylist.get(i).get("loc_distance").toString());
+
+                Log.d(Constants.TAG, "map data => " + new JSONObject(arraylist.get(i)).toString());
+
+                attr.put("id_loc", data.get("id_loc"));
+                attr.put("loc_name", data.get("loc_name"));
+                attr.put("loc_address", data.get("loc_address"));
+                Log.d(Constants.TAG, "map data => " + data.get("loc_icon"));
+
+                attr.put("loc_icon", data.get("loc_icon"));
+                attr.put("loc_distance", data.get("loc_distance"));
 
 
                 for (int j = 0; j < categories.length ; j++) {

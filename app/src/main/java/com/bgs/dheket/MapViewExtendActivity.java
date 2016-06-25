@@ -151,7 +151,7 @@ public class MapViewExtendActivity extends AppCompatActivity {
         placeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent goToScreen = new Intent(getApplicationContext(), DetailLocationWithNoMerchantActivity.class);
+                Intent goToScreen = new Intent(MapViewExtendActivity.this, DetailLocationWithNoMerchantActivity.class);
                 Bundle paket = new Bundle();
                 paket.putInt("location_id", Integer.parseInt(textView_id_loc.getText().toString()));
                 paket.putInt("cat_id", cat_id);
@@ -391,7 +391,7 @@ public class MapViewExtendActivity extends AppCompatActivity {
     }
 
     public void toListMap(){
-        Intent toListMap = new Intent(getApplicationContext(),MapViewWithListActivity.class);
+        Intent toListMap = new Intent(this,MapViewWithListActivity.class);
         Bundle paket = new Bundle();
         paket.putInt("cat_id", cat_id);
         paket.putString("kategori", category);
