@@ -16,7 +16,7 @@ public class DialogUtils {
         Dialog pd = new Dialog(mContext, android.R.style.Theme_Black);
         View view = LayoutInflater.from(mContext).inflate(R.layout.spiner_dialog, null);
         pd.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        pd.getWindow().setBackgroundDrawableResource(R.color.transparent);
+        //pd.getWindow().setBackgroundDrawableResource(R.color.transparent);
         pd.setContentView(view);
         return pd;
     }

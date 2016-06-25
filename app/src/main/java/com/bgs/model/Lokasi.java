@@ -14,7 +14,7 @@ public class Lokasi implements Parcelable {
     double longitude;
     String phone;
     int isPromo;
-    int idLocationHere;
+    String idLocationHere;
     String description;
     String locationTag;
     double distance;
@@ -22,14 +22,16 @@ public class Lokasi implements Parcelable {
     Category category;
     Merchant merchant;
 
+    public Lokasi(){}
+
     public Lokasi(int id, String name, String address, double latitude, double longitude,
-            String phone, int isPromo, int idLocationHere, String description, String locationTag, double distance,
+            String phone, int isPromo, String idLocationHere, String description, String locationTag, double distance,
                   Category category) {
         this(id, name, address, latitude, longitude, phone,
                 isPromo, idLocationHere, description, locationTag, distance, category, null);
     }
     public Lokasi(int id, String name, String address, double latitude, double longitude,
-                  String phone, int isPromo, int idLocationHere, String description, String locationTag, double distance,
+                  String phone, int isPromo, String idLocationHere, String description, String locationTag, double distance,
                   Category category, Merchant merchant) {
         this.id = id;
         this.name = name;
@@ -64,8 +66,8 @@ public class Lokasi implements Parcelable {
     public void setPhone(String phone) { this.phone = phone; }
     public int getIsPromo() { return isPromo; }
     public void setIsPromo(int isPromo) { this.isPromo = isPromo; }
-    public int getIdLocationHere() { return idLocationHere; }
-    public void setIdLocationHere(int idLocationHere) { this.idLocationHere = idLocationHere; }
+    public String getIdLocationHere() { return idLocationHere; }
+    public void setIdLocationHere(String idLocationHere) { this.idLocationHere = idLocationHere; }
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
     public String getLocationTag() { return locationTag; }
@@ -86,7 +88,7 @@ public class Lokasi implements Parcelable {
         this.longitude = in.readDouble();
         this.phone = in.readString();
         this.isPromo = in.readInt();
-        this.idLocationHere = in.readInt();
+        this.idLocationHere = in.readString();
         this.description = in.readString();
         this.locationTag = in.readString();
         this.distance = in.readDouble();
@@ -103,7 +105,7 @@ public class Lokasi implements Parcelable {
         dest.writeDouble(longitude);
         dest.writeString(phone);
         dest.writeInt(isPromo );
-        dest.writeInt(idLocationHere);
+        dest.writeString(idLocationHere);
         dest.writeString(description);
         dest.writeString(locationTag);
         dest.writeDouble(distance);

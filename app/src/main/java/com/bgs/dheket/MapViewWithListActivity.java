@@ -491,10 +491,16 @@ public class MapViewWithListActivity extends AppCompatActivity {
                             data = merchantArray.getJSONObject(i);
                             merchId = data.getString("id_merchant");
                             //merchant_name, username,email,gender, birthday":null,"phone":null,"address":null,"facebook_photo":}
-                            merchant = new Merchant(Integer.parseInt(merchId),
-                                    data.getString("merchant_name"), data.getString("username"), data.getString("email"),
-                                    data.getString("gender"), data.getString("birthday"), data.getString("phone"),
-                                    data.getString("address"), data.getString("facebook_photo"));
+                            merchant = new Merchant();
+                            merchant.setId(Integer.parseInt(merchId));
+                            merchant.setName(data.getString("merchant_name"));
+                            merchant.setUserName(data.getString("username"));
+                            merchant.setEmail(data.getString("email"));
+                            merchant.setGender(data.getString("gender"));
+                            merchant.setBirthDay(data.getString("birthday"));
+                            merchant.setPhone(data.getString("phone"));
+                            merchant.setAddress(data.getString("address"));
+                            merchant.setFacebookPhoto(data.getString("facebook_photo"));
                             merchantMap.put(merchId, merchant);
                         } catch (JSONException e) {
                             Log.e(Constants.TAG, e.getMessage(), e);
@@ -517,14 +523,20 @@ public class MapViewWithListActivity extends AppCompatActivity {
                         int id, String name, String address, double latitude, double longitude,
                         String phone, int isPromo, int idLocationHere, String description, String locationTag, double distance
                          */
-                            lokasi = new Lokasi(
-                                    Integer.parseInt(data.getString("id_location")),
-                                    data.getString("location_name"),
-                                    data.getString("location_address"),
-                                    Double.parseDouble(data.getString("latitude")),
-                                    Double.parseDouble(data.getString("longitude")),
-                                    "", 0, 0, "", "", Double.parseDouble(data.getString("distance")), category, merchantMap.get(merchId));
-
+                            lokasi = new Lokasi();
+                            lokasi.setId(Integer.parseInt(data.getString("id_location")));
+                            lokasi.setName(data.getString("location_name"));
+                            lokasi.setAddress(data.getString("location_address"));
+                            lokasi.setLatitude(Double.parseDouble(data.getString("latitude")));
+                            lokasi.setLongitude(Double.parseDouble(data.getString("longitude")));
+                            lokasi.setPhone("");
+                            lokasi.setIsPromo(0);
+                            lokasi.setIdLocationHere("");
+                            lokasi.setDescription("");
+                            lokasi.setLocationTag("");
+                            lokasi.setDistance(Double.parseDouble(data.getString("distance")));
+                            lokasi.setCategory(category);
+                            lokasi.setMerchant(merchantMap.get(merchId));
                             locationList.add(lokasi);
 
                         } catch (JSONException e) {

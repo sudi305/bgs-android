@@ -20,6 +20,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bgs.chat.model.ChatContact;
 import com.bgs.common.Constants;
 import com.bgs.common.GpsUtils;
 import com.bgs.common.Utility;
@@ -104,6 +105,32 @@ public class MapViewSingleActivity extends AppCompatActivity {
     private Lokasi lokasi;
     private Location currentBestLocation;
 
+    private static final String ACTION_CALL_FROM_LOC_NOMERCHANT = "com.bgs.dheket.map.action.CALL_FROM_LOC_NOMERCHANT";
+    private static final String ACTION_CALL_FROM_LOC_WITHMERCHANT = "com.bgs.dheket.map.action.CALL_FROM_LOC_WITHMERCHANT";
+
+    private static final String EXTRA_PARAM_LOKASIDETIL = "com.bgs.dheket.map.extra.PARAM_LOKASIDETIL";
+    private static final String EXTRA_PARAM_LOCATION = "com.bgs.dheket.map.extra.PARAM_LOCATION";
+
+    public static void startFromLocationWithMerchant(Context context, Lokasi lokasiDetail, Location location) {
+        startMapActivity(context, ACTION_CALL_FROM_LOC_WITHMERCHANT, lokasiDetail, location);
+    }
+    public static void startFromLocationNoMerchant(Context context, Lokasi lokasiDetail, Location location) {
+        startMapActivity(context, ACTION_CALL_FROM_LOC_NOMERCHANT, lokasiDetail, location);
+    }
+
+    private static void startMapActivity(Context context, String action, Lokasi lokasiDetail, Location location) {
+        Intent intent = new Intent(context, MapViewSingleActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setAction(action);
+        if ( lokasiDetail != null )
+            intent.putExtra(EXTRA_PARAM_LOKASIDETIL, lokasiDetail);
+
+        if ( location != null )
+            intent.putExtra(EXTRA_PARAM_LOCATION, location);
+
+        context.startActivity(intent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -122,8 +149,8 @@ public class MapViewSingleActivity extends AppCompatActivity {
         mMapView.setOnSingleTapListener(mapTapCallback);
         //mMapView.setOnLongPressListener(mapLongPress);
 
-        lokasi = getIntent().getParcelableExtra("lokasi");
-        currentBestLocation = getIntent().getParcelableExtra("currentBestLocation");
+        lokasi = getIntent().getParcelableExtra(EXTRA_PARAM_LOKASIDETIL);
+        currentBestLocation = getIntent().getParcelableExtra(EXTRA_PARAM_LOCATION);
 
         /*
         paket = getIntent().getExtras();
@@ -168,20 +195,15 @@ public class MapViewSingleActivity extends AppCompatActivity {
         placeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent goToScreen = new Intent(getApplicationContext(), DetailLocationWithNoMerchantActivity.class);
+
+                Intent goToScreen = null;
+                if ( getIntent().getAction().equalsIgnoreCase(ACTION_CALL_FROM_LOC_NOMERCHANT)) {
+                    goToScreen = new Intent(getApplicationContext(), DetailLocationWithNoMerchantActivity.class);
+                } else if ( getIntent().getAction().equalsIgnoreCase(ACTION_CALL_FROM_LOC_WITHMERCHANT)) {
+                    goToScreen = new Intent(getApplicationContext(), DetailLocationWithMerchantActivity.class);
+                }
                 goToScreen.putExtra("lokasi", lokasi);
                 goToScreen.putExtra("currentBestLocation", currentBestLocation);
-                /*
-                Bundle paket = new Bundle();
-                paket.putInt("location_id", Integer.parseInt(textView_id_loc.getText().toString()));
-                paket.putInt("cat_id", cat_id);
-                paket.putString("kategori", category);
-                paket.putDouble("radius", radius);
-                paket.putDouble("latitude", latitude);
-                paket.putDouble("longitude", longitude);
-                paket.putString("icon", icon);
-                goToScreen.putExtras(paket);
-                */
 
                 startActivity(goToScreen);
                 finish();
@@ -418,20 +440,15 @@ public class MapViewSingleActivity extends AppCompatActivity {
     }
 
     public void toDetailLoc(){
-        Intent toDetail = new Intent(getApplicationContext(),DetailLocationWithNoMerchantActivity.class);
+        Intent toDetail = null;
+        if ( getIntent().getAction().equalsIgnoreCase(ACTION_CALL_FROM_LOC_NOMERCHANT)) {
+            toDetail = new Intent(getApplicationContext(), DetailLocationWithNoMerchantActivity.class);
+        } else if ( getIntent().getAction().equalsIgnoreCase(ACTION_CALL_FROM_LOC_WITHMERCHANT)) {
+            toDetail = new Intent(getApplicationContext(), DetailLocationWithMerchantActivity.class);
+        }
         toDetail.putExtra("lokasi", lokasi);
         toDetail.putExtra("currentBestLocation", currentBestLocation);
-        /*
-        Bundle paket = new Bundle();
-        paket.putInt("location_id", Integer.parseInt(textView_id_loc.getText().toString()));
-        paket.putInt("cat_id", cat_id);
-        paket.putString("kategori", category);
-        paket.putDouble("radius", radius);
-        paket.putDouble("latitude", latitude);
-        paket.putDouble("longitude", longitude);
-        paket.putString("icon", icon);
-        toDetail.putExtras(paket);
-        */
+
         startActivity(toDetail);
         finish();
     }

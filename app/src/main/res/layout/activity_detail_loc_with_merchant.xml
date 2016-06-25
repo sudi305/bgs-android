@@ -9,7 +9,7 @@
         android:layout_height="match_parent">
 
         <ScrollView
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/scrollView10"
             android:fillViewport="true"
@@ -132,42 +132,29 @@
             </LinearLayout>
         </ScrollView>
 
-        <LinearLayout
-            android:orientation="vertical"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_gravity="center"
-            android:background="@drawable/roundedbutton_nosquare1"
-            android:id="@+id/linearLayout_dl_wm_loc_chat">
-
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical|center_horizontal"
-                android:layout_gravity="center_horizontal|center_vertical">
-
-
+            android:background="@color/colorPrimaryDark"
+            android:id="@+id/relativeLayout_dl_wm_loc_chat">
                 <ImageView
                     android:id="@+id/chat_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
+                    android:layout_centerInParent="true"
+                    android:layout_toLeftOf="@+id/model"
                     android:src="@drawable/ic_question_answer_24dp"/>
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:drawableTint="#ffffff"
                     android:text="  CHAT TO MERCHANT"
                     android:id="@+id/model"
-                    android:layout_gravity="center_vertical"
-                    android:layout_toRightOf="@+id/chat_icon"
+                    android:layout_centerInParent="true"
                     android:clickable="true"
                     android:textColor="#ffffff" />
-            </RelativeLayout>
-        </LinearLayout>
-
+        </RelativeLayout>
     </RelativeLayout>
 </LinearLayout>

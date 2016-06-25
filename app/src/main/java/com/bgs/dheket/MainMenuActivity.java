@@ -173,6 +173,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     static final long TWO_MINUTES = TimeUnit.MINUTES.toSeconds(2);
 
     private static Map<String, Emitter.Listener> CHAT_EVENT_LISTENERS = new LinkedHashMap<String, Emitter.Listener>();
+    private Category[] categories = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -353,6 +354,9 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             @Override
             public void onClick(View v) {
                 if (radius != 0) {
+                    removeUpdateLocationManager();
+                    MapViewActivity.startFromMainMenu(MainMenuActivity.this, categories, currentBestLocation);
+                    /*
                     Intent toMap = new Intent(getApplicationContext(), MapViewActivity.class);
                     Bundle paket = new Bundle();
                     paket.putString("email", email);
@@ -368,10 +372,11 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                     paket.putIntArray("id_cat", id_kategori);
                     paket.putDouble("radius", radius);
                     toMap.putExtras(paket);
+
                     //myLocationManager.removeUpdates(MainMenuActivity.this);
                     //myLocationManager = null;
-                    removeUpdateLocationManager();
                     startActivity(toMap);
+                    */
                     finish();
                 }
             }
@@ -866,6 +871,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 real_radius = Double.parseDouble(jObject.getString("rad"));
                 email = jObject.getString("email");
                 radius = (real_radius);
+                categories = new Category[menuItemArray.length()];
                 Log.d(Constants.TAG, "Proses 3 -> Try get data dari WS = " + urls + "\nJumlah data dari WS = " + menuItemArray.length());
                 for (int i = 0; i < menuItemArray.length(); i++) {
                     id_kategori[i] = menuItemArray.getJSONObject(i).getInt("id_category");
@@ -873,6 +879,15 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                     lokasi[i] = menuItemArray.getJSONObject(i).getInt("total_location");
                     promo[i] = menuItemArray.getJSONObject(i).getInt("total_promo");
                     icon_kategori[i] = menuItemArray.getJSONObject(i).getString("icon").toString();
+
+                    Category category = new Category();
+                    category.setId(id_kategori[i]);
+                    category.setName(nama_katagori[i]);
+                    category.setIcon(icon_kategori[i]);
+                    category.setRadius(radius);
+                    category.setTotalLokasi(lokasi[i]);
+                    category.setTotalPromo(promo[i]);
+                    categories[i] = category;
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

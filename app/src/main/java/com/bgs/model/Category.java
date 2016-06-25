@@ -7,17 +7,18 @@ import android.os.Parcelable;
  * Created by zhufre on 6/21/2016.
  */
 public class Category implements Parcelable {
+    //single
     int id;
-    //double latitude;
-    //double longitude;
     String icon;
     String name;
     double radius;
+    int totalLokasi;
+    int totalPromo;
 
-    public Category(int id, /*double latitude, double longitude, */String icon, String name, double radius) {
+    public Category() {}
+
+    public Category(int id, String icon, String name, double radius) {
         this.id = id;
-        //this.latitude = latitude;
-        //this.longitude = longitude;
         this.icon = icon;
         this.name = name;
         this.radius = radius;
@@ -25,36 +26,34 @@ public class Category implements Parcelable {
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
-    /*
-    public double getLatitude() { return latitude; }
-    public void setLatitude(double latitude) { this.latitude = latitude; }
-    public double getLongitude() { return longitude; }
-    public void setLongitude(double longitude) { this.longitude = longitude; }
-    */
     public String getIcon() { return icon; }
     public void setIcon(String icon) { this.icon = icon; }
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
     public double getRadius() { return radius; }
     public void setRadius(double radius) { this.radius = radius; }
+    public int getTotalLokasi() { return totalLokasi; }
+    public void setTotalLokasi(int totalLokasi) { this.totalLokasi = totalLokasi; }
+    public int getTotalPromo() { return totalPromo; }
+    public void setTotalPromo(int totalPromo) { this.totalPromo = totalPromo; }
 
     protected Category(Parcel in) {
         id = in.readInt();
-        //latitude = in.readDouble();
-        //longitude = in.readDouble();
         icon = in.readString();
         name = in.readString();
         radius = in.readDouble();
+        totalLokasi = in.readInt();
+        totalPromo = in.readInt();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
-        //dest.writeDouble(latitude);
-        //dest.writeDouble(longitude);
         dest.writeString(icon);
         dest.writeString(name);
         dest.writeDouble(radius);
+        dest.writeInt(totalLokasi);
+        dest.writeInt(totalPromo);
     }
 
     @Override
