@@ -59,7 +59,6 @@ import android.widget.Toast;
 
 import com.bgs.chat.MainChatActivity;
 import com.bgs.chat.services.ChatClientService;
-import com.bgs.chat.services.ChatTaskService;
 import com.bgs.chat.widgets.CircleBackgroundSpan;
 import com.bgs.common.Constants;
 import com.bgs.common.GpsUtils;
@@ -97,7 +96,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
 /**
@@ -588,21 +586,21 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
                         //update user app
                         //add by supri 2016/6/16
-                        UserApp userApp = App.getInstance().getUserApp();
+                        UserApp userApp = App.getUserApp();
                         if (userApp == null) userApp = new UserApp();
                         userApp.setName(name);
                         userApp.setEmail(email);
                         userApp.setId(id);
                         userApp.setPicture(imageUsr);
 
-                        App.getInstance().updateUserApp(userApp);
-
+                        App.updateUserApp(userApp);
+                        Log.d(Constants.TAG, "App.getInstance().getUserApp()=" + App.getUserApp());
                         //DO LOGIN
-                        attemptLogin();
+                        //attemptLogin();
                     }
 
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    Log.e(Constants.TAG, e.getMessage(), e);
                 }
             }
         });
@@ -1171,11 +1169,13 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             JSONObject user = new JSONObject();
             try {
                 String name = Utility.getDeviceUniqueID(getContentResolver());
-                UserApp userApp = App.getInstance().getUserApp();
-                user.put("name", userApp.getName());
-                user.put("email", userApp.getEmail());
-                user.put("phone", userApp.getPhone());
-                chatClientService.emit(ChatClientService.SocketEmit.DO_LOGIN, user);
+                UserApp userApp = App.getUserApp();
+                if ( userApp != null ) {
+                    user.put("name", userApp.getName());
+                    user.put("email", userApp.getEmail());
+                    user.put("phone", userApp.getPhone());
+                    chatClientService.emit(ChatClientService.SocketEmit.DO_LOGIN, user);
+                }
             } catch (JSONException e) {
                 Log.e(Constants.TAG_CHAT, e.getMessage(), e);
             }
@@ -1227,7 +1227,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     public void onResume() {
         super.onResume();
         Log.d(Constants.TAG, "ON RESUME");
-        chatClientService.registerReceivers(makeReceivers());
+        //chatClientService.registerReceivers(makeReceivers());
         Log.d(Constants.TAG, "locManager = " + App.getInstance().getLocationManager());
 
     }

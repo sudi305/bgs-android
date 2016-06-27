@@ -184,7 +184,9 @@ public class MapViewSingleActivity extends AppCompatActivity {
         placeLayout = (ViewGroup) findViewById(R.id.placeLayout_single);
         placeLayout.setVisibility(View.GONE);
 
-        if (!category.getIcon().isEmpty() && (!category.getIcon().equalsIgnoreCase("null") || !category.getIcon().equalsIgnoreCase(""))){
+        String icon = category.getIcon();
+        Log.d(Constants.TAG, "icon -> ["+icon+"]");
+        if (icon != null && !icon.isEmpty() && !(icon.equalsIgnoreCase("null") || icon.equalsIgnoreCase(""))){
             mcat= new PictureMarkerSymbol();
             mcat.setUrl(category.getIcon());
         } else {
@@ -448,9 +450,10 @@ public class MapViewSingleActivity extends AppCompatActivity {
         }
         toDetail.putExtra("lokasi", lokasi);
         toDetail.putExtra("currentBestLocation", currentBestLocation);
-
-        startActivity(toDetail);
-        finish();
+        if ( toDetail != null) {
+            startActivity(toDetail);
+            finish();
+        }
     }
 
     private void clearCurrentResults() {

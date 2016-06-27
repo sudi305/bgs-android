@@ -80,7 +80,7 @@ public class MainChatActivity extends AppCompatActivity {
                 //Toast.makeText(MainChatActivity.this, "Selected page position: " + position, Toast.LENGTH_SHORT).show();
                 //retrive contact
                 if ( position == 1)
-                    ChatTaskService.startActionUpdateContact(getActivity());
+                    ChatTaskService.startActionGetContacts(getActivity());
             }
 
             // This method will be invoked when the current page is scrolled
@@ -99,7 +99,7 @@ public class MainChatActivity extends AppCompatActivity {
 
         //Log.d(getResources().getString(R.string.app_name), "count=" + tabsStrip.getChildCount());
 
-        App app = App.getInstance();
+        UserApp userApp = App.getUserApp();
         /*
         if ( app.getUserApp() == null ) {
             String id = NativeUtilities.getDeviceUniqueID(getContentResolver());
@@ -107,7 +107,7 @@ public class MainChatActivity extends AppCompatActivity {
         }
         */
         TextView title = (TextView) findViewById(R.id.user_app);
-        String titleText = title.getText() + ( app.getUserApp() == null ? "" : " - " + app.getUserApp().getName());
+        String titleText = title.getText() + ( userApp == null ? "" : " - " + userApp.getName());
         title.setText(titleText);
 
 
@@ -144,7 +144,7 @@ public class MainChatActivity extends AppCompatActivity {
             JSONObject user = new JSONObject();
             try {
                 String name = Utility.getDeviceUniqueID(getContentResolver());
-                UserApp userApp = App.getInstance().getUserApp();
+                UserApp userApp = App.getUserApp();
                 user.put("name", userApp.getName());
                 user.put("email", userApp.getEmail());
                 user.put("phone", userApp.getPhone());
@@ -176,7 +176,7 @@ public class MainChatActivity extends AppCompatActivity {
                 return;
             }
             //retrive contact
-            ChatTaskService.startActionUpdateContact(getActivity());
+            ChatTaskService.startActionGetContacts(getActivity());
         }
     };
 
@@ -302,10 +302,10 @@ public class MainChatActivity extends AppCompatActivity {
         //pagerAdapter = new ChatTabPagerAdapter(getSupportFragmentManager());
         //viewPager.setAdapter(pagerAdapter);
         Log.d(Constants.TAG_CHAT, "chatClientService=" + chatClientService);
-        chatClientService.registerReceivers(makeReceivers());
+        //chatClientService.registerReceivers(makeReceivers());
 
         //retrive contact
-        ChatTaskService.startActionUpdateContact(getActivity());
+        ChatTaskService.startActionGetContacts(getActivity());
     }
 
     @Override

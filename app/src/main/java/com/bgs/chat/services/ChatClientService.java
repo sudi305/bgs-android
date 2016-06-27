@@ -161,6 +161,7 @@ public class ChatClientService {
         @Override
         public void call(Object... args) {
             JSONObject data = (JSONObject) args[0];
+            //Log.d(Constants.TAG_CHAT, "onListContact = " + data.toString());
             sendChatServiceBroadcast(SocketEvent.LIST_CONTACT, data.toString());
         }
     };
@@ -188,27 +189,27 @@ public class ChatClientService {
     public boolean isLogin() {return mLogin;}
     public Socket getSocket() { return mSocket; }
     private Map<String, BroadcastReceiver> mReceivers = new HashMap<String, BroadcastReceiver>();
-    private boolean mRegistered;
     public boolean isConnected() {return mSocket.connected();}
 
     public void registerReceivers(Map<String, BroadcastReceiver> receivers) {
         //prevent reregister in case unregisterd not called
-        if ( mRegistered ) unregisterReceivers();
-
+        //Log.d(Constants.TAG_CHAT, "registerReceivers()=>mRegistered=" + mRegistered);
+        mReceivers.clear();
         mReceivers = receivers;
         for(String event : mReceivers.keySet()) {
             LocalBroadcastManager.getInstance(mContext).registerReceiver(mReceivers.get(event), new IntentFilter(event));
         }
-        mRegistered = true;
+        //mRegistered = true;
     }
 
     public void unregisterReceivers() {
+        //Log.d(Constants.TAG_CHAT, "unregisterReceivers()=>mRegistered=" + mRegistered);
+
         for(String event : mReceivers.keySet()) {
             LocalBroadcastManager.getInstance(mContext).unregisterReceiver(mReceivers.get(event));
         }
         //clear map
         mReceivers.clear();
-        mRegistered = false;
     }
 
     public static class SocketEmit {

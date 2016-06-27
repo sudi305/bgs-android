@@ -152,16 +152,18 @@ public class MapViewWithListActivity extends AppCompatActivity {
         // Enabled wrap around map.
         mMapView.enableWrapAround(true);
         String icon = category.getIcon();
-        if (!icon.isEmpty() && (!icon.equalsIgnoreCase("null") || !icon.equalsIgnoreCase(""))){
+        Log.d(Constants.TAG, "icon -> ["+icon+"]");
+        Log.d(Constants.TAG, String.format("%s - %s - %s", icon != null, !icon.isEmpty(), !(icon.equalsIgnoreCase("null") || icon.equalsIgnoreCase(""))));
+        if (icon != null && !icon.isEmpty() && !(icon.equalsIgnoreCase("null") || icon.equalsIgnoreCase(""))){
             mcat= new PictureMarkerSymbol();
             mcat.setUrl(icon);
         } else {
             mcat= new PictureMarkerSymbol(getApplicationContext(), ContextCompat.getDrawable(getApplicationContext(), R.drawable.pin_blue));
-            Log.d(Constants.TAG, "icon kosong -> ["+icon+"]");
         }
+        Log.d(Constants.TAG, "mcat -> ["+mcat.getUrl()+"]");
+
         //mAdd = new PictureMarkerSymbol(rootView.getContext().getApplicationContext(), ContextCompat.getDrawable(rootView.getContext().getApplicationContext(), R.drawable.pin_add));
         linearLayout_contentlist = (LinearLayout)findViewById(R.id.linearLayout_result_lm);
-
         setupLocator();
         setupLocationListener();
 
@@ -456,6 +458,8 @@ public class MapViewWithListActivity extends AppCompatActivity {
         private Context context;
         private ArrayList<Lokasi> locationList;
         private Dialog dialog;
+        private Graphic[] graphics;
+        MultiPoint fullExtent = new MultiPoint();
 
         public CallWebPageTask(Context context) {
             this.context = context;
@@ -516,15 +520,20 @@ public class MapViewWithListActivity extends AppCompatActivity {
                     Log.d(Constants.TAG, "Data lokasi dari server -> " + locationArray.length());
                     double locDistance = 0;
                     Lokasi lokasi = null;
-                    for (int i = 0; i < locationArray.length(); i++) {
+                    Map<String, Object> attr = null;
+                    int totalLocation = locationArray.length();
+                    //store graphic obj
+                    graphics = new Graphic[totalLocation];
+                    for (int i = 0; i < totalLocation; i++) {
                         try {
-                            //Log.d(Constants.TAG, "data => " + locationArray.getJSONObject(i).toString());
+
                             data = locationArray.getJSONObject(i);
+                            //Log.d(Constants.TAG, "MapViewWithListActivity=>data => " + data.toString());
                             merchId = data.getString("merchant_id");
-                        /*
-                        int id, String name, String address, double latitude, double longitude,
-                        String phone, int isPromo, int idLocationHere, String description, String locationTag, double distance
-                         */
+                            /*
+                            int id, String name, String address, double latitude, double longitude,
+                            String phone, int isPromo, int idLocationHere, String description, String locationTag, double distance
+                             */
                             lokasi = new Lokasi();
                             lokasi.setId(Integer.parseInt(data.getString("id_location")));
                             lokasi.setName(data.getString("location_name"));
@@ -541,6 +550,21 @@ public class MapViewWithListActivity extends AppCompatActivity {
                             lokasi.setMerchant(merchantMap.get(merchId));
                             locationList.add(lokasi);
 
+                            Location locationPin = Constants.DEMO_LOCATION;
+                            locationPin.setLatitude(lokasi.getLatitude());
+                            locationPin.setLongitude(lokasi.getLongitude());
+                            Point point = getAsPoint(locationPin);
+                            fullExtent.add(point);
+
+                            attr = new HashMap<String, Object>();
+                            attr.put("id_loc", lokasi.getId());
+                            attr.put("loc_name", lokasi.getName());
+                            attr.put("loc_address", lokasi.getAddress());
+                            attr.put("loc_distance", lokasi.getDistance());
+
+                            graphics[i] = new Graphic(point, mcat, attr);
+
+
                         } catch (JSONException e) {
                             Log.e(Constants.TAG, e.getMessage(), e);
                         }
@@ -548,7 +572,6 @@ public class MapViewWithListActivity extends AppCompatActivity {
                 }
 
             } catch (JSONException e) {
-                e.printStackTrace();
                 Log.e(Constants.TAG, e.getMessage(), e);
             }
 
@@ -557,45 +580,21 @@ public class MapViewWithListActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result) {
-            updateData(locationList);
-
+            updateData(locationList, graphics, fullExtent);
             if (dialog.isShowing())
                 dialog.dismiss();
         }
     }
 
-    public void updateData(ArrayList<Lokasi> locationList) {
+    public void updateData(ArrayList<Lokasi> locationList, Graphic[] graphics, MultiPoint fullExtent) {
         Log.d(Constants.TAG, "call updateData()");
-        MultiPoint fullExtent = new MultiPoint();
         Symbol symbol = null;
-        //-6.21267000, 106.61778566
         Map<String, Object> attr = new HashMap<String, Object>();
         if (locationList != null) {
-            mResultsLayer.removeAll();
             clearCurrentResults();
+            //redraw layer
+            mResultsLayer.addGraphics(graphics);
             for (final Lokasi lokasi : locationList) {
-                /*
-                Location locationPin = currentBestLocation;
-                //Log.d(Constants.TAG, data.toString());
-                if ( locationPin == null ) {
-                    //dev mode
-                    locationPin = Constants.DEMO_LOCATION;
-                } else {
-                    locationPin = currentBestLocation;
-                }
-                */
-                Location locationPin = Constants.DEMO_LOCATION;
-                locationPin.setLatitude(lokasi.getLatitude());
-                locationPin.setLongitude(lokasi.getLongitude());
-                Point point = getAsPoint(locationPin);
-                symbol = mcat;
-
-                attr.put("id_loc", lokasi.getId());
-                attr.put("loc_name", lokasi.getName());
-                attr.put("loc_address", lokasi.getAddress());
-                attr.put("loc_distance", lokasi.getDistance());
-                mResultsLayer.addGraphic(new Graphic(point, symbol, attr));
-                fullExtent.add(point);
 
                 LayoutInflater inflater = (LayoutInflater) getSystemService( Context.LAYOUT_INFLATER_SERVICE );
                 final View viewItem = inflater.inflate(R.layout.item_listmod, null);
@@ -634,6 +633,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
                     }
                 });
             }
+
             /*for (int i = 0; i < id_loc.length; i++) {
                 Location locationPin = location;
                 locationPin.setLatitude(loc_lat[i]);

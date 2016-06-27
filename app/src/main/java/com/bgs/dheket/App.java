@@ -20,7 +20,7 @@ import io.socket.emitter.Emitter;
  * Created by madhur on 3/1/15.
  */
 public class App extends Application {
-    private UserApp userApp;
+    private static UserApp mUserApp;
     LocationManager locationManager;
     private static App Instance;
     public static volatile Handler applicationHandler = null;
@@ -39,12 +39,11 @@ public class App extends Application {
     public static App getInstance() {
         return Instance;
     }
-    public void updateUserApp(UserApp userApp) {
-        this.userApp = userApp;
+    public static void updateUserApp(UserApp userApp) {
+        mUserApp = userApp;
     }
-    public UserApp getUserApp() {
-        return userApp;
-    }
+    public static UserApp getUserApp() { return mUserApp; }
+
     public void setLocationManager(LocationManager locationManager) { this.locationManager = locationManager; }
     public LocationManager getLocationManager() {
         return locationManager;
