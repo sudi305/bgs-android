@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.bgs.common.Constants;
 import com.bgs.common.DialogUtils;
+import com.bgs.common.ExtraParamConstants;
 import com.bgs.common.Utility;
 import com.bgs.imageOrView.ViewPagerAdapter;
 import com.bgs.model.Category;
@@ -170,8 +171,8 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
             //paket.putString("icon", category.getIcon());
         }
 
-        intent.putExtra("category", category);
-        intent.putExtra("currentBestLocation", currentBestLocation);
+        intent.putExtra(ExtraParamConstants.CATEGORY, category);
+        intent.putExtra(ExtraParamConstants.CURRNET_BEST_LOCATION, currentBestLocation);
         startActivity(intent);
         finish();
     }

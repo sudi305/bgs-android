@@ -61,6 +61,7 @@ import com.bgs.chat.MainChatActivity;
 import com.bgs.chat.services.ChatClientService;
 import com.bgs.chat.widgets.CircleBackgroundSpan;
 import com.bgs.common.Constants;
+import com.bgs.common.ExtraParamConstants;
 import com.bgs.common.GpsUtils;
 import com.bgs.common.Utility;
 import com.bgs.imageOrView.MySeekBar;
@@ -532,8 +533,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             goToScreen = new Intent(this, MapViewWithListActivity.class);
             final Category category = new Category(catId, icon, kategori, radius);
 
-            goToScreen.putExtra("currentBestLocation", currentBestLocation);
-            goToScreen.putExtra("category", category);
+            goToScreen.putExtra(ExtraParamConstants.CURRNET_BEST_LOCATION, currentBestLocation);
+            goToScreen.putExtra(ExtraParamConstants.CATEGORY, category);
 
             removeUpdateLocationManager();
             startActivity(goToScreen);

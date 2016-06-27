@@ -1,5 +1,6 @@
 package com.bgs.dheket;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +23,8 @@ import android.widget.Toast;
 
 import com.bgs.chat.model.ChatContact;
 import com.bgs.common.Constants;
+import com.bgs.common.DialogUtils;
+import com.bgs.common.ExtraParamConstants;
 import com.bgs.common.GpsUtils;
 import com.bgs.common.Utility;
 import com.bgs.model.Category;
@@ -108,8 +111,6 @@ public class MapViewSingleActivity extends AppCompatActivity {
     private static final String ACTION_CALL_FROM_LOC_NOMERCHANT = "com.bgs.dheket.map.action.CALL_FROM_LOC_NOMERCHANT";
     private static final String ACTION_CALL_FROM_LOC_WITHMERCHANT = "com.bgs.dheket.map.action.CALL_FROM_LOC_WITHMERCHANT";
 
-    private static final String EXTRA_PARAM_LOKASIDETIL = "com.bgs.dheket.map.extra.PARAM_LOKASIDETIL";
-    private static final String EXTRA_PARAM_LOCATION = "com.bgs.dheket.map.extra.PARAM_LOCATION";
 
     public static void startFromLocationWithMerchant(Context context, Lokasi lokasiDetail, Location location) {
         startMapActivity(context, ACTION_CALL_FROM_LOC_WITHMERCHANT, lokasiDetail, location);
@@ -123,10 +124,10 @@ public class MapViewSingleActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setAction(action);
         if ( lokasiDetail != null )
-            intent.putExtra(EXTRA_PARAM_LOKASIDETIL, lokasiDetail);
+            intent.putExtra(ExtraParamConstants.LOKASI_DETAIL, lokasiDetail);
 
         if ( location != null )
-            intent.putExtra(EXTRA_PARAM_LOCATION, location);
+            intent.putExtra(ExtraParamConstants.CURRNET_BEST_LOCATION, location);
 
         context.startActivity(intent);
     }
@@ -149,8 +150,8 @@ public class MapViewSingleActivity extends AppCompatActivity {
         mMapView.setOnSingleTapListener(mapTapCallback);
         //mMapView.setOnLongPressListener(mapLongPress);
 
-        lokasi = getIntent().getParcelableExtra(EXTRA_PARAM_LOKASIDETIL);
-        currentBestLocation = getIntent().getParcelableExtra(EXTRA_PARAM_LOCATION);
+        lokasi = getIntent().getParcelableExtra(ExtraParamConstants.LOKASI_DETAIL);
+        currentBestLocation = getIntent().getParcelableExtra(ExtraParamConstants.CURRNET_BEST_LOCATION);
 
         /*
         paket = getIntent().getExtras();
@@ -204,8 +205,8 @@ public class MapViewSingleActivity extends AppCompatActivity {
                 } else if ( getIntent().getAction().equalsIgnoreCase(ACTION_CALL_FROM_LOC_WITHMERCHANT)) {
                     goToScreen = new Intent(MapViewSingleActivity.this, DetailLocationWithMerchantActivity.class);
                 }
-                goToScreen.putExtra("lokasi", lokasi);
-                goToScreen.putExtra("currentBestLocation", currentBestLocation);
+                goToScreen.putExtra(ExtraParamConstants.LOKASI_DETAIL, lokasi);
+                goToScreen.putExtra(ExtraParamConstants.CURRNET_BEST_LOCATION, currentBestLocation);
 
                 startActivity(goToScreen);
                 finish();
@@ -244,8 +245,7 @@ public class MapViewSingleActivity extends AppCompatActivity {
     }
 
     public void getDataFromServer() {
-        task = new CallWebPageTask();
-        task.applicationContext = getApplicationContext();
+        task = new CallWebPageTask(this);
         double latitude =0, longitude = 0;
         if ( currentBestLocation != null) {
             latitude = currentBestLocation.getLatitude();
@@ -448,8 +448,8 @@ public class MapViewSingleActivity extends AppCompatActivity {
         } else if ( getIntent().getAction().equalsIgnoreCase(ACTION_CALL_FROM_LOC_WITHMERCHANT)) {
             toDetail = new Intent(this, DetailLocationWithMerchantActivity.class);
         }
-        toDetail.putExtra("lokasi", lokasi);
-        toDetail.putExtra("currentBestLocation", currentBestLocation);
+        toDetail.putExtra(ExtraParamConstants.LOKASI_DETAIL, lokasi);
+        toDetail.putExtra(ExtraParamConstants.CURRNET_BEST_LOCATION, currentBestLocation);
         if ( toDetail != null) {
             startActivity(toDetail);
             finish();
@@ -522,16 +522,23 @@ public class MapViewSingleActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mMapView.destroyDrawingCache();
+    }
+
     private class CallWebPageTask extends AsyncTask<String, Void, String> {
+        public Context context;
+        private Dialog dialog;
 
-        private ProgressDialog dialog;
-        protected Context applicationContext;
-
+        public CallWebPageTask(Context context) {
+            this.context = context;
+            dialog = DialogUtils.LoadingSpinner(context);
+        }
         @Override
         protected void onPreExecute() {
-            /*if (isFirst==true){
-                this.dialog = ProgressDialog.show(applicationContext, "Retrieving Data", "Please Wait...", true);
-            }*/
+            dialog.show();
         }
 
         @Override
@@ -568,6 +575,8 @@ public class MapViewSingleActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             updateData();
+            if ( dialog.isShowing() )
+                dialog.dismiss();
         }
     }
 

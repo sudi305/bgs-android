@@ -1,7 +1,6 @@
 package com.bgs.dheket;
 
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -17,15 +16,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.bgs.common.Constants;
 import com.bgs.common.DialogUtils;
+import com.bgs.common.ExtraParamConstants;
 import com.bgs.common.GpsUtils;
 import com.bgs.common.Utility;
 import com.bgs.model.Category;
@@ -78,7 +76,6 @@ public class MapViewWithListActivity extends AppCompatActivity {
 
     Locator mLocator;
     Location locationTouch;
-    private Location currentBestLocation;
     ArrayList<String> mFindOutFields = new ArrayList<>();
 
     LocationDisplayManager mLDM;
@@ -89,6 +86,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
 
     //store data katagory yg dikirim via intent
     private Category category;
+    private Location currentBestLocation;
 
     String urls = "";
     String parameters;
@@ -126,8 +124,6 @@ public class MapViewWithListActivity extends AppCompatActivity {
         //actionBar.setHomeAsUpIndicator(R.drawable.logo);
         actionBar.setHomeButtonEnabled(true);
 
-
-
         //Retrieve the map and initial extent from XML layout
         mMapView = (MapView) findViewById(R.id.map_single);
         mMapView.setOnStatusChangedListener(statusChangedListener);
@@ -135,8 +131,8 @@ public class MapViewWithListActivity extends AppCompatActivity {
         //mMapView.setOnLongPressListener(mapLongPress);
 
         //get category from bundle
-        category = getIntent().getParcelableExtra("category");
-        currentBestLocation = getIntent().getParcelableExtra("currentBestLocation");
+        category = getIntent().getParcelableExtra(ExtraParamConstants.CATEGORY);
+        currentBestLocation = getIntent().getParcelableExtra(ExtraParamConstants.CURRNET_BEST_LOCATION);
 
         actionBar.setTitle(category.getName());
 //        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
@@ -193,8 +189,10 @@ public class MapViewWithListActivity extends AppCompatActivity {
         @Override
         public void onSingleTap(float x, float y) {
             // Find out if we tapped on a Graphic
-            Intent gotoMapExtend = new Intent(MapViewWithListActivity.this, MapViewExtendActivity.class);
+            MapViewExtendActivity.startFromMapWithList(MapViewWithListActivity.this, category, currentBestLocation);
+            //Intent gotoMapExtend = new Intent(MapViewWithListActivity.this, MapViewExtendActivity.class);
 
+            /*
             Bundle paket = new Bundle();
             paket.putInt("cat_id", category.getId());
             paket.putString("kategori", category.getName());
@@ -209,8 +207,8 @@ public class MapViewWithListActivity extends AppCompatActivity {
             paket.putDouble("longitude", longitude);
             paket.putString("icon", category.getIcon());
             gotoMapExtend.putExtras(paket);
-
-            startActivity(gotoMapExtend);
+            */
+            //startActivity(gotoMapExtend);
             finish();
             /*//Toast.makeText(rootView.getContext().getApplicationContext(),"this location at x= "+x+" and y= "+y+" | point on SingleTaps"+onSingleTaps(x,y)+"",Toast.LENGTH_SHORT).show();
             int[] graphicIDs = mResultsLayer.getGraphicIDs(x, y, 25);
@@ -386,7 +384,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
     }
 
     public void toMainMenu(){
-        Intent toMainMenu = new Intent(this,MainMenuActivity.class);
+        Intent toMainMenu = new Intent(this, MainMenuActivity.class);
         startActivity(toMainMenu);
         finish();
     }
@@ -518,7 +516,6 @@ public class MapViewWithListActivity extends AppCompatActivity {
                 if ( !joResponse.isNull("locations")) {
                     locationArray = joResponse.getJSONArray("locations");
                     Log.d(Constants.TAG, "Data lokasi dari server -> " + locationArray.length());
-                    double locDistance = 0;
                     Lokasi lokasi = null;
                     Map<String, Object> attr = null;
                     int totalLocation = locationArray.length();
@@ -534,6 +531,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
                             int id, String name, String address, double latitude, double longitude,
                             String phone, int isPromo, int idLocationHere, String description, String locationTag, double distance
                              */
+
                             lokasi = new Lokasi();
                             lokasi.setId(Integer.parseInt(data.getString("id_location")));
                             lokasi.setName(data.getString("location_name"));
@@ -588,8 +586,6 @@ public class MapViewWithListActivity extends AppCompatActivity {
 
     public void updateData(ArrayList<Lokasi> locationList, Graphic[] graphics, MultiPoint fullExtent) {
         Log.d(Constants.TAG, "call updateData()");
-        Symbol symbol = null;
-        Map<String, Object> attr = new HashMap<String, Object>();
         if (locationList != null) {
             clearCurrentResults();
             //redraw layer
@@ -626,10 +622,12 @@ public class MapViewWithListActivity extends AppCompatActivity {
                         } else {
                             goToScreen = new Intent(MapViewWithListActivity.this, DetailLocationWithNoMerchantActivity.class);
                         }
-                        goToScreen.putExtra("lokasi", _lokasi);
-                        goToScreen.putExtra("currentBestLocation", currentBestLocation);
-                        startActivity(goToScreen);
-                        finish();
+                        if ( goToScreen != null ) {
+                            goToScreen.putExtra(ExtraParamConstants.LOKASI_DETAIL, _lokasi);
+                            goToScreen.putExtra(ExtraParamConstants.CURRNET_BEST_LOCATION, currentBestLocation);
+                            startActivity(goToScreen);
+                            finish();
+                        }
                     }
                 });
             }

@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.bgs.common.Constants;
 import com.bgs.common.DialogUtils;
+import com.bgs.common.ExtraParamConstants;
 import com.bgs.common.GpsUtils;
 import com.bgs.common.Utility;
 import com.bgs.model.Category;
@@ -112,9 +113,6 @@ public class MapViewActivity extends AppCompatActivity {
 
     private static final String ACTION_CALL_FROM_MAINMENU = "com.bgs.dheket.map.action.CALL_FROM_MAINMENU";
 
-    private static final String EXTRA_PARAM_CATEGORIES = "com.bgs.dheket.map.extra.PARAM_CATEGORIES";
-    private static final String EXTRA_PARAM_LOCATION = "com.bgs.dheket.map.extra.PARAM_LOCATION";
-
     public static void startFromMainMenu(Context context, Category[] categories, Location location) {
         startMapActivity(context, ACTION_CALL_FROM_MAINMENU, categories, location);
     }
@@ -124,10 +122,10 @@ public class MapViewActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setAction(action);
         if ( categories != null )
-            intent.putExtra(EXTRA_PARAM_CATEGORIES, categories);
+            intent.putExtra(ExtraParamConstants.CATEGORIES, categories);
 
         if ( location != null )
-            intent.putExtra(EXTRA_PARAM_LOCATION, location);
+            intent.putExtra(ExtraParamConstants.CURRNET_BEST_LOCATION, location);
 
         context.startActivity(intent);
     }
@@ -152,10 +150,10 @@ public class MapViewActivity extends AppCompatActivity {
         mMapView.setOnSingleTapListener(mapTapCallback);
         //mMapView.setOnLongPressListener(mapLongPress);
 
-        Parcelable[] parcelables = getIntent().getParcelableArrayExtra(EXTRA_PARAM_CATEGORIES);
+        Parcelable[] parcelables = getIntent().getParcelableArrayExtra(ExtraParamConstants.CATEGORIES);
         categories = new Category[parcelables.length];
         System.arraycopy(parcelables, 0, categories, 0, parcelables.length);
-        currentBestLocation = getIntent().getParcelableExtra(EXTRA_PARAM_LOCATION);
+        currentBestLocation = getIntent().getParcelableExtra(ExtraParamConstants.CURRNET_BEST_LOCATION);
 
         madd = new PictureMarkerSymbol[categories.length];
         PictureMarkerSymbol a = null;
@@ -185,7 +183,7 @@ public class MapViewActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent goToScreen = new Intent(getApplicationContext(), DetailLocationWithNoMerchantActivity.class);
                 //goToScreen.putExtra("lokasi", lokasi);
-                goToScreen.putExtra("currentBestLocation", currentBestLocation);
+                goToScreen.putExtra(ExtraParamConstants.CURRNET_BEST_LOCATION, currentBestLocation);
 
                 startActivity(goToScreen);
                 finish();

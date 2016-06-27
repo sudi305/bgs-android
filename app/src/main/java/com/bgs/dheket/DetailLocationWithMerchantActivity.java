@@ -23,6 +23,7 @@ import com.bgs.chat.ChatPageActivity;
 import com.bgs.chat.model.ChatContact;
 import com.bgs.chat.model.ChatContactType;
 import com.bgs.common.Constants;
+import com.bgs.common.ExtraParamConstants;
 import com.bgs.common.Utility;
 import com.bgs.imageOrView.ViewPagerAdapter;
 import com.bgs.model.Category;
@@ -35,7 +36,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -89,10 +89,10 @@ public class DetailLocationWithMerchantActivity extends AppCompatActivity implem
         //actionBar.setHomeAsUpIndicator(R.drawable.logo);
         actionBar.setHomeButtonEnabled(true);
         actionBar.setTitle("Detail Location");
-//        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
+        //actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
 
-        lokasi = getIntent().getParcelableExtra("lokasi");
-        currentBestLocation = getIntent().getParcelableExtra("currentBestLocation");
+        lokasi = getIntent().getParcelableExtra(ExtraParamConstants.LOKASI_DETAIL);
+        currentBestLocation = getIntent().getParcelableExtra(ExtraParamConstants.CURRNET_BEST_LOCATION);
 
         if (" ".equalsIgnoreCase(lokasi.getCategory().getName())){
             //icon_cat = lokasi.getCategory().getIcon();
@@ -174,7 +174,7 @@ public class DetailLocationWithMerchantActivity extends AppCompatActivity implem
     }
 
     public void back_to_previous_screen(){
-        Intent intent = new Intent(getApplicationContext(),MapViewWithListActivity.class);
+        Intent intent = new Intent(getApplicationContext(), MapViewWithListActivity.class);
 
         Bundle paket = new Bundle();
         /*
@@ -206,8 +206,8 @@ public class DetailLocationWithMerchantActivity extends AppCompatActivity implem
         intent.putExtras(paket);
         */
 
-        intent.putExtra("category", category);
-        intent.putExtra("currentBestLocation", currentBestLocation);
+        intent.putExtra(ExtraParamConstants.CATEGORY, category);
+        intent.putExtra(ExtraParamConstants.CURRNET_BEST_LOCATION, currentBestLocation);
         startActivity(intent);
         finish();
     }

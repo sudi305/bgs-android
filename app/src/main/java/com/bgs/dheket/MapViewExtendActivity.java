@@ -1,6 +1,6 @@
 package com.bgs.dheket;
 
-import android.app.ProgressDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -20,7 +20,13 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bgs.common.Constants;
+import com.bgs.common.DialogUtils;
+import com.bgs.common.ExtraParamConstants;
+import com.bgs.common.GpsUtils;
 import com.bgs.common.Utility;
+import com.bgs.model.Category;
+import com.bgs.model.Lokasi;
 import com.bgs.networkAndSensor.Compass;
 import com.bgs.networkAndSensor.HttpGetOrPost;
 import com.esri.android.map.GraphicsLayer;
@@ -37,7 +43,6 @@ import com.esri.core.geometry.SpatialReference;
 import com.esri.core.geometry.Unit;
 import com.esri.core.map.Graphic;
 import com.esri.core.symbol.PictureMarkerSymbol;
-import com.esri.core.symbol.Symbol;
 import com.esri.core.tasks.geocode.Locator;
 
 import org.json.JSONArray;
@@ -70,7 +75,7 @@ public class MapViewExtendActivity extends AppCompatActivity {
 
     Locator mLocator;
     Location locationTouch;
-    Location location;
+    //Location location;
     ArrayList<String> mFindOutFields = new ArrayList<>();
 
     LocationDisplayManager mLDM;
@@ -80,11 +85,11 @@ public class MapViewExtendActivity extends AppCompatActivity {
 
     private JSONObject jObject;
     private String jsonResult = "";
-    double radius = 0.0;
-    double latitude, longitude;
+    //double radius = 0.0;
+    //double latitude, longitude;
     String urls = "";
-    String parameters, email, icon, category;
-    int cat_id, looping = 0;
+    String parameters;//, email, icon, category;
+    //int cat_id, looping = 0;
     ViewGroup placeLayout;
 
     ArrayList<HashMap<String, String>> arraylist;
@@ -96,11 +101,34 @@ public class MapViewExtendActivity extends AppCompatActivity {
     CallWebPageTask task;
     Bundle paket;
 
+    private Category category;
+    private Location currentBestLocation;
+
+    private static final String ACTION_CALL_FROM_LOC_MAPWITHLIST = "com.bgs.dheket.map.action.CALL_FROM_MAPWITHLIST";
+
+    public static void startFromMapWithList(Context context, Category category, Location location) {
+        startMapActivity(context, ACTION_CALL_FROM_LOC_MAPWITHLIST, category, location);
+    }
+
+    private static void startMapActivity(Context context, String action, Category category, Location location) {
+        Intent intent = new Intent(context, MapViewExtendActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setAction(action);
+        if ( category != null )
+            intent.putExtra(ExtraParamConstants.CATEGORY, category);
+
+        if ( location != null )
+            intent.putExtra(ExtraParamConstants.CURRNET_BEST_LOCATION, location);
+
+        context.startActivity(intent);
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_view_list);
-
+        Log.d(Constants.TAG, "MapViewExtendActivity=>onCreate");
         actionBar = getSupportActionBar();
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -114,8 +142,11 @@ public class MapViewExtendActivity extends AppCompatActivity {
         mMapView.setOnSingleTapListener(mapTapCallback);
         //mMapView.setOnLongPressListener(mapLongPress);
 
-        paket = getIntent().getExtras();
+        category = getIntent().getParcelableExtra(ExtraParamConstants.CATEGORY);
+        currentBestLocation = getIntent().getParcelableExtra(ExtraParamConstants.CURRNET_BEST_LOCATION);
 
+        /*
+        paket = getIntent().getExtras();
         latitude = paket.getDouble("latitude");
         cat_id = paket.getInt("cat_id");
         longitude = paket.getDouble("longitude");
@@ -124,12 +155,13 @@ public class MapViewExtendActivity extends AppCompatActivity {
         Log.e("icon",icon);
         category = paket.getString("kategori");
         radius = paket.getDouble("radius");
+        */
 
-        urls = String.format(getResources().getString(R.string.link_getLocationByCategory));//"http://dheket.esy.es/getLocationByCategory.php"
+        urls = String.format(getResources().getString(R.string.link_getLocationAndMerchByCategory));//"http://dheket.esy.es/getLocationByCategory.php"
 
-        actionBar.setTitle(category);
+        actionBar.setTitle(category.getName());
 //        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
-        actionBar.setSubtitle(Html.fromHtml("<font color='#ff9800' size='10'>Radius " + formatNumber.changeFormatNumber(radius) + " Km</font>"));
+        actionBar.setSubtitle(Html.fromHtml("<font color='#ff9800' size='10'>Radius " + formatNumber.changeFormatNumber(category.getRadius()) + " Km</font>"));
 
         textView_id_loc = (TextView) findViewById(R.id.textView_map_id);
         textView_loc_name = (TextView) findViewById(R.id.textView_map_nama_lokasi);
@@ -140,7 +172,8 @@ public class MapViewExtendActivity extends AppCompatActivity {
         placeLayout = (ViewGroup) findViewById(R.id.placeLayout_single);
         placeLayout.setVisibility(View.GONE);
 
-        if (!icon.isEmpty() && (!icon.equalsIgnoreCase("null") || !icon.equalsIgnoreCase(""))){
+        String icon = category.getIcon();
+        if (icon != null && !icon.isEmpty() && !(icon.equalsIgnoreCase("null") || icon.equalsIgnoreCase(""))){
             mcat= new PictureMarkerSymbol();
             mcat.setUrl(icon);
         } else {
@@ -151,24 +184,27 @@ public class MapViewExtendActivity extends AppCompatActivity {
         placeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Intent goToScreen = new Intent(MapViewExtendActivity.this, DetailLocationWithNoMerchantActivity.class);
+
                 Bundle paket = new Bundle();
                 paket.putInt("location_id", Integer.parseInt(textView_id_loc.getText().toString()));
-                paket.putInt("cat_id", cat_id);
-                paket.putString("kategori", category);
-                paket.putDouble("radius", radius);
-                paket.putDouble("latitude", latitude);
-                paket.putDouble("longitude", longitude);
-                paket.putString("icon", icon);
+                paket.putInt("cat_id", category.getId());
+                paket.putString("kategori", category.getName());
+                paket.putDouble("radius", category.getRadius());
+                paket.putDouble("latitude", currentBestLocation.getLatitude());
+                paket.putDouble("longitude", currentBestLocation.getLongitude());
+                paket.putString("icon", category.getIcon());
                 goToScreen.putExtras(paket);
-                startActivity(goToScreen);
-                finish();
+                //startActivity(goToScreen);
+                //finish();
             }
         });
 
         btn_toMainMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 toListMap();
             }
         });
@@ -202,12 +238,19 @@ public class MapViewExtendActivity extends AppCompatActivity {
 
         setupLocator();
         setupLocationListener();
+
+        //first init
+        getDataFromServer();
     }
 
     public void getDataFromServer() {
-        task = new CallWebPageTask();
-        task.applicationContext = getApplicationContext();
-        parameters = urls +"/"+ radius + "/" + latitude + "/" + longitude + "/" +cat_id;
+        task = new CallWebPageTask(this);
+        double latitude = 0, longitude = 0;
+        if ( currentBestLocation != null ) {
+            latitude = currentBestLocation.getLatitude();
+            longitude = currentBestLocation.getLongitude();
+        }
+        parameters = urls +"/"+ category.getRadius() + "/" + latitude + "/" + longitude + "/" + category.getId();
         Log.e("OK Connecting Sukses", "" + parameters);
         //Log.e("Sukses", parameters);
         task.execute(new String[]{parameters});
@@ -278,7 +321,6 @@ public class MapViewExtendActivity extends AppCompatActivity {
     private void setupLocator() {
         // Parameterless constructor - uses the Esri world geocoding service.
         mLocator = Locator.createOnlineLocator();
-
         // Set up the outFields parameter for the search.
         mFindOutFields.add("id_loc");
         mFindOutFields.add("loc_name");
@@ -299,15 +341,15 @@ public class MapViewExtendActivity extends AppCompatActivity {
                 public void onLocationChanged(Location loc) {
                     if (!locationChanged) {
                         locationChanged = true;
-                        Log.e("sukses location ", "lat " + loc.getLatitude() + " | lng " + loc.getLongitude() + " | point " + getAsPoint(loc));
-                        location = loc;
-                        locationTouch = location;
-                        // After zooming, turn on the Location pan mode to show the location
-                        // symbol. This will disable as soon as you interact with the map.
-                        if (!isFirst) {
-                            latitude = loc.getLatitude();
-                            longitude = loc.getLongitude();
-                        }
+                        Log.d(Constants.TAG, "sukses location -> lat " + loc.getLatitude() + " | lng " + loc.getLongitude() + " | point " + getAsPoint(loc));
+
+                        if ( currentBestLocation != null ) {
+                            if (GpsUtils.isBetterLocation(loc, currentBestLocation)) {
+                                currentBestLocation = loc;
+                            }
+                        } else { currentBestLocation = loc; }
+
+                        locationTouch = currentBestLocation;
 
                         getDataFromServer();
                         /*Toast.makeText(getApplicationContext(), "location change " + (looping++), Toast.LENGTH_SHORT).show();*/
@@ -391,7 +433,11 @@ public class MapViewExtendActivity extends AppCompatActivity {
     }
 
     public void toListMap(){
-        Intent toListMap = new Intent(this,MapViewWithListActivity.class);
+        Log.d(Constants.TAG, "BACK TO => MapViewWithListActivity FROM => MapViewExtendActivity");
+        Intent toListMap = new Intent(MapViewExtendActivity.this, MapViewWithListActivity.class);
+        toListMap.putExtra(ExtraParamConstants.CATEGORY, category);
+        toListMap.putExtra(ExtraParamConstants.CURRNET_BEST_LOCATION, currentBestLocation);
+        /*
         Bundle paket = new Bundle();
         paket.putInt("cat_id", cat_id);
         paket.putString("kategori", category);
@@ -401,6 +447,7 @@ public class MapViewExtendActivity extends AppCompatActivity {
         paket.putString("icon", icon);
         toListMap.putExtras(paket);
         startActivity(toListMap);
+        */
         finish();
     }
 
@@ -470,16 +517,25 @@ public class MapViewExtendActivity extends AppCompatActivity {
         }
     }
 
-    private class CallWebPageTask extends AsyncTask<String, Void, String> {
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mMapView.destroyDrawingCache();
+    }
 
-        private ProgressDialog dialog;
-        protected Context applicationContext;
+    private class CallWebPageTask extends AsyncTask<String, Void, String> {
+        protected Context context;
+        private Dialog dialog;
+        private Graphic[] graphics;
+        MultiPoint fullExtent = new MultiPoint();
+
+        public CallWebPageTask(Context context) {
+            dialog = DialogUtils.LoadingSpinner(context);
+        }
 
         @Override
         protected void onPreExecute() {
-            /*if (isFirst==true){
-                this.dialog = ProgressDialog.show(applicationContext, "Retrieving Data", "Please Wait...", true);
-            }*/
+            dialog.show();
         }
 
         @Override
@@ -487,27 +543,57 @@ public class MapViewExtendActivity extends AppCompatActivity {
             String response = "";
             HttpGetOrPost httpGetOrPost = new HttpGetOrPost();
             response = httpGetOrPost.getRequest(url[0]);
+            JSONArray locationArray = null;
+            JSONObject joResponse;
+            JSONObject data;
             try {
-                //simpan data dari web ke dalam array
-                JSONArray menuItemArray = null;
-                jObject = new JSONObject(response);
-                menuItemArray = jObject.getJSONArray("dheket_locByCat");
-                arraylist = new ArrayList<HashMap<String, String>>();
-                Log.e("Data dari server", "" + menuItemArray.length());
-                for (int i = 0; i < menuItemArray.length(); i++) {
-                    HashMap<String, String> map = new HashMap<String, String>();
-                    map.put("id_loc",menuItemArray.getJSONObject(i).getString("id_location"));
-                    map.put("loc_name",menuItemArray.getJSONObject(i).getString("location_name"));
-                    map.put("loc_address",menuItemArray.getJSONObject(i).getString("location_address"));
-                    map.put("loc_lat",menuItemArray.getJSONObject(i).getString("latitude"));
-                    map.put("loc_lng",menuItemArray.getJSONObject(i).getString("longitude"));
-                    map.put("cat_id",menuItemArray.getJSONObject(i).getString("category_id"));
-                    map.put("loc_distance",""+Double.parseDouble(formatNumber.changeFormatNumber(menuItemArray.getJSONObject(i).getDouble("distance"))));
-                    arraylist.add(map);
+                joResponse = new JSONObject(response);
+                //get locations
+                if ( !joResponse.isNull("locations")) {
+                    locationArray = joResponse.getJSONArray("locations");
+                    Log.d(Constants.TAG, "Data lokasi dari server -> " + locationArray.length());
+                    Lokasi lokasi = null;
+                    Map<String, Object> attr = null;
+                    int totalLocation = locationArray.length();
+                    //store graphic obj
+                    graphics = new Graphic[totalLocation];
+                    for (int i = 0; i < totalLocation; i++) {
+                        try {
+
+                            data = locationArray.getJSONObject(i);
+                            //Log.d(Constants.TAG, "MapViewExtendActivity=>data => " + data.toString());
+                            lokasi = new Lokasi();
+                            lokasi.setId(Integer.parseInt(data.getString("id_location")));
+                            lokasi.setName(data.getString("location_name"));
+                            lokasi.setAddress(data.getString("location_address"));
+                            lokasi.setLatitude(Double.parseDouble(data.getString("latitude")));
+                            lokasi.setLongitude(Double.parseDouble(data.getString("longitude")));
+                            lokasi.setDistance(Double.parseDouble(data.getString("distance")));
+
+
+                            Location locationPin = Constants.DEMO_LOCATION;
+                            locationPin.setLatitude(lokasi.getLatitude());
+                            locationPin.setLongitude(lokasi.getLongitude());
+                            Point point = getAsPoint(locationPin);
+                            fullExtent.add(point);
+
+                            attr = new HashMap<String, Object>();
+                            attr.put("id_loc", lokasi.getId());
+                            attr.put("loc_name", lokasi.getName());
+                            attr.put("loc_address", lokasi.getAddress());
+                            attr.put("loc_distance", lokasi.getDistance());
+
+                            graphics[i] = new Graphic(point, mcat, attr);
+
+
+                        } catch (JSONException e) {
+                            Log.e(Constants.TAG, e.getMessage(), e);
+                        }
+                    }
                 }
+
             } catch (JSONException e) {
-                e.printStackTrace();
-                Log.e("cek 2", "error" + e);
+                Log.e(Constants.TAG, e.getMessage(), e);
             }
 
             return response;
@@ -515,56 +601,23 @@ public class MapViewExtendActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result) {
-            updateData();
+            updateData(graphics, fullExtent);
+            if ( dialog.isShowing()) dialog.dismiss();
         }
     }
 
-    public void updateData() {
-        MultiPoint fullExtent = new MultiPoint();
-        Symbol symbol = null;
-        //-6.21267000, 106.61778566
-        Map<String, Object> attr = new HashMap<String, Object>();
-        if (arraylist != null) {
-            mResultsLayer.removeAll();
+    public void updateData(Graphic[] graphics, MultiPoint fullExtent) {
+        if (graphics != null) {
             clearCurrentResults();
-            for (int i = 0; i < arraylist.size() ; i++) {
-                Location locationPin = location;
-                locationPin.setLatitude(Double.parseDouble(arraylist.get(i).get("loc_lat").toString()));
-                locationPin.setLongitude(Double.parseDouble(arraylist.get(i).get("loc_lng").toString()));
-                Point point = getAsPoint(locationPin);
-                attr.put("id_loc", arraylist.get(i).get("id_loc").toString());
-                attr.put("loc_name", arraylist.get(i).get("loc_name").toString());
-                attr.put("loc_address", arraylist.get(i).get("loc_address").toString());
-                attr.put("loc_distance", arraylist.get(i).get("loc_distance").toString());
-
-                symbol = mcat;
-
-
-                mResultsLayer.addGraphic(new Graphic(point, symbol, attr));
-                fullExtent.add(point);
-            }
-            /*for (int i = 0; i < id_loc.length; i++) {
-                Location locationPin = location;
-                locationPin.setLatitude(loc_lat[i]);
-                locationPin.setLongitude(loc_lng[i]);
-                Point point = getAsPoint(locationPin);
-                attr.put("id_loc", id_loc[i]);
-                attr.put("loc_name", loc_name[i]);
-                attr.put("loc_address", loc_address[i]);
-                attr.put("loc_distance", loc_distance[i]);
-                attr.put("loc_icon", loc_pic[i]);
-
-
-                symbol = mcat;
-
-                mResultsLayer.addGraphic(new Graphic(point, symbol, attr));
-                fullExtent.add(point);
-            }*/
+            //redraw layer
+            mResultsLayer.addGraphics(graphics);
             mMapView.setExtent(fullExtent, 100);
-            if (arraylist.size() < 2) {
+            if (graphics.length < 2) {
                 if ((mLDM != null) && (mLDM.getLocation() != null)) {
+                    Log.d(Constants.TAG, String.format("lat=%s, long=%s", currentBestLocation.getLatitude(), currentBestLocation.getLongitude()));
+
                     // Keep current scale and go to current location, if there is one.
-                    zoomToLocation(location);
+                    zoomToLocation(currentBestLocation);
                     mLDM.setAutoPanMode(LocationDisplayManager.AutoPanMode.LOCATION);
                 }
             }

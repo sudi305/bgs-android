@@ -34,6 +34,7 @@ import com.bgs.chat.widgets.Emoji;
 import com.bgs.chat.widgets.EmojiView;
 import com.bgs.chat.widgets.SizeNotifierRelativeLayout;
 import com.bgs.common.Constants;
+import com.bgs.common.ExtraParamConstants;
 import com.bgs.common.NativeUtilities;
 import com.bgs.common.Utility;
 import com.bgs.dheket.App;
@@ -58,9 +59,6 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
     private static final String ACTION_CHAT_FROM_HISTORY = "com.bgs.chat.action.CHAT_FROM_HISTORY";
     private static final String ACTION_CHAT_FROM_LOCATION = "com.bgs.chat.action.FROM_LOCATION";
 
-    private static final String EXTRA_PARAM_CONTACT = "com.bgs.chat.extra.CONTACT";
-    private static final String EXTRA_PARAM_LOKASIDETIL = "com.bgs.chat.extra.LOKASIDETIL";
-    private static final String EXTRA_PARAM_LOCATION = "com.bgs.chat.extra.LOCATION";
 
     private TextView userContactTextView;
     private ListView chatListView;
@@ -113,11 +111,11 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
         Intent intent = new Intent(context, ChatPageActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setAction(action);
-        intent.putExtra(EXTRA_PARAM_CONTACT, contact);
+        intent.putExtra(ExtraParamConstants.CHAT_CONTACT, contact);
         if ( lokasiDetail != null )
-            intent.putExtra(EXTRA_PARAM_LOKASIDETIL, lokasiDetail);
+            intent.putExtra(ExtraParamConstants.LOKASI_DETAIL, lokasiDetail);
         if ( location != null )
-            intent.putExtra(EXTRA_PARAM_LOCATION, location);
+            intent.putExtra(ExtraParamConstants.CURRNET_BEST_LOCATION, location);
 
         context.startActivity(intent);
     }
@@ -129,10 +127,10 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
         setContentView(R.layout.activity_chatpage);
 
         //get object intent
-        chatContact =  (ChatContact)getIntent().getParcelableExtra(EXTRA_PARAM_CONTACT);
+        chatContact =  (ChatContact)getIntent().getParcelableExtra(ExtraParamConstants.CHAT_CONTACT);
         if (getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_LOCATION)) {
-            lokasi = (Lokasi) getIntent().getParcelableExtra(EXTRA_PARAM_LOKASIDETIL);
-            currentBestLocation = (Location) getIntent().getParcelableExtra(EXTRA_PARAM_LOCATION);
+            lokasi = (Lokasi) getIntent().getParcelableExtra(ExtraParamConstants.LOKASI_DETAIL);
+            currentBestLocation = (Location) getIntent().getParcelableExtra(ExtraParamConstants.CURRNET_BEST_LOCATION);
         }
 
         NativeUtilities.statusBarHeight = getStatusBarHeight();
@@ -160,8 +158,8 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
                 Intent intent = null;
                 if (getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_LOCATION)) {
                     intent = new Intent(getActivity(), DetailLocationWithMerchantActivity.class);
-                    intent.putExtra(EXTRA_PARAM_LOKASIDETIL, lokasi);
-                    intent.putExtra(EXTRA_PARAM_LOCATION, currentBestLocation);
+                    intent.putExtra(ExtraParamConstants.LOKASI_DETAIL, lokasi);
+                    intent.putExtra(ExtraParamConstants.CURRNET_BEST_LOCATION, currentBestLocation);
 
                 } else if ( getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_CONTACT)
                             || getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_HISTORY)) {
