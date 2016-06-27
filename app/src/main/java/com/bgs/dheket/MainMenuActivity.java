@@ -5,6 +5,7 @@ import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -57,7 +58,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bgs.chat.MainChatActivity;
-import com.bgs.chat.services.ChatService;
+import com.bgs.chat.services.ChatClientService;
+import com.bgs.chat.services.ChatTaskService;
 import com.bgs.chat.widgets.CircleBackgroundSpan;
 import com.bgs.common.Constants;
 import com.bgs.common.GpsUtils;
@@ -90,6 +92,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -151,22 +154,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     RelativeLayout.LayoutParams p;
 
     //CHATS
-    private Socket socket;
-    private boolean mLogin = false;
-    private boolean mConnect = false;
 
-    public boolean isConnect() {
-        return mConnect;
-    }
-    public void setConnect(boolean mConnect) {
-        this.mConnect = mConnect;
-    }
-    public boolean isLogin() {
-        return mLogin;
-    }
-    public void setLogin(boolean mLogin) {
-        this.mLogin = mLogin;
-    }
+    private ChatClientService chatClientService;
 
     //add by supri
     private Location currentBestLocation = null;
@@ -376,39 +365,14 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         });
 
         //CHAT SOCKET
-        App app = (App) getApplication();
-        CHAT_EVENT_LISTENERS.putAll(new LinkedHashMap<String, Emitter.Listener>(){{
-            put(Socket.EVENT_CONNECT, onConnect);
-            put(Socket.EVENT_DISCONNECT, onDisconnect);
-            put(Socket.EVENT_CONNECT_ERROR, onConnectError);
-            put(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
-            put(App.SOCKET_EVENT_LOGIN, onLogin);
-            put(App.SOCKET_EVENT_NEW_MESSAGE, onNewMessage);
-        }});
-        socket = app.startChatSocket(CHAT_EVENT_LISTENERS);
+        Log.d(Constants.TAG_CHAT,"ON CREATE");
+        chatClientService = App.getChatClientService();
+        Log.d(Constants.TAG_CHAT,"chatClientService = " + chatClientService);
+        chatClientService.registerReceivers(makeReceivers());
+        attemptLogin();
 
+        //update new message counter drawer menu
         updateNewMessageCounter();
-    }
-
-    /**
-     * update new message counter inline chat menu
-     */
-    private void updateNewMessageCounter() {
-        //update chat meenu item
-        Menu menuNav = navigationView.getMenu();
-        MenuItem element = menuNav.findItem(R.id.nav_chat);
-        String before = element.getTitle().toString();
-
-        String counter = Integer.toString(99);
-        String s = before + " " + counter;
-        SpannableString sColored = new SpannableString(s);
-
-        int textSize = getResources().getDimensionPixelSize(R.dimen.chat_counter);
-        int start = s.length() - (counter.length());
-        sColored.setSpan(new CircleBackgroundSpan(Color.RED, Color.DKGRAY, Color.WHITE, textSize, 2, 8), start, s.length(), 0);
-        //sColored.setSpan(new BackgroundColorSpan( Color.GRAY ), s.length()-3, s.length(), 0);
-        //sColored.setSpan(new ForegroundColorSpan( Color.WHITE ), s.length()-3, s.length(), 0);
-        element.setTitle(sColored);
     }
 
 
@@ -624,15 +588,15 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
                         //update user app
                         //add by supri 2016/6/16
-                        App app = (App) getApplication();
-                        UserApp userApp = app.getUserApp();
+                        UserApp userApp = App.getInstance().getUserApp();
                         if (userApp == null) userApp = new UserApp();
                         userApp.setName(name);
                         userApp.setEmail(email);
                         userApp.setId(id);
                         userApp.setPicture(imageUsr);
 
-                        app.setUserApp(userApp);
+                        App.getInstance().updateUserApp(userApp);
+
                         //DO LOGIN
                         attemptLogin();
                     }
@@ -1174,135 +1138,88 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     }
 
     //BEGIN SOCKET METHOD BLOCK
-    private void attemptLogin() {
-        if (isConnect()) {
-            if (isLogin()) return;
-            UserApp userApp = ((App) getApplication()).getUserApp();
-            if (userApp != null) {
+    public Map<String, BroadcastReceiver> makeReceivers(){
+        Map<String, BroadcastReceiver> map = new HashMap<String, BroadcastReceiver>();
+        map.put(ChatClientService.SocketEvent.CONNECT, connectReceiver);
+        map.put(ChatClientService.SocketEvent.NEW_MESSAGE, newMessageReceiver);
+        return map;
+    }
 
-                try {
-                    //String name = NativeUtilities.getDeviceUniqueID(getContentResolver());
-                    JSONObject user = new JSONObject();
-                    user.put("name", userApp.getName());
-                    user.put("email", userApp.getEmail());
-                    user.put("phone", userApp.getPhone());
-                    socket.emit(App.SOCKET_EVENT_DO_LOGIN, user);
-                } catch (JSONException e) {
-                    Log.e(Constants.TAG_CHAT, e.getMessage(), e);
-                }
+    /**
+     * update new message counter inline chat menu
+     */
+    private void updateNewMessageCounter() {
+        //update chat meenu item
+        Menu menuNav = navigationView.getMenu();
+        MenuItem element = menuNav.findItem(R.id.nav_chat);
+        String before = element.getTitle().toString();
+
+        String counter = Integer.toString(99);
+        String s = before + " " + counter;
+        SpannableString sColored = new SpannableString(s);
+
+        int textSize = getResources().getDimensionPixelSize(R.dimen.chat_counter);
+        int start = s.length() - (counter.length());
+        sColored.setSpan(new CircleBackgroundSpan(Color.RED, Color.DKGRAY, Color.WHITE, textSize, 2, 8), start, s.length(), 0);
+        //sColored.setSpan(new BackgroundColorSpan( Color.GRAY ), s.length()-3, s.length(), 0);
+        //sColored.setSpan(new ForegroundColorSpan( Color.WHITE ), s.length()-3, s.length(), 0);
+        element.setTitle(sColored);
+    }
+
+    private void attemptLogin() {
+        if ( !chatClientService.isLogin() ) {
+            JSONObject user = new JSONObject();
+            try {
+                String name = Utility.getDeviceUniqueID(getContentResolver());
+                UserApp userApp = App.getInstance().getUserApp();
+                user.put("name", userApp.getName());
+                user.put("email", userApp.getEmail());
+                user.put("phone", userApp.getPhone());
+                chatClientService.emit(ChatClientService.SocketEmit.DO_LOGIN, user);
+            } catch (JSONException e) {
+                Log.e(Constants.TAG_CHAT, e.getMessage(), e);
             }
         }
     }
 
-    private Emitter.Listener onNewMessage = new Emitter.Listener() {
+    private BroadcastReceiver connectReceiver = new BroadcastReceiver() {
         @Override
-        public void call(final Object... args) {
+        public void onReceive(Context context, Intent intent) {
+            attemptLogin();
+        }
+    };
+
+    private BroadcastReceiver newMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, final Intent intent) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                JSONObject from;
+                String message;
+                try {
+                    String data = intent.getStringExtra("data");
+                    JSONObject joData = new JSONObject(data);
+                    from = joData.getJSONObject("from");
+                    message = joData.getString("message");
 
-                    JSONObject data = (JSONObject) args[0];
-                    JSONObject from;
-                    String message;
-                    try {
-                        from = data.getJSONObject("from");
-                        message = data.getString("message");
+                    //String id = from.getString("id");
+                    String name = from.getString("name");
+                    String email = from.getString("email");
+                    String phone = from.getString("phone");
 
-                        //String id = from.getString("id");
-                        String name = from.getString("name");
-                        String email = from.getString("email");
-                        String phone = from.getString("phone");
+                    //Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT );
+                    Log.d(Constants.TAG_CHAT, "message2 = " + message);
+                    //update new message count - option menu
 
-                        //Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT );
-                        Log.d(Constants.TAG_CHAT, "message2 = " + message);
-                        //update new message count - option menu
-
-                    } catch (JSONException e) {
-                        return;
-                    }
+                } catch (JSONException e) {
+                    return;
+                }
                 }
             });
         }
     };
 
-    private Emitter.Listener onConnect = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (!isConnect()) {
-                        setConnect(true);
-                        Log.d(Constants.TAG_CHAT, getResources().getString(R.string.connect));
-                    }
-
-
-                    attemptLogin();
-                    //if(null!=userContact) socket.emit("add user", userContact.getName());
-                    //isLogin = true;
-                }
-            });
-        }
-    };
-
-    private Emitter.Listener onDisconnect = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    setConnect(false);
-                    setLogin(false);
-                    //Toast.makeText(getApplicationContext(), R.string.disconnect, Toast.LENGTH_LONG).show();
-                    Log.d(Constants.TAG_CHAT, getResources().getString(R.string.disconnect));
-                    //attemptLogin();
-                    while (isConnect() == false)
-                        ChatService.startActionKeepConnection(MainMenuActivity.this);
-                }
-            });
-        }
-    };
-
-    private Emitter.Listener onConnectError = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    setConnect(false);
-                    setLogin(false);
-                    //Toast.makeText(getApplicationContext(), R.string.error_connect, Toast.LENGTH_LONG).show();
-                    Log.d(Constants.TAG_CHAT, getResources().getString(R.string.error_connect));
-                    //attemptLogin();
-
-                }
-            });
-        }
-    };
-
-    private Emitter.Listener onLogin = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-            if (isLogin()) return;
-
-            JSONObject data = (JSONObject) args[0];
-            try {
-                setLogin(data.getBoolean("success"));
-                //Toast.makeText(getApplicationContext(), "Login1 " + isLogin, Toast.LENGTH_SHORT).show();
-            } catch (JSONException e) {
-                Log.e(Constants.TAG_CHAT, e.getMessage(), e);
-                return;
-            }
-            Log.d(Constants.TAG_CHAT, "Login " + isLogin());
-            //Toast.makeText(getApplicationContext(), "Login2 " + isLogin, Toast.LENGTH_SHORT).show();
-
-            //retrive contact
-            if (isLogin()) {
-                ChatService.startActionUpdateContact(MainMenuActivity.this);
-                //socket.emit("get contacts");
-            }
-        }
-    };
     //END SOCKET METHOD BLOCK
 
 
@@ -1310,16 +1227,14 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     public void onResume() {
         super.onResume();
         Log.d(Constants.TAG, "ON RESUME");
-        App app = (App)getApplication();
-        socket = app.resumeChatSocket();
-        Log.d(Constants.TAG, "locManager = " + app.getLocationManager());
+        chatClientService.registerReceivers(makeReceivers());
+        Log.d(Constants.TAG, "locManager = " + App.getInstance().getLocationManager());
 
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        App app = (App)getApplication();
-        app.stopChatSocket(CHAT_EVENT_LISTENERS, false);;
+        chatClientService.unregisterReceivers();
     }
 }

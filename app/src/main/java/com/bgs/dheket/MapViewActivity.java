@@ -531,7 +531,7 @@ public class MapViewActivity extends AppCompatActivity {
                 arraylist = new ArrayList<HashMap<String, String>>();
                 Log.e(Constants.TAG, "Data dari server -> " + jaTag.length());
                 for (int i = 0; i < jaTag.length(); i++) {
-                    Log.e(Constants.TAG, "Data User Lokasi -> " + jaTag.getJSONObject(i));
+                    Log.d(Constants.TAG, "Data User Lokasi -> " + jaTag.getJSONObject(i));
                     HashMap<String, String> map = new HashMap<String, String>();
                     map.put("id_loc",jaTag.getJSONObject(i).getString("id_location"));
                     map.put("loc_name",jaTag.getJSONObject(i).getString("location_name"));
@@ -580,12 +580,12 @@ public class MapViewActivity extends AppCompatActivity {
 
                 Point point = getAsPoint(locationPin);
 
-                Log.d(Constants.TAG, "map data => " + new JSONObject(arraylist.get(i)).toString());
+                //Log.d(Constants.TAG, "map data => " + new JSONObject(data).toString());
 
                 attr.put("id_loc", data.get("id_loc"));
                 attr.put("loc_name", data.get("loc_name"));
                 attr.put("loc_address", data.get("loc_address"));
-                Log.d(Constants.TAG, "map data => " + data.get("loc_icon"));
+                //Log.d(Constants.TAG, "map data => " + data.get("loc_icon"));
 
                 attr.put("loc_icon", data.get("loc_icon"));
                 attr.put("loc_distance", data.get("loc_distance"));

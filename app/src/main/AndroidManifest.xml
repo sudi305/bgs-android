@@ -66,8 +66,8 @@
         <activity android:name="com.bgs.chat.MainChatActivity"
             android:label="@string/title_activity_main_chat"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
-        <receiver android:name="com.bgs.chat.services.ChatAlarmReceiver" android:process=":remote" android:enabled="true" />
-        <service android:name="com.bgs.chat.services.ChatService" android:enabled="true" android:exported="false" />
+        <receiver android:name="com.bgs.chat.services.ChatTaskAlarmReceiver" android:process=":remote" android:enabled="true" />
+        <service android:name="com.bgs.chat.services.ChatTaskService" android:enabled="true" android:exported="false" />
 
     </application>
 

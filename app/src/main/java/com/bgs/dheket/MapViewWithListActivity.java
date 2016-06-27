@@ -191,7 +191,8 @@ public class MapViewWithListActivity extends AppCompatActivity {
         @Override
         public void onSingleTap(float x, float y) {
             // Find out if we tapped on a Graphic
-            Intent gotoMapExtend = new Intent(MapViewWithListActivity.this,MapViewExtendActivity.class);
+            Intent gotoMapExtend = new Intent(MapViewWithListActivity.this, MapViewExtendActivity.class);
+
             Bundle paket = new Bundle();
             paket.putInt("cat_id", category.getId());
             paket.putString("kategori", category.getName());
@@ -206,6 +207,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
             paket.putDouble("longitude", longitude);
             paket.putString("icon", category.getIcon());
             gotoMapExtend.putExtras(paket);
+
             startActivity(gotoMapExtend);
             finish();
             /*//Toast.makeText(rootView.getContext().getApplicationContext(),"this location at x= "+x+" and y= "+y+" | point on SingleTaps"+onSingleTaps(x,y)+"",Toast.LENGTH_SHORT).show();

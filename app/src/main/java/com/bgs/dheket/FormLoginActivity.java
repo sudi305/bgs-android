@@ -220,14 +220,13 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
                         Log.e("Success", "2a");
 
                         //add by supri 2016/6/16
-                        App app = (App)getApplication();
-                        UserApp userApp = app.getUserApp();
+                        UserApp userApp = App.getInstance().getUserApp();
                         if ( userApp == null) userApp = new UserApp();
                         userApp.setName(name);
                         userApp.setEmail(email);
                         userApp.setId(id);
 
-                        app.setUserApp(userApp);
+                        App.getInstance().updateUserApp(userApp);
 
 
                     }

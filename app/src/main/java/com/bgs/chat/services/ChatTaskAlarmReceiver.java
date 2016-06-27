@@ -9,19 +9,16 @@ import android.content.Intent;
 /**
  * Created by zhufre on 6/15/2016.
  */
-public class ChatAlarmReceiver extends BroadcastReceiver {
+public class ChatTaskAlarmReceiver extends BroadcastReceiver {
     public static int REQUEST_CODE = 89898;
-    private static final String ACTION_UPDATE_CONTACT = "in.co.madhur.chatbubblesdemo.action.UPDATE_CONTACT";
-    private static final String ACTION_KEEP_CONNECTION = "in.co.madhur.chatbubblesdemo.action.KEEP_CONNECTION";
+    private static final String ACTION_UPDATE_CONTACT = "com.bgs.chat.services.action.UPDATE_CONTACT";
 
     @Override
     public void onReceive(Context context, Intent intent) {
         if ( intent != null ) {
             String action = intent.getAction();
             if ( ACTION_UPDATE_CONTACT.equalsIgnoreCase(action)) {
-                ChatService.startActionUpdateContact(context);
-            } else if ( ACTION_KEEP_CONNECTION.equalsIgnoreCase(action)) {
-                ChatService.startActionKeepConnection(context);
+                ChatTaskService.startActionUpdateContact(context);
             }
         }
     }
@@ -32,22 +29,9 @@ public class ChatAlarmReceiver extends BroadcastReceiver {
      * @param interval
      */
     public static void startUpdateContactScheduler(Context context, long interval) {
-        Intent intent = new Intent(context.getApplicationContext(), ChatAlarmReceiver.class);
+        Intent intent = new Intent(context.getApplicationContext(), ChatTaskAlarmReceiver.class);
         intent.setAction(ACTION_UPDATE_CONTACT);
         schedule(context, intent, interval);
-    }
-
-
-    /**
-     *
-     * @param context
-     * @param interval
-     */
-    public static void startKeepConnectionScheduler(Context context, long interval) {
-        Intent intent = new Intent(context.getApplicationContext(), ChatAlarmReceiver.class);
-        intent.setAction(ACTION_KEEP_CONNECTION);
-        schedule(context, intent, interval);
-
     }
 
     /**
