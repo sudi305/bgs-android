@@ -143,7 +143,7 @@ public class MapViewActivity extends AppCompatActivity {
 //        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
 
         //Retrieve the map and initial extent from XML layout
-        mMapView = (MapView) findViewById(R.id.map_single);
+        mMapView = (MapView) findViewById(R.id.map_view);
         mMapView.setOnStatusChangedListener(statusChangedListener);
         mMapView.setOnSingleTapListener(mapTapCallback);
         //mMapView.setOnLongPressListener(mapLongPress);
@@ -151,7 +151,7 @@ public class MapViewActivity extends AppCompatActivity {
         Parcelable[] parcelables = getIntent().getParcelableArrayExtra(ExtraParamConstants.CATEGORIES);
         categories = new Category[parcelables.length];
         System.arraycopy(parcelables, 0, categories, 0, parcelables.length);
-        currentBestLocation = getIntent().getParcelableExtra(ExtraParamConstants.CURRENT_BEST_LOCATION);
+        currentBestLocation = (Location) getIntent().getParcelableExtra(ExtraParamConstants.CURRENT_BEST_LOCATION);
 
         madd = new PictureMarkerSymbol[categories.length];
         PictureMarkerSymbol a = null;
@@ -525,10 +525,12 @@ public class MapViewActivity extends AppCompatActivity {
                 JSONObject joResponse = new JSONObject(response);
                 JSONArray jaTag = joResponse.getJSONArray("tag_cat");
                 arraylist = new ArrayList<HashMap<String, String>>();
+                HashMap<String, String> map;
                 Log.e(Constants.TAG, "Data dari server -> " + jaTag.length());
+
                 for (int i = 0; i < jaTag.length(); i++) {
                     //Log.d(Constants.TAG, "Data User Lokasi -> " + jaTag.getJSONObject(i));
-                    HashMap<String, String> map = new HashMap<String, String>();
+                    map = new HashMap<String, String>();
                     map.put("id_loc",jaTag.getJSONObject(i).getString("id_location"));
                     map.put("loc_name",jaTag.getJSONObject(i).getString("location_name"));
                     map.put("loc_address",jaTag.getJSONObject(i).getString("location_address"));

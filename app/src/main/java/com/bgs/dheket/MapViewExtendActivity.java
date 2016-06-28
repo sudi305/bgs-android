@@ -137,25 +137,14 @@ public class MapViewExtendActivity extends AppCompatActivity {
         actionBar.setHomeButtonEnabled(true);
 
         //Retrieve the map and initial extent from XML layout
-        mMapView = (MapView) findViewById(R.id.map_single);
+        mMapView = (MapView) findViewById(R.id.map_extend);
         mMapView.setOnStatusChangedListener(statusChangedListener);
         mMapView.setOnSingleTapListener(mapTapCallback);
         //mMapView.setOnLongPressListener(mapLongPress);
 
-        category = getIntent().getParcelableExtra(ExtraParamConstants.CATEGORY);
-        currentBestLocation = getIntent().getParcelableExtra(ExtraParamConstants.CURRENT_BEST_LOCATION);
+        category = (Category) getIntent().getParcelableExtra(ExtraParamConstants.CATEGORY);
+        currentBestLocation = (Location) getIntent().getParcelableExtra(ExtraParamConstants.CURRENT_BEST_LOCATION);
 
-        /*
-        paket = getIntent().getExtras();
-        latitude = paket.getDouble("latitude");
-        cat_id = paket.getInt("cat_id");
-        longitude = paket.getDouble("longitude");
-        email = paket.getString("email");
-        icon = paket.getString("icon");
-        Log.e("icon",icon);
-        category = paket.getString("kategori");
-        radius = paket.getDouble("radius");
-        */
 
         urls = String.format(getResources().getString(R.string.link_getLocationAndMerchByCategory));//"http://dheket.esy.es/getLocationByCategory.php"
 
@@ -204,8 +193,7 @@ public class MapViewExtendActivity extends AppCompatActivity {
         btn_toMainMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                toListMap(v.getContext());
+                toListMap();
             }
         });
 
@@ -405,7 +393,7 @@ public class MapViewExtendActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (item.getItemId() == android.R.id.home) {
-            toListMap(getApplicationContext());
+            toListMap();
             return super.onOptionsItemSelected(item);
         }
 
@@ -429,12 +417,12 @@ public class MapViewExtendActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        toListMap(getApplicationContext());
+        toListMap();
     }
 
-    public void toListMap(Context context){
+    private void toListMap(){
         Log.d(Constants.TAG, "BACK TO => MapViewWithListActivity FROM => MapViewExtendActivity");
-        Intent toListMap = new Intent(context, MapViewWithListActivity.class);
+        Intent toListMap = new Intent(this, MapViewWithListActivity.class);
         toListMap.putExtra(ExtraParamConstants.CATEGORY, category);
         toListMap.putExtra(ExtraParamConstants.CURRENT_BEST_LOCATION, currentBestLocation);
         /*
@@ -605,6 +593,7 @@ public class MapViewExtendActivity extends AppCompatActivity {
             clearCurrentResults();
             //redraw layer
             mResultsLayer.addGraphics(graphics);
+
             mMapView.setExtent(fullExtent, 100);
             if (graphics.length < 2) {
                 if ((mLDM != null) && (mLDM.getLocation() != null)) {

@@ -8,15 +8,13 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:id="@+id/scrollView9" >
-
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
             <com.esri.android.map.MapView
                 xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/map_single"
+                android:id="@+id/map_with_list"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 mapoptions.MapType="Streets" >
@@ -26,13 +24,13 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/linearLayout_result_lm"></LinearLayout>
+                android:id="@+id/linearLayout_result_lm" />
 
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/linearLayout_search_lm"></LinearLayout>
+                android:id="@+id/linearLayout_search_lm" />
         </LinearLayout>
     </ScrollView>
 

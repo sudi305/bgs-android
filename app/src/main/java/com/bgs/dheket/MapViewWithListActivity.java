@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -124,14 +125,14 @@ public class MapViewWithListActivity extends AppCompatActivity {
         actionBar.setHomeButtonEnabled(true);
 
         //Retrieve the map and initial extent from XML layout
-        mMapView = (MapView) findViewById(R.id.map_single);
+        mMapView = (MapView) findViewById(R.id.map_with_list);
         mMapView.setOnStatusChangedListener(statusChangedListener);
         mMapView.setOnSingleTapListener(mapTapCallback);
         //mMapView.setOnLongPressListener(mapLongPress);
 
         //get category from bundle
-        category = getIntent().getParcelableExtra(ExtraParamConstants.CATEGORY);
-        currentBestLocation = getIntent().getParcelableExtra(ExtraParamConstants.CURRENT_BEST_LOCATION);
+        category = (Category) getIntent().getParcelableExtra(ExtraParamConstants.CATEGORY);
+        currentBestLocation = (Location) getIntent().getParcelableExtra(ExtraParamConstants.CURRENT_BEST_LOCATION);
 
         actionBar.setTitle(category.getName());
 //        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
@@ -181,6 +182,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
         task.execute(new String[]{parameters});
     }
 
+
     /**
      * When the map is tapped, select the graphic at that location.
      */
@@ -189,56 +191,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
         public void onSingleTap(float x, float y) {
             // Find out if we tapped on a Graphic
             MapViewExtendActivity.startFromMapWithList(MapViewWithListActivity.this, category, currentBestLocation);
-            //Intent gotoMapExtend = new Intent(MapViewWithListActivity.this, MapViewExtendActivity.class);
-
-            /*
-            Bundle paket = new Bundle();
-            paket.putInt("cat_id", category.getId());
-            paket.putString("kategori", category.getName());
-            paket.putDouble("radius", category.getRadius());
-            double longitude =0, latitude = 0;
-            if ( currentBestLocation != null ) {
-                latitude = currentBestLocation.getLatitude();
-                longitude = currentBestLocation.getLongitude();
-            }
-
-            paket.putDouble("latitude", latitude);
-            paket.putDouble("longitude", longitude);
-            paket.putString("icon", category.getIcon());
-            gotoMapExtend.putExtras(paket);
-            */
-            //startActivity(gotoMapExtend);
-            finish();
-            /*//Toast.makeText(rootView.getContext().getApplicationContext(),"this location at x= "+x+" and y= "+y+" | point on SingleTaps"+onSingleTaps(x,y)+"",Toast.LENGTH_SHORT).show();
-            int[] graphicIDs = mResultsLayer.getGraphicIDs(x, y, 25);
-            if (graphicIDs != null && graphicIDs.length > 0) {
-                // If there is more than one graphic, only select the first found.
-                if (graphicIDs.length > 1) {
-                    int id = graphicIDs[0];
-                    graphicIDs = new int[]{id};
-                }
-
-                // Only deselect the last graphic if user has tapped a new one. App
-                // remains showing the last selected nearby service information,
-                // as that is the main focus of the app.
-                mResultsLayer.clearSelection();
-
-                // Select the graphic
-                mResultsLayer.setSelectedGraphics(graphicIDs, true);
-
-                // Use the graphic attributes to update the information views.
-                Graphic gr = mResultsLayer.getGraphic(graphicIDs[0]);
-                Log.d("atrribut", "" + gr.getAttributes());
-
-                if (gr.getAttributes().isEmpty()) {
-                    Toast.makeText(getApplicationContext(), "No Attribute for this location!", Toast.LENGTH_SHORT).show();
-                } else {
-                    updateContent(gr.getAttributes());
-                }
-            } else {
-                mMapView.setRotationAngle(0);
-                // Also reset the compass angle.
-            }*/
+            //finish();
         }
     };
 
@@ -578,8 +531,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             updateData(locationList, graphics, fullExtent);
-            if (dialog.isShowing())
-                dialog.dismiss();
+            if (dialog.isShowing()) dialog.dismiss();
         }
     }
 
