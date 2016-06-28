@@ -337,27 +337,6 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 if (radius != 0) {
                     removeUpdateLocationManager();
                     MapViewActivity.startFromMainMenu(MainMenuActivity.this, categories, currentBestLocation);
-                    /*
-                    Intent toMap = new Intent(getApplicationContext(), MapViewActivity.class);
-                    Bundle paket = new Bundle();
-                    paket.putString("email", email);
-                    double longitude =0, latitude = 0;
-                    if ( currentBestLocation != null ) {
-                        latitude = currentBestLocation.getLatitude();
-                        longitude = currentBestLocation.getLongitude();
-                    }
-
-                    paket.putDouble("latitude", latitude);
-                    paket.putDouble("longitude", longitude);
-                    paket.putStringArray("icon", icon_kategori);
-                    paket.putIntArray("id_cat", id_kategori);
-                    paket.putDouble("radius", radius);
-                    toMap.putExtras(paket);
-
-                    //myLocationManager.removeUpdates(MainMenuActivity.this);
-                    //myLocationManager = null;
-                    startActivity(toMap);
-                    */
                     finish();
                 }
             }

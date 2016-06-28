@@ -9,7 +9,7 @@
 
         <com.esri.android.map.MapView
             xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/map_extend"
+            android:id="@+id/map_view_extend"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -19,7 +19,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/placeLayout_single"
+            android:id="@+id/placeLayout_extend"
             android:orientation="vertical"
             android:visibility="visible"
             android:layout_alignParentTop="true"
@@ -33,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="Nama Lokasi"
-                android:id="@+id/textView_map_nama_lokasi"
+                android:id="@+id/textView_map_extend_nama_lokasi"
                 android:layout_gravity="center_horizontal"
                 android:gravity="center"
                 android:layout_marginLeft="10dp"
@@ -46,7 +46,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="Di Lokasi"
-                android:id="@+id/textView_map_lokasinya"
+                android:id="@+id/textView_map_extend_lokasinya"
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
                 android:gravity="center"
@@ -59,7 +59,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="Jarak"
-                android:id="@+id/textView_map_jarak"
+                android:id="@+id/textView_map_extend_jarak"
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
                 android:gravity="center"
@@ -73,7 +73,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:text="Small Text"
-                android:id="@+id/textView_map_id"
+                android:id="@+id/textView_map_extend_id"
                 android:visibility="gone" />
         </LinearLayout>
 
@@ -83,7 +83,7 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:id="@+id/button_map_tolist"
+            android:id="@+id/button_map_extend_tolist"
             android:text="BACK TO LIST"
             android:background="@drawable/roundedbutton_nosquare">
 
@@ -92,11 +92,11 @@
         <ImageButton
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:id="@+id/imageButton_map_center"
+            android:id="@+id/imageButton_map_extend_center"
             android:src="@drawable/ic_gps_fixed_24dp"
             android:background="@drawable/roundedbutton_square5"
             android:layout_gravity="center_horizontal"
-            android:layout_above="@+id/button_map_tolist"
+            android:layout_above="@+id/button_map_extend_tolist"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_marginBottom="15dp"

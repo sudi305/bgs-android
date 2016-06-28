@@ -93,9 +93,6 @@ public class MapViewExtendActivity extends AppCompatActivity {
     ViewGroup placeLayout;
 
     ArrayList<HashMap<String, String>> arraylist;
-    /*String[] loc_name, loc_address, loc_pic;
-    int[] loc_promo, id_loc;
-    double[] loc_distance, loc_lat, loc_lng;*/
 
     boolean isFirst = true, maxView = true, minView = true;
     CallWebPageTask task;
@@ -103,7 +100,6 @@ public class MapViewExtendActivity extends AppCompatActivity {
 
     private Category category;
     private Location currentBestLocation;
-
     private static final String ACTION_CALL_FROM_LOC_MAPWITHLIST = "com.bgs.dheket.map.action.CALL_FROM_MAPWITHLIST";
 
     public static void startFromMapWithList(Context context, Category category, Location location) {
@@ -127,7 +123,7 @@ public class MapViewExtendActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_map_view_list);
+        setContentView(R.layout.activity_map_view_extend_list);
         Log.d(Constants.TAG, "MapViewExtendActivity=>onCreate");
         actionBar = getSupportActionBar();
         actionBar.setDisplayShowHomeEnabled(true);
@@ -137,7 +133,7 @@ public class MapViewExtendActivity extends AppCompatActivity {
         actionBar.setHomeButtonEnabled(true);
 
         //Retrieve the map and initial extent from XML layout
-        mMapView = (MapView) findViewById(R.id.map_extend);
+        mMapView = (MapView) findViewById(R.id.map_view_extend);
         mMapView.setOnStatusChangedListener(statusChangedListener);
         mMapView.setOnSingleTapListener(mapTapCallback);
         //mMapView.setOnLongPressListener(mapLongPress);
@@ -152,13 +148,13 @@ public class MapViewExtendActivity extends AppCompatActivity {
 //        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
         actionBar.setSubtitle(Html.fromHtml("<font color='#ff9800' size='10'>Radius " + formatNumber.changeFormatNumber(category.getRadius()) + " Km</font>"));
 
-        textView_id_loc = (TextView) findViewById(R.id.textView_map_id);
-        textView_loc_name = (TextView) findViewById(R.id.textView_map_nama_lokasi);
-        textView_loc_address = (TextView) findViewById(R.id.textView_map_lokasinya);
-        textView_loc_distance = (TextView) findViewById(R.id.textView_map_jarak);
-        btn_toMainMenu = (Button)findViewById(R.id.button_map_tolist);
-        imageButton_gps_center = (ImageButton)findViewById(R.id.imageButton_map_center);
-        placeLayout = (ViewGroup) findViewById(R.id.placeLayout_single);
+        textView_id_loc = (TextView) findViewById(R.id.textView_map_extend_id);
+        textView_loc_name = (TextView) findViewById(R.id.textView_map_extend_nama_lokasi);
+        textView_loc_address = (TextView) findViewById(R.id.textView_map_extend_lokasinya);
+        textView_loc_distance = (TextView) findViewById(R.id.textView_map_extend_jarak);
+        btn_toMainMenu = (Button)findViewById(R.id.button_map_extend_tolist);
+        imageButton_gps_center = (ImageButton)findViewById(R.id.imageButton_map_extend_center);
+        placeLayout = (ViewGroup) findViewById(R.id.placeLayout_extend);
         placeLayout.setVisibility(View.GONE);
 
         String icon = category.getIcon();
@@ -480,6 +476,8 @@ public class MapViewExtendActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
+        Log.d(Constants.TAG, this.getLocalClassName() + "=>onPause");
+        Log.d(Constants.TAG, this.getLocalClassName() + String.format("=>lat=%s, long=%s", currentBestLocation.getLatitude(), currentBestLocation.getLongitude()));
         mMapView.pause();
         if (mLDM != null) {
             mLDM.pause();
@@ -489,6 +487,7 @@ public class MapViewExtendActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+        Log.d(Constants.TAG, this.getLocalClassName() + "=>onResume");
         mMapView.unpause();
         if (mLDM != null) {
             mLDM.resume();
@@ -500,6 +499,7 @@ public class MapViewExtendActivity extends AppCompatActivity {
     @Override
     public void onStop() {
         super.onStop();
+        Log.d(Constants.TAG, this.getLocalClassName() + "=>onStop");
         if (mLDM != null) {
             mLDM.stop();
         }

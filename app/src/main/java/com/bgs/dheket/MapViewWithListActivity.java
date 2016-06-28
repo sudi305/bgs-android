@@ -1,11 +1,15 @@
 package com.bgs.dheket;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -186,11 +190,15 @@ public class MapViewWithListActivity extends AppCompatActivity {
     /**
      * When the map is tapped, select the graphic at that location.
      */
-    final OnSingleTapListener mapTapCallback = new OnSingleTapListener() {
+    private OnSingleTapListener mapTapCallback = new OnSingleTapListener() {
         @Override
         public void onSingleTap(float x, float y) {
             // Find out if we tapped on a Graphic
-            MapViewExtendActivity.startFromMapWithList(MapViewWithListActivity.this, category, currentBestLocation);
+            MapViewExtendActivity.startFromMapWithList(getApplicationContext(), category, currentBestLocation);
+            //stop location manager
+            onStop();
+            //hack mode
+            //clearCurrentResults();
             //finish();
         }
     };
@@ -235,7 +243,6 @@ public class MapViewWithListActivity extends AppCompatActivity {
                 public void onLocationChanged(Location loc) {
                     if (!locationChanged) {
                         locationChanged = true;
-
                         Log.d(Constants.TAG, "sukses location -> lat " + loc.getLatitude() + " | lng " + loc.getLongitude() + " | point " + getAsPoint(loc));
 
                         if ( currentBestLocation != null ) {
@@ -341,10 +348,11 @@ public class MapViewWithListActivity extends AppCompatActivity {
         finish();
     }
 
-    private void clearCurrentResults() {
+    public void clearCurrentResults() {
         if (mResultsLayer != null) {
             mResultsLayer.removeAll();
         }
+        linearLayout_contentlist.removeAllViews();
     }
 
 
@@ -378,6 +386,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
+        Log.d(Constants.TAG, this.getLocalClassName() + "=>onPause");
         mMapView.pause();
         if (mLDM != null) {
             mLDM.pause();
@@ -387,7 +396,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(Constants.TAG, "MapViewWithListActivity -> onResume");
+        Log.d(Constants.TAG, this.getLocalClassName() + "=>onResume");
         mMapView.unpause();
         if (mLDM != null) {
             mLDM.resume();
@@ -399,6 +408,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
     @Override
     public void onStop() {
         super.onStop();
+        Log.d(Constants.TAG, this.getLocalClassName() + "=>onStop");
         if (mLDM != null) {
             mLDM.stop();
         }
@@ -471,6 +481,18 @@ public class MapViewWithListActivity extends AppCompatActivity {
                     Lokasi lokasi = null;
                     Map<String, Object> attr = null;
                     int totalLocation = locationArray.length();
+
+                    //imediate clear content if data exist
+                    //ane refill on postexec
+                    if ( totalLocation >0 ) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                clearCurrentResults();
+                            }
+                        });
+                    }
+
                     //store graphic obj
                     graphics = new Graphic[totalLocation];
                     for (int i = 0; i < totalLocation; i++) {
@@ -538,8 +560,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
     public void updateData(ArrayList<Lokasi> locationList, Graphic[] graphics, MultiPoint fullExtent) {
         Log.d(Constants.TAG, "call updateData()");
         if (locationList != null) {
-            clearCurrentResults();
-
+            //clearCurrentResults();
             for (final Lokasi lokasi : locationList) {
 
                 LayoutInflater inflater = (LayoutInflater) getSystemService( Context.LAYOUT_INFLATER_SERVICE );
@@ -584,22 +605,6 @@ public class MapViewWithListActivity extends AppCompatActivity {
 
             //redraw layer
             mResultsLayer.addGraphics(graphics);
-
-            /*for (int i = 0; i < id_loc.length; i++) {
-                Location locationPin = location;
-                locationPin.setLatitude(loc_lat[i]);
-                locationPin.setLongitude(loc_lng[i]);
-                Point point = getAsPoint(locationPin);
-                attr.put("id_loc", id_loc[i]);
-                attr.put("loc_name", loc_name[i]);
-                attr.put("loc_address", loc_address[i]);
-                attr.put("loc_distance", loc_distance[i]);
-                attr.put("loc_icon", loc_pic[i]);
-                symbol = mcat;
-
-                mResultsLayer.addGraphic(new Graphic(point, symbol, attr));
-                fullExtent.add(point);
-            }*/
             mMapView.setExtent(fullExtent, 100);
             if (locationList.size() < 2) {
                 if ((mLDM != null) && (mLDM.getLocation() != null)) {
