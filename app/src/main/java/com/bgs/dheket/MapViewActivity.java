@@ -1,7 +1,6 @@
 package com.bgs.dheket;
 
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -28,7 +27,6 @@ import com.bgs.common.ExtraParamConstants;
 import com.bgs.common.GpsUtils;
 import com.bgs.common.Utility;
 import com.bgs.model.Category;
-import com.bgs.model.Lokasi;
 import com.bgs.model.UserApp;
 import com.bgs.networkAndSensor.Compass;
 import com.bgs.networkAndSensor.HttpGetOrPost;
@@ -125,7 +123,7 @@ public class MapViewActivity extends AppCompatActivity {
             intent.putExtra(ExtraParamConstants.CATEGORIES, categories);
 
         if ( location != null )
-            intent.putExtra(ExtraParamConstants.CURRNET_BEST_LOCATION, location);
+            intent.putExtra(ExtraParamConstants.CURRENT_BEST_LOCATION, location);
 
         context.startActivity(intent);
     }
@@ -153,7 +151,7 @@ public class MapViewActivity extends AppCompatActivity {
         Parcelable[] parcelables = getIntent().getParcelableArrayExtra(ExtraParamConstants.CATEGORIES);
         categories = new Category[parcelables.length];
         System.arraycopy(parcelables, 0, categories, 0, parcelables.length);
-        currentBestLocation = getIntent().getParcelableExtra(ExtraParamConstants.CURRNET_BEST_LOCATION);
+        currentBestLocation = getIntent().getParcelableExtra(ExtraParamConstants.CURRENT_BEST_LOCATION);
 
         madd = new PictureMarkerSymbol[categories.length];
         PictureMarkerSymbol a = null;
@@ -183,7 +181,7 @@ public class MapViewActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent goToScreen = new Intent(getApplicationContext(), DetailLocationWithNoMerchantActivity.class);
                 //goToScreen.putExtra("lokasi", lokasi);
-                goToScreen.putExtra(ExtraParamConstants.CURRNET_BEST_LOCATION, currentBestLocation);
+                goToScreen.putExtra(ExtraParamConstants.CURRENT_BEST_LOCATION, currentBestLocation);
 
                 startActivity(goToScreen);
                 finish();
@@ -529,7 +527,7 @@ public class MapViewActivity extends AppCompatActivity {
                 arraylist = new ArrayList<HashMap<String, String>>();
                 Log.e(Constants.TAG, "Data dari server -> " + jaTag.length());
                 for (int i = 0; i < jaTag.length(); i++) {
-                    Log.d(Constants.TAG, "Data User Lokasi -> " + jaTag.getJSONObject(i));
+                    //Log.d(Constants.TAG, "Data User Lokasi -> " + jaTag.getJSONObject(i));
                     HashMap<String, String> map = new HashMap<String, String>();
                     map.put("id_loc",jaTag.getJSONObject(i).getString("id_location"));
                     map.put("loc_name",jaTag.getJSONObject(i).getString("location_name"));

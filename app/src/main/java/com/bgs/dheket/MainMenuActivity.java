@@ -533,7 +533,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             goToScreen = new Intent(this, MapViewWithListActivity.class);
             final Category category = new Category(catId, icon, kategori, radius);
 
-            goToScreen.putExtra(ExtraParamConstants.CURRNET_BEST_LOCATION, currentBestLocation);
+            goToScreen.putExtra(ExtraParamConstants.CURRENT_BEST_LOCATION, currentBestLocation);
             goToScreen.putExtra(ExtraParamConstants.CATEGORY, category);
 
             removeUpdateLocationManager();

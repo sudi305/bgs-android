@@ -92,7 +92,7 @@ public class DetailLocationWithMerchantActivity extends AppCompatActivity implem
         //actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
 
         lokasi = getIntent().getParcelableExtra(ExtraParamConstants.LOKASI_DETAIL);
-        currentBestLocation = getIntent().getParcelableExtra(ExtraParamConstants.CURRNET_BEST_LOCATION);
+        currentBestLocation = getIntent().getParcelableExtra(ExtraParamConstants.CURRENT_BEST_LOCATION);
 
         if (" ".equalsIgnoreCase(lokasi.getCategory().getName())){
             //icon_cat = lokasi.getCategory().getIcon();
@@ -166,7 +166,7 @@ public class DetailLocationWithMerchantActivity extends AppCompatActivity implem
     }
 
     public void toMapScreen(){
-        MapViewSingleActivity.startFromLocationWithMerchant(getApplicationContext(), lokasi, currentBestLocation);
+        MapViewSingleActivity.startFromLocationWithMerchant(this, lokasi, currentBestLocation);
         /*
         //paket.putInt("location_id", Integer.parseInt(arraylist.get(0).get("loc_id")));
         */
@@ -174,7 +174,7 @@ public class DetailLocationWithMerchantActivity extends AppCompatActivity implem
     }
 
     public void back_to_previous_screen(){
-        Intent intent = new Intent(getApplicationContext(), MapViewWithListActivity.class);
+        Intent intent = new Intent(this, MapViewWithListActivity.class);
 
         Bundle paket = new Bundle();
         /*
@@ -207,7 +207,7 @@ public class DetailLocationWithMerchantActivity extends AppCompatActivity implem
         */
 
         intent.putExtra(ExtraParamConstants.CATEGORY, category);
-        intent.putExtra(ExtraParamConstants.CURRNET_BEST_LOCATION, currentBestLocation);
+        intent.putExtra(ExtraParamConstants.CURRENT_BEST_LOCATION, currentBestLocation);
         startActivity(intent);
         finish();
     }

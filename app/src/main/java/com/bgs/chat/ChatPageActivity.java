@@ -115,7 +115,7 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
         if ( lokasiDetail != null )
             intent.putExtra(ExtraParamConstants.LOKASI_DETAIL, lokasiDetail);
         if ( location != null )
-            intent.putExtra(ExtraParamConstants.CURRNET_BEST_LOCATION, location);
+            intent.putExtra(ExtraParamConstants.CURRENT_BEST_LOCATION, location);
 
         context.startActivity(intent);
     }
@@ -130,7 +130,7 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
         chatContact =  (ChatContact)getIntent().getParcelableExtra(ExtraParamConstants.CHAT_CONTACT);
         if (getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_LOCATION)) {
             lokasi = (Lokasi) getIntent().getParcelableExtra(ExtraParamConstants.LOKASI_DETAIL);
-            currentBestLocation = (Location) getIntent().getParcelableExtra(ExtraParamConstants.CURRNET_BEST_LOCATION);
+            currentBestLocation = (Location) getIntent().getParcelableExtra(ExtraParamConstants.CURRENT_BEST_LOCATION);
         }
 
         NativeUtilities.statusBarHeight = getStatusBarHeight();
@@ -159,7 +159,7 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
                 if (getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_LOCATION)) {
                     intent = new Intent(getActivity(), DetailLocationWithMerchantActivity.class);
                     intent.putExtra(ExtraParamConstants.LOKASI_DETAIL, lokasi);
-                    intent.putExtra(ExtraParamConstants.CURRNET_BEST_LOCATION, currentBestLocation);
+                    intent.putExtra(ExtraParamConstants.CURRENT_BEST_LOCATION, currentBestLocation);
 
                 } else if ( getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_CONTACT)
                             || getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_HISTORY)) {

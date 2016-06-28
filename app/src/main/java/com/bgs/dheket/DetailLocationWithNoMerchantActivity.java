@@ -1,7 +1,6 @@
 package com.bgs.dheket;
 
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -16,7 +15,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -33,12 +31,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import okhttp3.internal.Util;
 
 /**
  * Created by SND on 28/03/2016.
@@ -92,8 +87,8 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
         actionBar.setTitle("Detail Location");
 //        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
 
-        lokasi = getIntent().getParcelableExtra("lokasi");
-        currentBestLocation = getIntent().getParcelableExtra("currentBestLocation");
+        lokasi = getIntent().getParcelableExtra(ExtraParamConstants.LOKASI_DETAIL);
+        currentBestLocation = getIntent().getParcelableExtra(ExtraParamConstants.CURRENT_BEST_LOCATION);
 
         if (" ".equalsIgnoreCase(lokasi.getCategory().getName())){
             //icon_cat = lokasi.getCategory().getIcon();
@@ -172,7 +167,7 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
         }
 
         intent.putExtra(ExtraParamConstants.CATEGORY, category);
-        intent.putExtra(ExtraParamConstants.CURRNET_BEST_LOCATION, currentBestLocation);
+        intent.putExtra(ExtraParamConstants.CURRENT_BEST_LOCATION, currentBestLocation);
         startActivity(intent);
         finish();
     }

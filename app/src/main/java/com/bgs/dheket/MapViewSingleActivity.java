@@ -1,7 +1,6 @@
 package com.bgs.dheket;
 
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -16,12 +15,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bgs.chat.model.ChatContact;
 import com.bgs.common.Constants;
 import com.bgs.common.DialogUtils;
 import com.bgs.common.ExtraParamConstants;
@@ -127,7 +124,7 @@ public class MapViewSingleActivity extends AppCompatActivity {
             intent.putExtra(ExtraParamConstants.LOKASI_DETAIL, lokasiDetail);
 
         if ( location != null )
-            intent.putExtra(ExtraParamConstants.CURRNET_BEST_LOCATION, location);
+            intent.putExtra(ExtraParamConstants.CURRENT_BEST_LOCATION, location);
 
         context.startActivity(intent);
     }
@@ -151,7 +148,7 @@ public class MapViewSingleActivity extends AppCompatActivity {
         //mMapView.setOnLongPressListener(mapLongPress);
 
         lokasi = getIntent().getParcelableExtra(ExtraParamConstants.LOKASI_DETAIL);
-        currentBestLocation = getIntent().getParcelableExtra(ExtraParamConstants.CURRNET_BEST_LOCATION);
+        currentBestLocation = getIntent().getParcelableExtra(ExtraParamConstants.CURRENT_BEST_LOCATION);
 
         /*
         paket = getIntent().getExtras();
@@ -206,7 +203,7 @@ public class MapViewSingleActivity extends AppCompatActivity {
                     goToScreen = new Intent(MapViewSingleActivity.this, DetailLocationWithMerchantActivity.class);
                 }
                 goToScreen.putExtra(ExtraParamConstants.LOKASI_DETAIL, lokasi);
-                goToScreen.putExtra(ExtraParamConstants.CURRNET_BEST_LOCATION, currentBestLocation);
+                goToScreen.putExtra(ExtraParamConstants.CURRENT_BEST_LOCATION, currentBestLocation);
 
                 startActivity(goToScreen);
                 finish();
@@ -449,7 +446,7 @@ public class MapViewSingleActivity extends AppCompatActivity {
             toDetail = new Intent(this, DetailLocationWithMerchantActivity.class);
         }
         toDetail.putExtra(ExtraParamConstants.LOKASI_DETAIL, lokasi);
-        toDetail.putExtra(ExtraParamConstants.CURRNET_BEST_LOCATION, currentBestLocation);
+        toDetail.putExtra(ExtraParamConstants.CURRENT_BEST_LOCATION, currentBestLocation);
         if ( toDetail != null) {
             startActivity(toDetail);
             finish();
@@ -586,7 +583,6 @@ public class MapViewSingleActivity extends AppCompatActivity {
         //-6.21267000, 106.61778566
         Map<String, Object> attr = new HashMap<String, Object>();
         if (arraylist != null) {
-            mResultsLayer.removeAll();
             clearCurrentResults();
             for (int i = 0; i < arraylist.size() ; i++) {
                 Location locationPin = Constants.DEMO_LOCATION;

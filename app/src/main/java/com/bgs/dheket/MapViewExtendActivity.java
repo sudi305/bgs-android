@@ -118,7 +118,7 @@ public class MapViewExtendActivity extends AppCompatActivity {
             intent.putExtra(ExtraParamConstants.CATEGORY, category);
 
         if ( location != null )
-            intent.putExtra(ExtraParamConstants.CURRNET_BEST_LOCATION, location);
+            intent.putExtra(ExtraParamConstants.CURRENT_BEST_LOCATION, location);
 
         context.startActivity(intent);
     }
@@ -143,7 +143,7 @@ public class MapViewExtendActivity extends AppCompatActivity {
         //mMapView.setOnLongPressListener(mapLongPress);
 
         category = getIntent().getParcelableExtra(ExtraParamConstants.CATEGORY);
-        currentBestLocation = getIntent().getParcelableExtra(ExtraParamConstants.CURRNET_BEST_LOCATION);
+        currentBestLocation = getIntent().getParcelableExtra(ExtraParamConstants.CURRENT_BEST_LOCATION);
 
         /*
         paket = getIntent().getExtras();
@@ -205,7 +205,7 @@ public class MapViewExtendActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                toListMap();
+                toListMap(v.getContext());
             }
         });
 
@@ -405,7 +405,7 @@ public class MapViewExtendActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (item.getItemId() == android.R.id.home) {
-            toListMap();
+            toListMap(getApplicationContext());
             return super.onOptionsItemSelected(item);
         }
 
@@ -429,14 +429,14 @@ public class MapViewExtendActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        toListMap();
+        toListMap(getApplicationContext());
     }
 
-    public void toListMap(){
+    public void toListMap(Context context){
         Log.d(Constants.TAG, "BACK TO => MapViewWithListActivity FROM => MapViewExtendActivity");
-        Intent toListMap = new Intent(MapViewExtendActivity.this, MapViewWithListActivity.class);
+        Intent toListMap = new Intent(context, MapViewWithListActivity.class);
         toListMap.putExtra(ExtraParamConstants.CATEGORY, category);
-        toListMap.putExtra(ExtraParamConstants.CURRNET_BEST_LOCATION, currentBestLocation);
+        toListMap.putExtra(ExtraParamConstants.CURRENT_BEST_LOCATION, currentBestLocation);
         /*
         Bundle paket = new Bundle();
         paket.putInt("cat_id", cat_id);
@@ -515,12 +515,6 @@ public class MapViewExtendActivity extends AppCompatActivity {
         if (mLDM != null) {
             mLDM.stop();
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mMapView.destroyDrawingCache();
     }
 
     private class CallWebPageTask extends AsyncTask<String, Void, String> {

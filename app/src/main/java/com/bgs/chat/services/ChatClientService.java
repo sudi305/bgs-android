@@ -57,7 +57,7 @@ public class ChatClientService {
             mSocket.on(SocketEvent.NEW_MESSAGE, onNewMessage);
             mSocket.connect();
         } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+            Log.e(Constants.TAG_CHAT, e.getMessage(), e);
         }
     }
 
@@ -70,7 +70,8 @@ public class ChatClientService {
         @Override
         public void call(final Object... args) {
             JSONObject data = (JSONObject) args[0];
-            sendChatServiceBroadcast(SocketEvent.NEW_MESSAGE, data.toString());
+            if ( mReceivers.containsKey(SocketEvent.NEW_MESSAGE))
+                sendChatServiceBroadcast(SocketEvent.NEW_MESSAGE, data.toString());
         }
     };
 
@@ -79,7 +80,8 @@ public class ChatClientService {
         public void call(Object... args) {
             //JSONObject data = (JSONObject) args[0];
             Log.d(Constants.TAG_CHAT, "CONNECTED");
-            sendChatServiceBroadcast(SocketEvent.CONNECT);
+            if ( mReceivers.containsKey(SocketEvent.CONNECT))
+                sendChatServiceBroadcast(SocketEvent.CONNECT);
         }
     };
 
@@ -89,7 +91,8 @@ public class ChatClientService {
             mLogin = false;
             //JSONObject data = (JSONObject) args[0];
             Log.d(Constants.TAG_CHAT , "DISCONNECTED");
-            sendChatServiceBroadcast(SocketEvent.DISCONNECT);
+            if ( mReceivers.containsKey(SocketEvent.DISCONNECT))
+                sendChatServiceBroadcast(SocketEvent.DISCONNECT);
         }
     };
 
@@ -99,7 +102,8 @@ public class ChatClientService {
             mLogin = false;
             //JSONObject data = (JSONObject) args[0];
             Log.d(Constants.TAG_CHAT , "CONNECTION ERROR");
-            sendChatServiceBroadcast(SocketEvent.CONNECT_ERROR);
+            if ( mReceivers.containsKey(SocketEvent.CONNECT_ERROR))
+                sendChatServiceBroadcast(SocketEvent.CONNECT_ERROR);
         }
     };
 
@@ -114,7 +118,8 @@ public class ChatClientService {
                 return;
             }
             Log.d(Constants.TAG_CHAT , "Login " + mLogin);
-            sendChatServiceBroadcast(SocketEvent.LOGIN, data.toString());
+            if ( mReceivers.containsKey(SocketEvent.LOGIN))
+                sendChatServiceBroadcast(SocketEvent.LOGIN, data.toString());
         }
     };
 
@@ -122,7 +127,8 @@ public class ChatClientService {
         @Override
         public void call(Object... args) {
             JSONObject data = (JSONObject) args[0];
-            sendChatServiceBroadcast(SocketEvent.USER_JOIN, data.toString());
+            if ( mReceivers.containsKey(SocketEvent.USER_JOIN))
+                sendChatServiceBroadcast(SocketEvent.USER_JOIN, data.toString());
 
         }
     };
@@ -132,7 +138,8 @@ public class ChatClientService {
         public void call(Object... args) {
             JSONObject data = (JSONObject) args[0];
             Log.d(Constants.TAG_CHAT, "UserLeft " + data.toString());
-            sendChatServiceBroadcast(SocketEvent.USER_LEFT, data.toString());
+            if ( mReceivers.containsKey(SocketEvent.USER_LEFT))
+                sendChatServiceBroadcast(SocketEvent.USER_LEFT, data.toString());
         }
     };
 
@@ -141,7 +148,8 @@ public class ChatClientService {
         public void call(Object... args) {
             JSONObject data = (JSONObject) args[0];
             Log.d(Constants.TAG_CHAT, "Typing " + data.toString());
-            sendChatServiceBroadcast(SocketEvent.TYPING, data.toString());
+            if ( mReceivers.containsKey(SocketEvent.TYPING))
+                sendChatServiceBroadcast(SocketEvent.TYPING, data.toString());
 
         }
     };
@@ -151,7 +159,8 @@ public class ChatClientService {
         public void call(Object... args) {
             JSONObject data = (JSONObject) args[0];
             Log.d(Constants.TAG_CHAT, "StopTyping " + data.toString());
-            sendChatServiceBroadcast(SocketEvent.STOP_TYPING, data.toString());
+            if ( mReceivers.containsKey(SocketEvent.STOP_TYPING))
+                sendChatServiceBroadcast(SocketEvent.STOP_TYPING, data.toString());
 
         }
     };
@@ -162,7 +171,8 @@ public class ChatClientService {
         public void call(Object... args) {
             JSONObject data = (JSONObject) args[0];
             //Log.d(Constants.TAG_CHAT, "onListContact = " + data.toString());
-            sendChatServiceBroadcast(SocketEvent.LIST_CONTACT, data.toString());
+            if ( mReceivers.containsKey(SocketEvent.LIST_CONTACT))
+                sendChatServiceBroadcast(SocketEvent.LIST_CONTACT, data.toString());
         }
     };
 
@@ -170,7 +180,8 @@ public class ChatClientService {
         @Override
         public void call(Object... args) {
             JSONObject data = (JSONObject) args[0];
-            sendChatServiceBroadcast(SocketEvent.UPDATE_CONTACT, data.toString());
+            if ( mReceivers.containsKey(SocketEvent.UPDATE_CONTACT))
+                sendChatServiceBroadcast(SocketEvent.UPDATE_CONTACT, data.toString());
         }
 
     };

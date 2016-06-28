@@ -44,7 +44,6 @@ import com.esri.core.geometry.SpatialReference;
 import com.esri.core.geometry.Unit;
 import com.esri.core.map.Graphic;
 import com.esri.core.symbol.PictureMarkerSymbol;
-import com.esri.core.symbol.Symbol;
 import com.esri.core.tasks.geocode.Locator;
 
 import org.json.JSONArray;
@@ -132,7 +131,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
 
         //get category from bundle
         category = getIntent().getParcelableExtra(ExtraParamConstants.CATEGORY);
-        currentBestLocation = getIntent().getParcelableExtra(ExtraParamConstants.CURRNET_BEST_LOCATION);
+        currentBestLocation = getIntent().getParcelableExtra(ExtraParamConstants.CURRENT_BEST_LOCATION);
 
         actionBar.setTitle(category.getName());
 //        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
@@ -588,8 +587,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
         Log.d(Constants.TAG, "call updateData()");
         if (locationList != null) {
             clearCurrentResults();
-            //redraw layer
-            mResultsLayer.addGraphics(graphics);
+
             for (final Lokasi lokasi : locationList) {
 
                 LayoutInflater inflater = (LayoutInflater) getSystemService( Context.LAYOUT_INFLATER_SERVICE );
@@ -624,13 +622,16 @@ public class MapViewWithListActivity extends AppCompatActivity {
                         }
                         if ( goToScreen != null ) {
                             goToScreen.putExtra(ExtraParamConstants.LOKASI_DETAIL, _lokasi);
-                            goToScreen.putExtra(ExtraParamConstants.CURRNET_BEST_LOCATION, currentBestLocation);
+                            goToScreen.putExtra(ExtraParamConstants.CURRENT_BEST_LOCATION, currentBestLocation);
                             startActivity(goToScreen);
                             finish();
                         }
                     }
                 });
             }
+
+            //redraw layer
+            mResultsLayer.addGraphics(graphics);
 
             /*for (int i = 0; i < id_loc.length; i++) {
                 Location locationPin = location;
