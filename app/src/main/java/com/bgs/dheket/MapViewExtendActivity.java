@@ -317,28 +317,27 @@ public class MapViewExtendActivity extends AppCompatActivity {
         if ((mMapView != null) && (mMapView.isLoaded())) {
             mLDM = mMapView.getLocationDisplayManager();
             mLDM.setLocationListener(new LocationListener() {
-
-                boolean locationChanged = false;
-
                 // Zooms to the current location when first GPS fix arrives.
                 @Override
                 public void onLocationChanged(Location loc) {
-                    if (!locationChanged) {
-                        locationChanged = true;
-                        Log.d(Constants.TAG, "sukses location -> lat " + loc.getLatitude() + " | lng " + loc.getLongitude() + " | point " + getAsPoint(loc));
+                    boolean locationChanged = false;
+                    Log.d(Constants.TAG, "sukses location -> lat " + loc.getLatitude() + " | lng " + loc.getLongitude() + " | point " + getAsPoint(loc));
 
-                        if ( currentBestLocation != null ) {
-                            if (GpsUtils.isBetterLocation(loc, currentBestLocation)) {
-                                currentBestLocation = loc;
-                            }
-                        } else { currentBestLocation = loc; }
+                    if ( currentBestLocation != null ) {
+                        if (GpsUtils.isBetterLocation(loc, currentBestLocation)) {
+                            currentBestLocation = loc;
+                        } else {
+                            locationChanged = true;
+                        }
+                    } else { currentBestLocation = loc; }
 
-                        locationTouch = currentBestLocation;
-
+                    locationTouch = currentBestLocation;
+                    if ( !isFirst && locationChanged ) {
                         getDataFromServer();
-                        /*Toast.makeText(getApplicationContext(), "location change " + (looping++), Toast.LENGTH_SHORT).show();*/
                         mLDM.setAutoPanMode(LocationDisplayManager.AutoPanMode.LOCATION);
+                        isFirst = false;
                     }
+
                 }
 
                 @Override

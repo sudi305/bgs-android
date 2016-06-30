@@ -239,6 +239,8 @@ public class MapViewSingleActivity extends AppCompatActivity {
 
         setupLocator();
         setupLocationListener();
+        //first call
+        getDataFromServer();
     }
 
     public void getDataFromServer() {
@@ -338,28 +340,25 @@ public class MapViewSingleActivity extends AppCompatActivity {
                 // Zooms to the current location when first GPS fix arrives.
                 @Override
                 public void onLocationChanged(Location loc) {
-                    if (!locationChanged) {
-                        locationChanged = true;
-                        Log.e("sukses location ", "lat " + loc.getLatitude() + " | lng " + loc.getLongitude() + " | point " + getAsPoint(loc));
+                    boolean locationChanged = false;
+                    Log.e("sukses location ", "lat " + loc.getLatitude() + " | lng " + loc.getLongitude() + " | point " + getAsPoint(loc));
 
-                        if ( currentBestLocation != null ) {
-                            if (GpsUtils.isBetterLocation(loc, currentBestLocation)) {
-                                currentBestLocation = loc;
-                            }
-                        } else { currentBestLocation = loc; }
-
-                        locationTouch = currentBestLocation;
-                        // After zooming, turn on the Location pan mode to show the location
-                        // symbol. This will disable as soon as you interact with the map.
-                        /*
-                        if (!isFirst) {
-                            latitude = loc.getLatitude();
-                            longitude = loc.getLongitude();
+                    if ( currentBestLocation != null ) {
+                        if (GpsUtils.isBetterLocation(loc, currentBestLocation)) {
+                            currentBestLocation = loc;
+                        } else {
+                            locationChanged = true;
                         }
-                        */
+                    } else { currentBestLocation = loc; }
+
+                    locationTouch = currentBestLocation;
+                    // After zooming, turn on the Location pan mode to show the location
+                    // symbol. This will disable as soon as you interact with the map.
+
+                    if ( !isFirst && locationChanged ) {
                         getDataFromServer();
-                        /*Toast.makeText(getApplicationContext(), "location change " + (looping++), Toast.LENGTH_SHORT).show();*/
                         mLDM.setAutoPanMode(LocationDisplayManager.AutoPanMode.LOCATION);
+                        isFirst = false;
                     }
                 }
 

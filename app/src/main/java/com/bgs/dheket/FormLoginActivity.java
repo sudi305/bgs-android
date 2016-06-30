@@ -7,7 +7,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -17,6 +19,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,6 +28,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bgs.common.Constants;
+import com.bgs.common.DialogUtils;
 import com.bgs.model.UserApp;
 import com.bgs.networkAndSensor.HttpGetOrPost;
 import com.facebook.AccessToken;
@@ -57,6 +62,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Created by SND on 18/01/2016.
@@ -64,7 +71,7 @@ import java.io.InputStreamReader;
 
 public class FormLoginActivity extends AppCompatActivity implements LocationListener {
     CallbackManager callbackManager;
-    LoginButton login;
+    LoginButton loginBtn;
     Button signup;
     TextView loading, login_fb;
     //android.support.v7.app.ActionBar actionBar;
@@ -85,6 +92,20 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo(
+                    "com.bgs.dheket", PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.d(Constants.TAG, "KeyHash:" + Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+
+        } catch (NoSuchAlgorithmException e) {
+
+        }
+
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
         setContentView(R.layout.activity_form_login);
@@ -100,8 +121,8 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
         getServiceFromGPS();
 
         callbackManager = CallbackManager.Factory.create();
-        login = (LoginButton)findViewById(R.id.login_button);
-        login.setReadPermissions("public_profile email");
+        loginBtn = (LoginButton)findViewById(R.id.login_button);
+        loginBtn.setReadPermissions("public_profile email");
         signup = (Button)findViewById(R.id.signup_button);
         loading = (TextView)findViewById(R.id.textView_formLogin_loading);
         login_fb = (TextView)findViewById(R.id.textView_login_fb);
@@ -118,18 +139,20 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
         login_fb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                login.performClick();
+
+                loginBtn.performClick();
             }
         });
-        login.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+        loginBtn.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+
             @Override
             public void onSuccess(LoginResult loginResult) {
                 loading.setVisibility(View.VISIBLE);
-                login.setVisibility(View.GONE);
+                loginBtn.setVisibility(View.GONE);
                 signup.setVisibility(View.GONE);
-                Log.e("Success", "1");
+                Log.d(Constants.TAG, "Success => 1");
                 RequestDataFromFB();
-                Log.e("Success", "1a");
+                Log.d(Constants.TAG, "Success => 1a");
                 login_fb.setVisibility(View.GONE);
             }
 
@@ -140,6 +163,7 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
 
             @Override
             public void onError(FacebookException exception) {
+                Log.e(Constants.TAG, exception.getMessage(), exception);
                 Toast.makeText(getApplicationContext(), "Login Failed", Toast.LENGTH_SHORT).show();
             }
         });
@@ -200,7 +224,7 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
                 JSONObject json = response.getJSONObject();
                 try {
                     if (json != null) {
-                        Log.e("json",""+json.toString());
+                        Log.d(Constants.TAG, "json => "+json.toString());
 
                         String id = json.getString("id");
                         String name = json.getString("name");
@@ -215,9 +239,9 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
                         username = name;
                         password = "123456";
                         facebook_id = id;
-                        Log.e("Success", "2");
+                        Log.d(Constants.TAG, "Success => 2");
                         checkExistingUser(email, latitude, longitude);
-                        Log.e("Success", "2a");
+                        Log.d(Constants.TAG, "Success => 2a");
 
                         //add by supri 2016/6/16
                         UserApp userApp = App.getInstance().getUserApp();
@@ -232,14 +256,14 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
                     }
 
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    Log.e(Constants.TAG, e.getMessage(), e);
                 }
             }
         });
         Bundle parameters = new Bundle();
         parameters.putString("fields", "id,name,link,email,picture");
         request.setParameters(parameters);
-        Log.e("Success", "3");
+        Log.d(Constants.TAG, "Success => 3");
         request.executeAsync();
         if (email.equalsIgnoreCase("")||email.isEmpty()){
             temp_email = "user"+facebook_id+"@dheket.co.id";
@@ -247,14 +271,14 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
         } else {
             checkExistingUser(email, latitude, longitude);
         }
-        Log.e("Success", "3a");
+        Log.d(Constants.TAG, "Success => 3a");
     }
 
     public void checkExistingUser(String email, double latitude, double longitude) {
-        CallWebPageTaskCheckEmail task = new CallWebPageTaskCheckEmail();
+        CallWebPageTaskCheckEmail task = new CallWebPageTaskCheckEmail(this);
         task.applicationContext = getApplicationContext();
         String urls = url + "/" + email + "/" + latitude + "/" + longitude;
-        Log.e("Sukses", urls);
+        Log.d(Constants.TAG, "Sukses =>" + urls);
         task.execute(new String[]{urls});
     }
 
@@ -263,13 +287,6 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
         criteria = new Criteria();
         provider = myLocationManager.getBestProvider(criteria, true);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
         location = myLocationManager.getLastKnownLocation(provider);
@@ -301,13 +318,18 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
     }
 
     private class CallWebPageTaskCheckEmail extends AsyncTask<String, Void, String> {
-
-        private ProgressDialog dialog;
+        private Context context;
+        private Dialog dialog;
         protected Context applicationContext;
+
+        public CallWebPageTaskCheckEmail(Context context) {
+            this.context = context;
+            dialog = DialogUtils.LoadingSpinner(context);
+        }
 
         @Override
         protected void onPreExecute() {
-            //this.dialog = ProgressDialog.show(getApplicationContext(), "Login Process", "Please Wait...", true);
+            //dialog.show();
         }
 
         @Override
@@ -321,7 +343,7 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
                 menuItemArray = jObject.getJSONArray("tag_cat");
                 email = jObject.getString("email");
             } catch (JSONException e) {
-                e.printStackTrace();
+                Log.e(Constants.TAG, e.getMessage(), e);
             }
             return response;
         }
@@ -329,24 +351,25 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
         @Override
         protected void onPostExecute(String result) {
             //this.dialog.cancel();
-            Log.e("Success","4");
+            Log.d(Constants.TAG, "Success => 4");
             if (email.equalsIgnoreCase("guest@dheket.co.id") || email.equalsIgnoreCase("") || email.equalsIgnoreCase(null)) {
-                Log.e("Success", "5");
+                Log.d(Constants.TAG, "Success => 5");
                 createUserAccountCustomer();
-                Log.e("Success", "5a");
+                Log.d(Constants.TAG, "Success => 5a");
             } else {
                 if (AccessToken.getCurrentAccessToken() != null) {
                     Intent loginWithFb = new Intent(FormLoginActivity.this, MainMenuActivity.class);
-                    Log.e("Success", "6");
+                    Log.d(Constants.TAG, "Success => 6");
                     startActivity(loginWithFb);
                     finish();
                 }
             }
+            if ( dialog.isShowing()) dialog.dismiss();
         }
     }
 
     public void createUserAccountCustomer() {
-        AsyncTAddingDataToServer asyncT = new AsyncTAddingDataToServer();
+        AsyncTAddingDataToServer asyncT = new AsyncTAddingDataToServer(this);
         asyncT.execute();
     }
 
@@ -395,6 +418,18 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
 
     /* Inner class to get response */
     class AsyncTAddingDataToServer extends AsyncTask<Void, Void, Void> {
+        private Context context;
+        private Dialog dialog;
+        public AsyncTAddingDataToServer(Context context) {
+            this.context = context;
+            dialog = DialogUtils.LoadingSpinner(context);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            //dialog.show();
+        }
+
         @Override
         protected Void doInBackground(Void... voids) {
             String url = urlCreateAccount;
@@ -407,18 +442,18 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
                 jsonobj.put("username", username);
                 jsonobj.put("password", password);
                 jsonobj.put("facebook_id", facebook_id);
-                Log.e("mainToPost", "mainToPost" + jsonobj.toString());
+                Log.d(Constants.TAG, "mainToPost => " + jsonobj.toString());
                 httppost.setEntity(new StringEntity(jsonobj.toString())); //json without header {"a"="a","b"=1}
                 // Execute HTTP Post Request
                 HttpResponse response = httpclient.execute(httppost);
                 InputStream inputStream = response.getEntity().getContent();
                 InputStreamToStringExample str = new InputStreamToStringExample();
                 responseServer = str.getStringFromInputStream(inputStream);
-                Log.e("response", "response ----- " + responseServer.toString() + "|");
-                Log.e("response", "response ----- " + responseServer.toString().equalsIgnoreCase("{\"success\":1}") + "|");
-                Log.e("Success","7");
+                Log.d(Constants.TAG, "response ----- " + responseServer.toString() + "|");
+                Log.d(Constants.TAG, "response ----- " + responseServer.toString().equalsIgnoreCase("{\"success\":1}") + "|");
+                Log.d(Constants.TAG, "Success => 7");
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(Constants.TAG, e.getMessage(), e);
             }
             return null;
         }
@@ -426,24 +461,25 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            Log.e("Success", "8");
+            Log.d(Constants.TAG, "Success => 8");
             if (responseServer!=null && responseServer.equalsIgnoreCase("{\"success\":1}")) {
                 Toast.makeText(getApplicationContext(),"Success!",Toast.LENGTH_SHORT).show();
                 responseServer="";
-                Log.e("Success", "8a");
+                Log.d(Constants.TAG, "Success => 8a");
                 if (AccessToken.getCurrentAccessToken() != null) {
                     Intent loginWithFb = new Intent(FormLoginActivity.this, MainMenuActivity.class);
-                    Log.e("Success", "8b");
+                    Log.d(Constants.TAG, "Success => 8b");
                     startActivity(loginWithFb);
                     finish();
                 }
-                Log.e("Success","9");
+                Log.d(Constants.TAG, "Success => 9");
             } else {
                 if (responseServer.equalsIgnoreCase("") || responseServer.isEmpty()) {
                     Toast.makeText(getApplicationContext(), "Ops, Error! Please Try Again!",Toast.LENGTH_SHORT).show();
-                    Log.e("Success", "10");
+                    Log.d(Constants.TAG, "Success => 10");
                 }
             }
+            if ( dialog.isShowing()) dialog.dismiss();
         }
     }
 }

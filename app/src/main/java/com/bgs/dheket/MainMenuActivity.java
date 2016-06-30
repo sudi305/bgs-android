@@ -61,6 +61,7 @@ import com.bgs.chat.MainChatActivity;
 import com.bgs.chat.services.ChatClientService;
 import com.bgs.chat.widgets.CircleBackgroundSpan;
 import com.bgs.common.Constants;
+import com.bgs.common.DialogUtils;
 import com.bgs.common.ExtraParamConstants;
 import com.bgs.common.GpsUtils;
 import com.bgs.common.Utility;
@@ -256,7 +257,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 //        Dialog.show(getFragmentManager(), "tag");
 
         initFormSettingRadius();
-        //updateData();
+        updateData();
         preProcessingGetData();
         getServiceFromGPS();
         if ( currentBestLocation == null ) {
@@ -768,23 +769,22 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
      * Class CallWebPageTask untuk implementasi class AscyncTask
      */
     private class CallWebPageTask extends AsyncTask<String, Void, String> {
+        private Context context;
+        private Dialog dialog;
 
-        public CallWebPageTask() {
-            applicationContext = MainMenuActivity.this;
-            dialog = new ProgressDialog(applicationContext);
+        public CallWebPageTask(Context context) {
+            this.context = context;
+            dialog = DialogUtils.LoadingSpinner(context);
         }
 
 
-        private ProgressDialog dialog;
-        protected Context applicationContext;
-
         @Override
         protected void onPreExecute() {
-            this.dialog.setTitle("Requesting Data");
-            this.dialog.setMessage("Please Wait...!!!");
-            this.dialog.setCanceledOnTouchOutside(false);
-            this.dialog.setCancelable(false);
-            //this.dialog.show();
+            //this.dialog.setTitle("Requesting Data");
+            //this.dialog.setMessage("Please Wait...!!!");
+            dialog.setCanceledOnTouchOutside(false);
+            dialog.setCancelable(false);
+            dialog.show();
         }
 
         @Override
@@ -829,9 +829,6 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
         @Override
         protected void onPostExecute(String result) {
-            /*if (dialog.isShowing()) {
-                dialog.dismiss();
-            }*/
             Log.d(Constants.TAG, "first_check -> " + first_check);
             /*if (email.equalsIgnoreCase("guest@dheket.co.id")){
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainMenuActivity.this);
@@ -857,6 +854,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             }*/
             Log.d(Constants.TAG, "Proses 5 -> selesai panggil WS = " + urls);
             updateData();
+
+            if (dialog.isShowing()) dialog.dismiss();
         }
     }
 
@@ -922,6 +921,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
     /* Inner class to get response */
     class AsyncTAddingDataToServer extends AsyncTask<Void, Void, Void> {
+
         @Override
         protected Void doInBackground(Void... voids) {
             String url = String.format(getResources().getString(R.string.link_updateRadiusByEmail));
@@ -964,8 +964,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     }
 
     public void getDataCategory(String email) {
-        CallWebPageTask task = new CallWebPageTask();
-        task.applicationContext = getApplicationContext();
+        CallWebPageTask task = new CallWebPageTask(this);
         double longitude =0, latitude = 0;
         if ( currentBestLocation != null ) {
             latitude = currentBestLocation.getLatitude();
@@ -1022,9 +1021,12 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
     @Override
     public void onLocationChanged(Location location) {
+        boolean locationChanged = false;
         if ( currentBestLocation != null ) {
             if (GpsUtils.isBetterLocation(location, currentBestLocation)) {
                 currentBestLocation = location;
+            } else {
+                locationChanged = true;
             }
         }
         else {
@@ -1032,8 +1034,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         }
         //Toast.makeText(getApplicationContext(),"lat "+latitude+" | lgt "+longitude, Toast.LENGTH_LONG).show();
         Log.d(Constants.TAG, "Proses 6 -> Ada perubahan lokasi maka panggil WS lagi= " + urls);
-
-        getDataCategory(email);
+        if ( locationChanged ) getDataCategory(email);
     }
 
     @Override
@@ -1054,10 +1055,10 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     }
 
     public void getServiceFromGPS() {
-        LocationManager locManager = ((App) getApplication()).getLocationManager();
+        LocationManager locManager = App.getLocationManager();
         if ( locManager == null) {
             locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            ((App) getApplication()).setLocationManager(locManager);
+            App.setLocationManager(locManager);
         }
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling

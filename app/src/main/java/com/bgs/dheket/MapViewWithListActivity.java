@@ -1,15 +1,11 @@
 package com.bgs.dheket;
 
-import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -20,7 +16,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -30,6 +25,7 @@ import com.bgs.common.Constants;
 import com.bgs.common.DialogUtils;
 import com.bgs.common.ExtraParamConstants;
 import com.bgs.common.GpsUtils;
+import com.bgs.common.MapUtils;
 import com.bgs.common.Utility;
 import com.bgs.model.Category;
 import com.bgs.model.Lokasi;
@@ -40,13 +36,9 @@ import com.esri.android.map.LocationDisplayManager;
 import com.esri.android.map.MapView;
 import com.esri.android.map.event.OnSingleTapListener;
 import com.esri.android.map.event.OnStatusChangedListener;
-import com.esri.core.geometry.Envelope;
-import com.esri.core.geometry.GeometryEngine;
-import com.esri.core.geometry.LinearUnit;
 import com.esri.core.geometry.MultiPoint;
 import com.esri.core.geometry.Point;
 import com.esri.core.geometry.SpatialReference;
-import com.esri.core.geometry.Unit;
 import com.esri.core.map.Graphic;
 import com.esri.core.symbol.PictureMarkerSymbol;
 import com.esri.core.tasks.geocode.Locator;
@@ -196,7 +188,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
             // Find out if we tapped on a Graphic
             MapViewExtendActivity.startFromMapWithList(getApplicationContext(), category, currentBestLocation);
             //stop location manager
-            onStop();
+            //onStop();
             //hack mode
             //clearCurrentResults();
             //finish();
@@ -237,33 +229,35 @@ public class MapViewWithListActivity extends AppCompatActivity {
         if ((mMapView != null) && (mMapView.isLoaded())) {
             mLDM = mMapView.getLocationDisplayManager();
             mLDM.setLocationListener(new LocationListener() {
-                boolean locationChanged = false;
                 // Zooms to the current location when first GPS fix arrives.
                 @Override
                 public void onLocationChanged(Location loc) {
-                    if (!locationChanged) {
-                        locationChanged = true;
-                        Log.d(Constants.TAG, "sukses location -> lat " + loc.getLatitude() + " | lng " + loc.getLongitude() + " | point " + getAsPoint(loc));
+                    boolean locationChanged = false;
+                    Log.d(Constants.TAG, "sukses location -> lat " + loc.getLatitude() + " | lng " + loc.getLongitude() + " | point " + MapUtils.getAsPoint(mMapSr, loc));
 
-                        if ( currentBestLocation != null ) {
-                            if (GpsUtils.isBetterLocation(loc, currentBestLocation)) {
-                                currentBestLocation = loc;
-                            }
-                        } else { currentBestLocation = loc; }
-
-                        locationTouch = currentBestLocation;
-
-                        // After zooming, turn on the Location pan mode to show the location
-                        // symbol. This will disable as soon as you interact with the map.
-                        /*
-                        if (!isFirst) {
-                            category.setLatitude(currentBestLocation.getLatitude());
-                            category.setLongitude( currentBestLocation.getLongitude());
+                    if ( currentBestLocation != null ) {
+                        if (GpsUtils.isBetterLocation(loc, currentBestLocation)) {
+                            currentBestLocation = loc;
+                        } else {
+                            locationChanged = true;
                         }
-                        */
+
+                    } else { currentBestLocation = loc; }
+
+                    locationTouch = currentBestLocation;
+
+                    // After zooming, turn on the Location pan mode to show the location
+                    // symbol. This will disable as soon as you interact with the map.
+                    /*
+                    if (!isFirst) {
+                        category.setLatitude(currentBestLocation.getLatitude());
+                        category.setLongitude( currentBestLocation.getLongitude());
+                    }
+                    */
+                    if ( !isFirst && locationChanged ) {
                         getDataFromServer();
-                        /*Toast.makeText(getApplicationContext(), "location change " + (looping++), Toast.LENGTH_SHORT).show();*/
                         mLDM.setAutoPanMode(LocationDisplayManager.AutoPanMode.LOCATION);
+                        isFirst = false;
                     }
                 }
 
@@ -284,19 +278,6 @@ public class MapViewWithListActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Zoom to location using a specific size of extent.
-     *
-     * @param loc the location to center the MapView at
-     */
-    private void zoomToLocation(Location loc) {
-        Point mapPoint = getAsPoint(loc);
-        Unit mapUnit = mMapSr.getUnit();
-        double zoomFactor = Unit.convertUnits(ZOOM_BY,
-                Unit.create(LinearUnit.Code.MILE_US), mapUnit);
-        Envelope zoomExtent = new Envelope(mapPoint, zoomFactor, zoomFactor);
-        mMapView.setExtent(zoomExtent);
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -349,23 +330,16 @@ public class MapViewWithListActivity extends AppCompatActivity {
     }
 
     public void clearCurrentResults() {
-        if (mResultsLayer != null) {
+        /*
+        if (mResultsLayer != null && clearMap) {
             mResultsLayer.removeAll();
         }
+        */
         linearLayout_contentlist.removeAllViews();
     }
 
 
-    private Point getAsPoint(Location loc) {
-        Point wgsPoint = new Point(loc.getLongitude(), loc.getLatitude());
-        return (Point) GeometryEngine.project(wgsPoint, SpatialReference.create(4326),
-                mMapSr);
-    }
 
-    public Point onSingleTaps(float x, float y) {
-        Point pnt = (Point) GeometryEngine.project(mMapView.toMapPoint(x, y), mMapView.getSpatialReference(), SpatialReference.create(4326));
-        return pnt;
-    }
 
     public void updateContent(Map<String, Object> attributes) {
         // This is called from UI thread (MapTap listener)
@@ -482,17 +456,6 @@ public class MapViewWithListActivity extends AppCompatActivity {
                     Map<String, Object> attr = null;
                     int totalLocation = locationArray.length();
 
-                    //imediate clear content if data exist
-                    //ane refill on postexec
-                    if ( totalLocation >0 ) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                clearCurrentResults();
-                            }
-                        });
-                    }
-
                     //store graphic obj
                     graphics = new Graphic[totalLocation];
                     for (int i = 0; i < totalLocation; i++) {
@@ -505,7 +468,6 @@ public class MapViewWithListActivity extends AppCompatActivity {
                             int id, String name, String address, double latitude, double longitude,
                             String phone, int isPromo, int idLocationHere, String description, String locationTag, double distance
                              */
-
                             lokasi = new Lokasi();
                             lokasi.setId(Integer.parseInt(data.getString("id_location")));
                             lokasi.setName(data.getString("location_name"));
@@ -525,7 +487,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
                             Location locationPin = Constants.DEMO_LOCATION;
                             locationPin.setLatitude(lokasi.getLatitude());
                             locationPin.setLongitude(lokasi.getLongitude());
-                            Point point = getAsPoint(locationPin);
+                            Point point = MapUtils.getAsPoint(mMapSr, locationPin);
                             fullExtent.add(point);
 
                             attr = new HashMap<String, Object>();
@@ -534,8 +496,8 @@ public class MapViewWithListActivity extends AppCompatActivity {
                             attr.put("loc_address", lokasi.getAddress());
                             attr.put("loc_distance", lokasi.getDistance());
 
-                            graphics[i] = new Graphic(point, mcat, attr);
 
+                            graphics[i] = new Graphic(point, mcat, attr);
 
                         } catch (JSONException e) {
                             Log.e(Constants.TAG, e.getMessage(), e);
@@ -560,7 +522,9 @@ public class MapViewWithListActivity extends AppCompatActivity {
     public void updateData(ArrayList<Lokasi> locationList, Graphic[] graphics, MultiPoint fullExtent) {
         Log.d(Constants.TAG, "call updateData()");
         if (locationList != null) {
-            //clearCurrentResults();
+            //clear data
+            clearCurrentResults();
+            MapUtils.updateMap(mResultsLayer, graphics);
             for (final Lokasi lokasi : locationList) {
 
                 LayoutInflater inflater = (LayoutInflater) getSystemService( Context.LAYOUT_INFLATER_SERVICE );
@@ -603,17 +567,16 @@ public class MapViewWithListActivity extends AppCompatActivity {
                 });
             }
 
-            //redraw layer
-            mResultsLayer.addGraphics(graphics);
             mMapView.setExtent(fullExtent, 100);
             if (locationList.size() < 2) {
                 if ((mLDM != null) && (mLDM.getLocation() != null)) {
                     // Keep current scale and go to current location, if there is one.
-                    zoomToLocation(currentBestLocation);
+                    MapUtils.zoomToLocation(mMapView, mMapSr, currentBestLocation, ZOOM_BY);
                     mLDM.setAutoPanMode(LocationDisplayManager.AutoPanMode.LOCATION);
                 }
             }
         }
     }
+
 
 }

@@ -5,6 +5,8 @@ import android.provider.Settings;
 import android.util.Log;
 
 import com.bgs.dheket.App;
+import com.esri.android.map.GraphicsLayer;
+import com.esri.core.map.Graphic;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -75,5 +77,7 @@ public class Utility {
             return changeFormatNumber(distance) + " Km";
         }
     }
+
+
 
 }

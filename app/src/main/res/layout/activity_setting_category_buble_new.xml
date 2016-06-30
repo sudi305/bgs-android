@@ -440,71 +440,7 @@
                             </LinearLayout>
 
                         </LinearLayout>
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" >
 
-                            <RadioGroup
-                                android:layout_width="wrap_content"
-                                android:layout_height="match_parent"
-                                android:layout_marginTop="10dp"
-                                android:id="@+id/radioGrup_cat2">
-
-                                <RadioButton
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Category"
-                                    android:id="@+id/radioButton_cat2"
-                                    android:checked="true" />
-
-                                <RadioButton
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Brand"
-                                    android:id="@+id/radioButton_brand2"
-                                    android:checked="false"
-                                    android:layout_marginTop="10dp" />
-                            </RadioGroup>
-
-                            <LinearLayout
-                                android:orientation="vertical"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1.61">
-
-                                <EditText
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:inputType="textPersonName"
-                                    android:ems="10"
-                                    android:id="@+id/editText_sb_cat2"
-                                    android:hint="Category"
-                                    android:layout_marginRight="10dp"
-                                    android:focusableInTouchMode="false"
-                                    android:layout_marginTop="5dp" />
-
-                                <EditText
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:inputType="textPersonName"
-                                    android:ems="10"
-                                    android:id="@+id/editText_sb_brand2"
-                                    android:hint="Brand"
-                                    android:layout_marginRight="10dp"
-                                    android:focusableInTouchMode="false" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textAppearance="?android:attr/textAppearanceSmall"
-                                    android:text="Category/Brand in bubble 1"
-                                    android:id="@+id/textView_sb_cc2"
-                                    android:textSize="10dp"
-                                    android:layout_marginLeft="5dp"
-                                    android:layout_marginTop="-6dp" />
-                            </LinearLayout>
-                        </LinearLayout>
 
                     </LinearLayout>
 
