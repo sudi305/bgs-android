@@ -386,7 +386,8 @@ public class MapViewWithListActivity extends AppCompatActivity {
         private Context context;
         private ArrayList<Lokasi> locationList;
         private Dialog dialog;
-        private Graphic[] graphics;
+        //private Graphic[] graphics;
+        Map<String, ArrayList> graphicMap;
         MultiPoint fullExtent = new MultiPoint();
 
         public CallWebPageTask(Context context) {
@@ -451,7 +452,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
                     int totalLocation = locationArray.length();
 
                     //store graphic obj
-                    graphics = new Graphic[totalLocation];
+                    final Graphic[] graphics = new Graphic[totalLocation];
                     for (int i = 0; i < totalLocation; i++) {
                         try {
 
@@ -497,6 +498,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
                             Log.e(Constants.TAG, e.getMessage(), e);
                         }
                     }
+                    graphicMap = MapUtils.analyzeGraphics(mResultsLayer, graphics);
                 }
 
             } catch (JSONException e) {
@@ -508,17 +510,17 @@ public class MapViewWithListActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result) {
-            updateData(locationList, graphics, fullExtent);
+            updateData(locationList, graphicMap, fullExtent);
             if (dialog.isShowing()) dialog.dismiss();
         }
     }
 
-    public void updateData(ArrayList<Lokasi> locationList, Graphic[] graphics, MultiPoint fullExtent) {
+    public void updateData(ArrayList<Lokasi> locationList, Map<String, ArrayList> graphicMap, MultiPoint fullExtent) {
         Log.d(Constants.TAG, "call updateData()");
         if (locationList != null) {
             //clear data
             clearCurrentResults();
-            MapUtils.updateMap(mResultsLayer, graphics);
+            MapUtils.updateMap(mResultsLayer, graphicMap);
             for (final Lokasi lokasi : locationList) {
 
                 LayoutInflater inflater = (LayoutInflater) getSystemService( Context.LAYOUT_INFLATER_SERVICE );
