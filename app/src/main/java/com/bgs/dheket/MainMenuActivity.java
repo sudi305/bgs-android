@@ -1129,6 +1129,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
      * update new message counter inline chat menu
      */
     private void updateNewMessageCounter(int newMessageCount) {
+        if ( newMessageCount < 1 ) return;
         //update chat meenu item
         Menu menuNav = navigationView.getMenu();
         MenuItem element = menuNav.findItem(R.id.nav_chat);
