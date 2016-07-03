@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.bgs.common.NativeUtilities;
+import com.bgs.common.Utility;
 
 
 public class SizeNotifierRelativeLayout extends RelativeLayout {
@@ -44,7 +45,7 @@ public class SizeNotifierRelativeLayout extends RelativeLayout {
         super.onLayout(changed, l, t, r, b);
         if (delegate != null) {
             View rootView = this.getRootView();
-            int usableViewHeight = rootView.getHeight() - NativeUtilities.statusBarHeight - NativeUtilities.getViewInset(rootView);
+            int usableViewHeight = rootView.getHeight() - Utility.statusBarHeight - Utility.getViewInset(rootView);
             this.getWindowVisibleDisplayFrame(rect);
             int keyboardHeight = usableViewHeight - (rect.bottom - rect.top);
             delegate.onSizeChanged(keyboardHeight);

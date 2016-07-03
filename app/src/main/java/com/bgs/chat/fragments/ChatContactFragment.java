@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,12 +12,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bgs.chat.ChatPageActivity;
-import com.bgs.common.Constants;
-import com.bgs.dheket.R;
 import com.bgs.chat.adapters.ChatContactListAdapter;
-import com.bgs.chat.model.ChatContact;
+import com.bgs.chat.services.ChatTaskService;
+import com.bgs.dheket.R;
+import com.bgs.domain.chat.model.ChatContact;
+import com.bgs.domain.chat.repository.ContactRepository;
+import com.bgs.domain.chat.repository.IContactRepository;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.socket.client.Socket;
 
@@ -34,7 +36,7 @@ public class ChatContactFragment extends Fragment {
     private ListView contactListView;
     private ChatContactListAdapter listAdapter;
     private ArrayList<ChatContact> chatContacts;
-
+    private IContactRepository contactRepository;
 
     /**
      * Use this factory method to create a new instance of
@@ -75,25 +77,28 @@ public class ChatContactFragment extends Fragment {
         contactListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //Intent intent = new Intent(getActivity(), ChatPageActivity.class);
                 ChatContact contact = chatContacts.get((int)id);
                 contact.setActive(1);
                 ChatPageActivity.startChatFromContact(getActivity(), contact);
-                //intent.putExtra("chatContact", contact);
-                //getActivity().startActivity(intent);
             }
         });
 
         listAdapter = new ChatContactListAdapter(chatContacts, getActivity());
         contactListView.setAdapter(listAdapter);
 
-        //ChatContact contact = new ChatContact("User1", "", "userone@gmail.com", "",  ChatContactType.PRIVATE);
+        //Contact contact = new Contact("User1", "", "userone@gmail.com", "",  ContactType.PRIVATE);
         //chatContacts.add(contact);
 
-        //contact = new ChatContact("User2", "", "usertwo@gmail.com", "",  ChatContactType.PRIVATE);
+        //contact = new Contact("User2", "", "usertwo@gmail.com", "",  ContactType.PRIVATE);
         //chatContacts.add(contact);
 
-
+        contactRepository = new ContactRepository(getActivity());
+        List<ChatContact> contactList = contactRepository.getListContact();
+        if ( contactList.size() == 0) {
+            ChatTaskService.startActionGetContacts(getActivity());
+        } else {
+            chatContacts.addAll(contactList);
+        }
         return rootView;
 
     }
@@ -134,8 +139,6 @@ public class ChatContactFragment extends Fragment {
      * @param contactList
      */
     public void updateContact(final ArrayList<ChatContact> contactList) {
-        Log.d(Constants.TAG_CHAT, "getActivity()==" + getActivity());
-        if ( getActivity() == null ) return;
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -168,8 +171,6 @@ public class ChatContactFragment extends Fragment {
      * @param contact
      */
     public void updateContact(final ChatContact contact) {
-        Log.d(Constants.TAG_CHAT, "getActivity()==" + getActivity());
-        if ( getActivity() == null ) return;
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -188,7 +189,6 @@ public class ChatContactFragment extends Fragment {
                 if ( !exist) chatContacts.add(contact);
 
                 listAdapter.notifyDataSetChanged();
-                //Log.d(getResources().getString(R.string.app_name), "c:" + contact.getName());
                 showEmptyMessage();
             }
         });
@@ -200,8 +200,6 @@ public class ChatContactFragment extends Fragment {
      * @param contactEmail
      */
     public void removeContact(final String contactEmail) {
-        Log.d(Constants.TAG_CHAT, "getActivity()==" + getActivity());
-        if ( getActivity() == null ) return;
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {

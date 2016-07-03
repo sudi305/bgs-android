@@ -25,21 +25,25 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bgs.chat.adapters.ChatListAdapter;
-import com.bgs.chat.model.ChatContact;
-import com.bgs.chat.model.ChatHelper;
-import com.bgs.chat.model.ChatMessage;
-import com.bgs.chat.model.MessageType;
 import com.bgs.chat.services.ChatClientService;
+import com.bgs.chat.viewmodel.ChatHelper;
 import com.bgs.chat.widgets.Emoji;
 import com.bgs.chat.widgets.EmojiView;
 import com.bgs.chat.widgets.SizeNotifierRelativeLayout;
 import com.bgs.common.Constants;
 import com.bgs.common.ExtraParamConstants;
-import com.bgs.common.NativeUtilities;
 import com.bgs.common.Utility;
 import com.bgs.dheket.App;
 import com.bgs.dheket.DetailLocationWithMerchantActivity;
 import com.bgs.dheket.R;
+import com.bgs.domain.chat.model.ChatContact;
+import com.bgs.domain.chat.model.ChatMessage;
+import com.bgs.domain.chat.model.ContactType;
+import com.bgs.domain.chat.model.MessageType;
+import com.bgs.domain.chat.repository.ContactRepository;
+import com.bgs.domain.chat.repository.IContactRepository;
+import com.bgs.domain.chat.repository.IMessageRepository;
+import com.bgs.domain.chat.repository.MessageRepository;
 import com.bgs.model.Lokasi;
 import com.bgs.model.UserApp;
 
@@ -47,7 +51,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -55,10 +61,6 @@ import java.util.Map;
  * status bar and navigation/system bar) with user interaction.
  */
 public class ChatPageActivity extends AppCompatActivity implements SizeNotifierRelativeLayout.SizeNotifierRelativeLayoutDelegate, NotificationCenter.NotificationCenterDelegate {
-    private static final String ACTION_CHAT_FROM_CONTACT = "com.bgs.chat.action.CHAT_FROM_CONTACT";
-    private static final String ACTION_CHAT_FROM_HISTORY = "com.bgs.chat.action.CHAT_FROM_HISTORY";
-    private static final String ACTION_CHAT_FROM_LOCATION = "com.bgs.chat.action.FROM_LOCATION";
-
 
     private TextView userContactTextView;
     private ListView chatListView;
@@ -75,16 +77,23 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
     private boolean keyboardVisible;
     private WindowManager.LayoutParams windowLayoutParams;
 
+    private IContactRepository contactRepository;
+    private IMessageRepository messageRepository;
     private ChatContact chatContact;
-    private Lokasi lokasi;
-    private Location currentBestLocation;
-
     private ChatClientService chatClientService;
 
     //private App app;
     private Activity getActivity() {
         return ChatPageActivity.this;
     }
+
+    private Lokasi lokasi;
+    private Location currentBestLocation;
+
+    private static final String ACTION_CHAT_FROM_CONTACT = "com.bgs.chat.action.CHAT_FROM_CONTACT";
+    private static final String ACTION_CHAT_FROM_HISTORY = "com.bgs.chat.action.CHAT_FROM_HISTORY";
+    private static final String ACTION_CHAT_FROM_LOCATION = "com.bgs.chat.action.FROM_LOCATION";
+
     public static void startChatFromContact(Context context, ChatContact contact) {
         startChatActivity(context, ACTION_CHAT_FROM_CONTACT, contact, null, null);
         Log.d(Constants.TAG_CHAT, "START CHAT FROM CONTACT");
@@ -123,7 +132,7 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        Log.d(Constants.TAG_CHAT, getLocalClassName() + " => ON CREATE");
         setContentView(R.layout.activity_chatpage);
 
         //get object intent
@@ -133,7 +142,10 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
             currentBestLocation = (Location) getIntent().getParcelableExtra(ExtraParamConstants.CURRENT_BEST_LOCATION);
         }
 
-        NativeUtilities.statusBarHeight = getStatusBarHeight();
+        contactRepository = new ContactRepository(getApplicationContext());
+        messageRepository = new MessageRepository(getApplicationContext());
+
+        Utility.statusBarHeight = getStatusBarHeight();
         userContactTextView = (TextView) findViewById(R.id.user_contact);
         userContactTextView.setText(chatContact != null ? chatContact.getName() : "");
 
@@ -152,7 +164,7 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
         });
 
         goBackButton = (ImageButton) findViewById(R.id.go_back_button);
-        goBackButton.setOnClickListener(new View.OnClickListener() {
+        goBackButton.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = null;
@@ -162,7 +174,7 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
                     intent.putExtra(ExtraParamConstants.CURRENT_BEST_LOCATION, currentBestLocation);
 
                 } else if ( getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_CONTACT)
-                            || getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_HISTORY)) {
+                        || getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_HISTORY)) {
                     intent = new Intent(getActivity(), MainChatActivity.class);
                 }
                 if ( intent != null ) {
@@ -196,12 +208,25 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
         chatListView.requestFocus();
 
         chatClientService = App.getChatClientService();
-        chatClientService.registerReceivers(makeReceivers());
-        //TODO
+        //chatClientService.registerReceivers(makeReceivers());
+        //socket.on("new message", onNewMessage);
         //socket.on("user joined", onUserJoined);
         //socket.on("user left", onUserLeft);
         //socket.on("typing", onTyping);
         //socket.on("stop typing", onStopTyping);
+        Log.d(Constants.TAG_CHAT, "ID => " + chatContact.getId());
+
+        List<ChatMessage> messages;/*messageRepository.getListMessageByContact(chatContact.getId());
+        for(ChatMessage msg : messages) {
+            Log.d(Constants.TAG_CHAT, String.format("MSG => %s, TIME => %s  ", msg.getMessageText(), new Date(msg.getCreateTime())));
+        }
+        */
+        messages = messageRepository.getListMessageByContactAndDate(chatContact.getId(), new Date(System.currentTimeMillis()));
+        for(ChatMessage msg : messages) {
+            Log.d(Constants.TAG_CHAT, String.format("MSG => %s, READ-STATUS => %s, TYPE=%s  ", msg.getMessageText(), msg.getMessageReadStatus(), msg.getMessageType()));
+        }
+        addMessage(messages);
+
     }
 
     public Map<String, BroadcastReceiver> makeReceivers(){
@@ -215,7 +240,9 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
     private void attemptSend() {
         //if (null == userContact.getName()) return;
         if (!chatClientService.isConnected()) return;
+
         //mTyping = false;
+
         String message = chatEditText1.getText().toString().trim();
         if (TextUtils.isEmpty(message)) {
             chatEditText1.requestFocus();
@@ -223,8 +250,10 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
         }
 
         chatEditText1.setText("");
-
-        addMessage(ChatHelper.createMessage(message, MessageType.OUT));
+        ChatMessage msg = ChatHelper.createMessage(chatContact.getId(), message, MessageType.OUT);
+        addMessage(msg);
+        //save
+        messageRepository.createOrUpdate(msg);
         Log.d(getResources().getString(R.string.app_name), "before send = " + message);
         JSONObject obj = new JSONObject();
         JSONObject user = new JSONObject();
@@ -246,6 +275,15 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
         // perform the sending message attempt.
         chatClientService.emit(ChatClientService.SocketEmit.NEW_MESSAGE, obj);
 
+    }
+
+    private void addMessage(List<ChatMessage> messages) {
+        chatMessages.addAll(messages);
+
+        if(listAdapter!=null) {
+            listAdapter.notifyDataSetChanged();
+            scrollToBottom();
+        }
     }
 
     private void addMessage(ChatMessage message) {
@@ -289,17 +327,31 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
                     String data = intent.getStringExtra("data");
                     JSONObject from;
                     String message;
+                    String email;
+                    String name;
+                    String phone;
                     try {
                         JSONObject joData = new JSONObject(data);
                         from = joData.getJSONObject("from");
+                        name = from.getString("name");
+                        email = from.getString("email");
+                        phone = from.getString("phone");
+
                         message = joData.getString("message");
                     } catch (JSONException e) {
                         return;
                     }
                     //Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT );
-                    Log.d(Constants.TAG_CHAT,"message = " + message);
+                    Log.d(Constants.TAG_CHAT, String.format("from=%s\r\nmessage=%s ", from, message));
+                    ChatContact contact = contactRepository.getContactByEmail(email);
+                    if ( contact == null) {
+                        contact = new ChatContact(name, "", email, phone, ContactType.PRIVATE);
+                        contactRepository.createOrUpdate(contact);
+                    }
                     //removeTyping(username);
-                    addMessage(ChatHelper.createMessage(message, MessageType.IN ));
+                    ChatMessage msg = ChatHelper.createMessage(contact.getId(), message, MessageType.IN);
+                    addMessage(msg);
+                    messageRepository.createOrUpdate(msg);
                 }
             });
         }
@@ -396,7 +448,7 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
                             i = 0;
                         }
                         try {
-                            CharSequence localCharSequence = Emoji.replaceEmoji(symbol, chatEditText1.getPaint().getFontMetricsInt(), NativeUtilities.dp(20));
+                            CharSequence localCharSequence = Emoji.replaceEmoji(symbol, chatEditText1.getPaint().getFontMetricsInt(), Utility.dp(20));
                             chatEditText1.setText(chatEditText1.getText().insert(i, localCharSequence));
                             int j = i + localCharSequence.length();
                             chatEditText1.setSelection(j, j);
@@ -421,14 +473,14 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
             final int currentHeight;
 
             if (keyboardHeight <= 0)
-                keyboardHeight = App.getInstance().getSharedPreferences("emoji", 0).getInt("kbd_height", NativeUtilities.dp(200));
+                keyboardHeight = App.getInstance().getSharedPreferences("emoji", 0).getInt("kbd_height", Utility.dp(200));
 
             currentHeight = keyboardHeight;
 
             WindowManager wm = (WindowManager) App.getInstance().getSystemService(Activity.WINDOW_SERVICE);
 
             windowLayoutParams.height = currentHeight;
-            windowLayoutParams.width = NativeUtilities.displaySize.x;
+            windowLayoutParams.width = Utility.displaySize.x;
 
             try {
                 if (emojiView.getParent() != null) {
@@ -542,7 +594,7 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
         }
 
 
-        if (height > NativeUtilities.dp(50) && keyboardVisible) {
+        if (height > Utility.dp(50) && keyboardVisible) {
             keyboardHeight = height;
             App.getInstance().getSharedPreferences("emoji", 0).edit().putInt("kbd_height", keyboardHeight).commit();
         }
@@ -553,8 +605,8 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
 
             newHeight = keyboardHeight;
 
-            if (windowLayoutParams.width != NativeUtilities.displaySize.x || windowLayoutParams.height != newHeight) {
-                windowLayoutParams.width = NativeUtilities.displaySize.x;
+            if (windowLayoutParams.width != Utility.displaySize.x || windowLayoutParams.height != newHeight) {
+                windowLayoutParams.width = Utility.displaySize.x;
                 windowLayoutParams.height = newHeight;
 
                 wm.updateViewLayout(emojiView, windowLayoutParams);
@@ -611,26 +663,33 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
     @Override
     public void onPause() {
         super.onPause();
+        Log.d(Constants.TAG_CHAT, getLocalClassName() + " => ON PAUSE");
         hideEmojiPopup();
+        chatClientService.unregisterReceivers();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-        //chatClientService.registerReceivers(makeReceivers());
+        Log.d(Constants.TAG_CHAT, getLocalClassName() + " => ON RESUME");
+        chatClientService.registerReceivers(makeReceivers());
     }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d(Constants.TAG_CHAT, getLocalClassName() + " => ON STOP");
+    }
+
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        chatClientService.unregisterReceivers();
+        //socket.off("new message", onNewMessage);
         //socket.off("user joined", onUserJoined);
         //socket.off("user left", onUserLeft);
         //socket.off("typing", onTyping);
         //socket.off("stop typing", onStopTyping);
-
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.emojiDidLoaded);
 
     }

@@ -347,9 +347,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         Log.d(Constants.TAG_CHAT,"ON CREATE");
         chatClientService = App.getChatClientService();
         Log.d(Constants.TAG_CHAT,"chatClientService = " + chatClientService);
-        chatClientService.registerReceivers(makeReceivers());
         attemptLogin();
-
         //update new message counter drawer menu
         updateNewMessageCounter();
     }
@@ -1203,12 +1201,18 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
     //END SOCKET METHOD BLOCK
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(Constants.TAG_CHAT, getLocalClassName() + " => ON PAUSE");
+        chatClientService.unregisterReceivers();
+    }
 
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(Constants.TAG, "ON RESUME");
-        //chatClientService.registerReceivers(makeReceivers());
+        Log.d(Constants.TAG, getLocalClassName() + " => ON RESUME");
+        chatClientService.registerReceivers(makeReceivers());
         Log.d(Constants.TAG, "locManager = " + App.getInstance().getLocationManager());
 
     }
@@ -1216,6 +1220,5 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     @Override
     public void onDestroy() {
         super.onDestroy();
-        chatClientService.unregisterReceivers();
     }
 }

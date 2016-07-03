@@ -63,4 +63,8 @@ dependencies {
     compile project(':flowlayout-lib')
     compile 'org.jetbrains:annotations-java5:15.0'
     compile 'org.apache.commons:commons-lang3:3.4'
+
+    compile 'com.j256.ormlite:ormlite-core:4.48'
+    compile 'com.j256.ormlite:ormlite-android:4.48'
 }
+

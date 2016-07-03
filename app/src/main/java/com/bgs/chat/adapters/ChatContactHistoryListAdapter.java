@@ -8,7 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bgs.chat.model.ChatContactHistory;
+import com.bgs.chat.viewmodel.ChatHistory;
 import com.bgs.dheket.R;
 
 import java.text.SimpleDateFormat;
@@ -19,11 +19,11 @@ import java.util.ArrayList;
  */
 public class ChatContactHistoryListAdapter extends BaseAdapter {
 
-    private ArrayList<ChatContactHistory> chatContactHistories;
+    private ArrayList<ChatHistory> chatContactHistories;
     private Context context;
     public static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("HH:mm");
 
-    public ChatContactHistoryListAdapter(ArrayList<ChatContactHistory> chatContactHistories, Context context) {
+    public ChatContactHistoryListAdapter(ArrayList<ChatHistory> chatContactHistories, Context context) {
         this.chatContactHistories = chatContactHistories;
         this.context = context;
 
@@ -47,7 +47,7 @@ public class ChatContactHistoryListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View v = null;
-        ChatContactHistory contact = chatContactHistories.get(position);
+        ChatHistory contact = chatContactHistories.get(position);
         ViewHolder holder;
 
         if (convertView == null) {
@@ -69,6 +69,7 @@ public class ChatContactHistoryListAdapter extends BaseAdapter {
         if ( contact != null ) {
             //holder1.picture.setBackground();
             holder.nameTextView.setText(contact.getContact().getName());
+            holder.messageTextView.setText("");
             if ( contact.getLastChatMessage() != null ) {
                 String msg = contact.getLastChatMessage().getMessageText();
                 if ( msg.length() > 40 ) msg = msg.substring(0, 40) + "...";
@@ -91,7 +92,7 @@ public class ChatContactHistoryListAdapter extends BaseAdapter {
 
     @Override
     public int getItemViewType(int position) {
-        ChatContactHistory contact = chatContactHistories.get(position);
+        ChatHistory contact = chatContactHistories.get(position);
         return contact.getContact().getContactType().ordinal();
     }
 

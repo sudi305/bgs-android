@@ -16,18 +16,21 @@ import com.astuetz.PagerSlidingTabStrip;
 import com.bgs.chat.adapters.ChatTabPagerAdapter;
 import com.bgs.chat.fragments.ChatContactFragment;
 import com.bgs.chat.fragments.ChatContactHistoryFragment;
-import com.bgs.chat.model.ChatContact;
-import com.bgs.chat.model.ChatContactType;
-import com.bgs.chat.model.ChatHelper;
-import com.bgs.chat.model.ChatMessage;
-import com.bgs.chat.model.MessageType;
 import com.bgs.chat.services.ChatClientService;
-import com.bgs.chat.services.ChatTaskService;
+import com.bgs.chat.viewmodel.ChatHelper;
 import com.bgs.common.Constants;
 import com.bgs.common.Utility;
 import com.bgs.dheket.App;
 import com.bgs.dheket.MainMenuActivity;
 import com.bgs.dheket.R;
+import com.bgs.domain.chat.model.ChatContact;
+import com.bgs.domain.chat.model.ChatMessage;
+import com.bgs.domain.chat.model.ContactType;
+import com.bgs.domain.chat.model.MessageType;
+import com.bgs.domain.chat.repository.ContactRepository;
+import com.bgs.domain.chat.repository.IContactRepository;
+import com.bgs.domain.chat.repository.IMessageRepository;
+import com.bgs.domain.chat.repository.MessageRepository;
 import com.bgs.model.UserApp;
 
 import org.json.JSONArray;
@@ -36,23 +39,25 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
-
-import io.socket.client.Socket;
-import io.socket.emitter.Emitter;
 
 public class MainChatActivity extends AppCompatActivity {
     ViewPager viewPager;
+
     private ImageButton goBackButton;
     private ChatTabPagerAdapter pagerAdapter;
-    private static Map<String, Emitter.Listener> CHAT_EVENT_LISTENERS = new LinkedHashMap<String, Emitter.Listener>();
+
     private ChatClientService chatClientService;
+    private IContactRepository contactRepository;
+    private IMessageRepository messageRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(Constants.TAG_CHAT, getLocalClassName() + " => ON CREATE");
         setContentView(R.layout.activity_mainchat);
+        contactRepository = new ContactRepository(getApplicationContext());
+        messageRepository = new MessageRepository(getApplicationContext());
 
         goBackButton = (ImageButton) findViewById(R.id.go_back_button);
         goBackButton.setOnClickListener(new View.OnClickListener() {
@@ -78,9 +83,7 @@ public class MainChatActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
                 //Toast.makeText(MainChatActivity.this, "Selected page position: " + position, Toast.LENGTH_SHORT).show();
-                //retrive contact
-                if ( position == 1)
-                    ChatTaskService.startActionGetContacts(getActivity());
+
             }
 
             // This method will be invoked when the current page is scrolled
@@ -97,40 +100,26 @@ public class MainChatActivity extends AppCompatActivity {
             }
         });
 
+
         //Log.d(getResources().getString(R.string.app_name), "count=" + tabsStrip.getChildCount());
 
         UserApp userApp = App.getUserApp();
-        /*
-        if ( app.getUserApp() == null ) {
-            String id = NativeUtilities.getDeviceUniqueID(getContentResolver());
-            app.setUserApp(new UserApp(id, id, "", id + "@zmail.com", ""));
+        if ( userApp == null ) {
+            String id = Utility.getDeviceUniqueID(getContentResolver());
+            userApp = new UserApp(id, id, "", id + "@zmail.com", "");
+            App.updateUserApp(userApp);
         }
-        */
         TextView title = (TextView) findViewById(R.id.user_app);
-        String titleText = title.getText() + ( userApp == null ? "" : " - " + userApp.getName());
-        title.setText(titleText);
-
-
-        Log.d(Constants.TAG_CHAT,"ON CREATE");
+        title.setText(title.getText() + " - " + userApp.getName());
         chatClientService = App.getChatClientService();
         Log.d(Constants.TAG_CHAT,"chatClientService = " + chatClientService);
-        chatClientService.registerReceivers(makeReceivers());
         attemptLogin();
 
-    }
 
-    public Map<String, BroadcastReceiver> makeReceivers(){
-        Map<String, BroadcastReceiver> map = new HashMap<String, BroadcastReceiver>();
-        map.put(ChatClientService.SocketEvent.CONNECT, connectReceiver);
-        map.put(ChatClientService.SocketEvent.USER_JOIN, userJoinReceiver);
-        map.put(ChatClientService.SocketEvent.NEW_MESSAGE, newMessageReceiver);
-        map.put(ChatClientService.SocketEvent.LIST_CONTACT, listContactReceiver);
-        map.put(ChatClientService.SocketEvent.UPDATE_CONTACT, updateContactReceiver);
-        return map;
     }
 
     public void toMainMenu(){
-        Intent mainMenu = new Intent(this,MainMenuActivity.class);
+        Intent mainMenu = new Intent(this, MainMenuActivity.class);
         startActivity(mainMenu);
         finish();
     }
@@ -162,31 +151,14 @@ public class MainChatActivity extends AppCompatActivity {
         }
     };
 
-    private BroadcastReceiver userJoinReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String data = intent.getStringExtra("data");
-            JSONObject user;
-            try {
-                JSONObject joData = new JSONObject(data);
-                user = joData.getJSONObject("user");
-                Log.d(Constants.TAG_CHAT, "User Join " + user.getString("email"));
-            } catch (JSONException e) {
-                Log.e(Constants.TAG_CHAT, e.getMessage(), e);
-                return;
-            }
-            //retrive contact
-            ChatTaskService.startActionGetContacts(getActivity());
-        }
-    };
-
     private BroadcastReceiver newMessageReceiver = new BroadcastReceiver()  {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, Intent intent){
             String data = intent.getStringExtra("data");
             JSONObject from;
             String message;
             try {
+
                 JSONObject joData = new JSONObject(data);
                 from = joData.getJSONObject("from");
                 message = joData.getString("message");
@@ -199,28 +171,30 @@ public class MainChatActivity extends AppCompatActivity {
                 //Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT );
                 Log.d(Constants.TAG_CHAT, "message2 = " + message);
                 //removeTyping(username);
-                final ChatContactFragment fragment0 = (ChatContactFragment) pagerAdapter.getItem(1);
-                ChatContact contact = fragment0.getContact(email);
-                if (contact == null) {
-                    contact = new ChatContact(null, name, "", email, phone, ChatContactType.PRIVATE);
+                //final ChatContactFragment fragment0 = (ChatContactFragment) pagerAdapter.getItem(1);
+                ChatContact contact = contactRepository.getContactByEmail(email);
+                if ( contact == null) {
+                    contact = new ChatContact(name, "", email, phone, ContactType.PRIVATE);
+                    contactRepository.createOrUpdate(contact);
                 }
-                if (contact.getActive() != 1) {
-                    final ChatMessage lastMessage = ChatHelper.createMessage(message, MessageType.IN);
+                if ( contact.getActive() != 1) {
+                    final ChatMessage lastMessage = ChatHelper.createMessage(contact.getId(), message, MessageType.IN);
+                    messageRepository.createOrUpdate(lastMessage);
                     final ChatContactHistoryFragment fragment1 = (ChatContactHistoryFragment) pagerAdapter.getItem(0);
-                    fragment1.updateContactHistory(contact, 1, lastMessage);
+                    final long newMessages = messageRepository.getNewMessageCountByContact(contact.getId());
+                    fragment1.updateContactHistory(contact, (int)newMessages, lastMessage);
                 }
 
             } catch (JSONException e) {
-                Log.e(Constants.TAG_CHAT, e.getMessage(), e);
             }
-
         }
     };
 
     private BroadcastReceiver listContactReceiver = new BroadcastReceiver()  {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, Intent intent){
             String data = intent.getStringExtra("data");
+            //Log.d(getResources().getString(R.string.app_name), "list contact ");
             JSONArray contacts = new JSONArray();
             try {
                 JSONObject joData = new JSONObject(data);
@@ -237,51 +211,68 @@ public class MainChatActivity extends AppCompatActivity {
             final ArrayList<ChatContact> contactList = new ArrayList<ChatContact>();
             for(int i = 0; i < contacts.length(); i++) {
                 try {
-                    JSONObject contact = contacts.getJSONObject(i);
-                    String id = contact.getString("id");
-                    String name = contact.getString("name");
-                    String email = contact.getString("email");
-                    String phone = contact.getString("phone");
+                    JSONObject joContact = contacts.getJSONObject(i);
+                    String id = joContact.getString("id");
+                    String name = joContact.getString("name");
+                    String email = joContact.getString("email");
+                    String phone = joContact.getString("phone");
                     //skip contact for current app user
 
                     //if ( email.equalsIgnoreCase(app.getUserApp().getEmail())) continue;
-                    contactList.add(new ChatContact(id, name, "", email, phone, ChatContactType.PRIVATE));
+                    ChatContact contact = contactRepository.getContactByEmail(email);
+                    if ( contact == null ) {
+                        contact = new ChatContact(name, "", email, phone, ContactType.PRIVATE);
+                        contactRepository.createOrUpdate(contact);
+                        contactList.add(contact);
+                    }
+
                 } catch (JSONException e) {
                     Log.d(Constants.TAG_CHAT,e.getMessage(), e);
                 }
             }
 
-            ChatContactFragment fragment = (ChatContactFragment)pagerAdapter.getItem(1);
-            fragment.updateContact(contactList);
+            updateContactList(contactList);
 
         }
     };
 
+    private void updateContactList(ArrayList<ChatContact> contactList) {
+        if ( contactList.size() > 0) {
+            ChatContactFragment fragment = (ChatContactFragment) pagerAdapter.getItem(1);
+            fragment.updateContact(contactList);
+        }
+    }
     private BroadcastReceiver updateContactReceiver = new BroadcastReceiver()  {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, Intent intent){
             String data = intent.getStringExtra("data");
-
             boolean remove = false;
-            JSONObject contact = null;
             try {
                 JSONObject joData = new JSONObject(data);
-                remove =joData.getBoolean("remove");
-                contact = joData.getJSONObject("contact");
+                JSONObject joContact = null;
+                remove = joData.getBoolean("remove");
+                joContact = joData.getJSONObject("contact");
+                //Toast.makeText(getApplicationContext(), "Login1 " + isLogin, Toast.LENGTH_SHORT).show();
 
-                Log.d(Constants.TAG_CHAT, "update contact = " + contact);
-                if ( contact != null ) {
+                Log.d(Constants.TAG_CHAT, "update contact = " + joContact);
+                //Toast.makeText(getApplicationContext(), "Login2 " + isLogin, Toast.LENGTH_SHORT).show();
+                if ( joContact != null ) {
 
-                    String id = contact.getString("id");
-                    String name = contact.getString("name");
-                    String email = contact.getString("email");
-                    String phone = contact.getString("phone");
+                    String id = joContact.getString("id");
+                    String name = joContact.getString("name");
+                    String email = joContact.getString("email");
+                    String phone = joContact.getString("phone");
 
                     ChatContactFragment fragment = (ChatContactFragment) pagerAdapter.getItem(1);
                     if (remove) {
-                        fragment.removeContact(email);
+                        //fragment.removeContact(email);
                     } else {
-                        fragment.updateContact(new ChatContact(id, name, "", email, phone, ChatContactType.PRIVATE));
+                        ChatContact contact = contactRepository.getContactByEmail(email);
+                        if ( contact == null ) {
+                            contact = new ChatContact(name, "", email, phone, ContactType.PRIVATE);
+                            contactRepository.createOrUpdate(contact);
+                            fragment.updateContact(contact);
+                        }
                     }
                 }
 
@@ -289,29 +280,70 @@ public class MainChatActivity extends AppCompatActivity {
                 Log.e(Constants.TAG_CHAT, e.getMessage(), e);
                 return;
             }
+
+
         }
     };
 
-    //END SOCKET METHOD BLOCK
+    private BroadcastReceiver userJoinReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String data = intent.getStringExtra("data");
+            JSONObject user;
+            try {
+                JSONObject joData = new JSONObject(data);
+                user = joData.getJSONObject("user");
+                Log.d(Constants.TAG_CHAT, "User Join " + user.getString("email"));
+            } catch (JSONException e) {
+                Log.e(Constants.TAG_CHAT, e.getMessage(), e);
+                return;
+            }
+            //retrive contact
+            //ChatTaskService.startActionGetContacts(getActivity());
+        }
+    };
+
+    public Map<String, BroadcastReceiver> makeReceivers(){
+        Map<String, BroadcastReceiver> map = new HashMap<String, BroadcastReceiver>();
+        map.put(ChatClientService.SocketEvent.CONNECT, connectReceiver);
+        map.put(ChatClientService.SocketEvent.USER_JOIN, userJoinReceiver);
+        map.put(ChatClientService.SocketEvent.NEW_MESSAGE, newMessageReceiver);
+        map.put(ChatClientService.SocketEvent.LIST_CONTACT, listContactReceiver);
+        map.put(ChatClientService.SocketEvent.UPDATE_CONTACT, updateContactReceiver);
+        return map;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(Constants.TAG_CHAT, getLocalClassName() + " => ON PAUSE");
+        chatClientService.unregisterReceivers();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d(Constants.TAG_CHAT, getLocalClassName() + " => ON STOP");
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(Constants.TAG_CHAT,"ON RESUME");
-        //reset page adapter
-        //pagerAdapter = new ChatTabPagerAdapter(getSupportFragmentManager());
-        //viewPager.setAdapter(pagerAdapter);
+        Log.d(Constants.TAG_CHAT,getLocalClassName() + " => ON RESUME");
         Log.d(Constants.TAG_CHAT, "chatClientService=" + chatClientService);
-        //chatClientService.registerReceivers(makeReceivers());
-
-        //retrive contact
-        ChatTaskService.startActionGetContacts(getActivity());
+        chatClientService.registerReceivers(makeReceivers());
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        chatClientService.unregisterReceivers();
+        /*
+        socket.off("login", onLogin);
+        socket.off("user join", onUserJoin);
+        socket.off("list contact", onListContact);
+        socket.off("update contact", onUpdateContact);
+        socket.off("new message", onNewMessage);
+        */
     }
 
 

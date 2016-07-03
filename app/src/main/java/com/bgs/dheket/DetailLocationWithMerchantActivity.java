@@ -20,17 +20,19 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bgs.chat.ChatPageActivity;
-import com.bgs.chat.model.ChatContact;
-import com.bgs.chat.model.ChatContactType;
 import com.bgs.common.Constants;
+import com.bgs.common.DialogUtils;
 import com.bgs.common.ExtraParamConstants;
 import com.bgs.common.Utility;
+import com.bgs.domain.chat.model.ChatContact;
+import com.bgs.domain.chat.model.ContactType;
+import com.bgs.domain.chat.repository.ContactRepository;
+import com.bgs.domain.chat.repository.IContactRepository;
 import com.bgs.imageOrView.ViewPagerAdapter;
 import com.bgs.model.Category;
 import com.bgs.model.Lokasi;
 import com.bgs.model.Merchant;
 import com.bgs.networkAndSensor.HttpGetOrPost;
-import com.bgs.common.DialogUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -77,11 +79,14 @@ public class DetailLocationWithMerchantActivity extends AppCompatActivity implem
     String[] icon_cat;
     int[] id_cat;
 
+    //repo
+    IContactRepository contactRepository;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_loc_with_merchant);
-
+        contactRepository = new ContactRepository(getApplicationContext());
         actionBar = getSupportActionBar();
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -118,7 +123,10 @@ public class DetailLocationWithMerchantActivity extends AppCompatActivity implem
                 Log.d(Constants.TAG, "GOTO CHAT");
                 try {
                     Merchant merchant = lokasi.getMerchant();
-                    ChatContact chatContact = new ChatContact(String.valueOf(merchant.getId()), merchant.getName(), merchant.getFacebookPhoto(), merchant.getEmail(), merchant.getPhone(), ChatContactType.PRIVATE);
+                    ChatContact chatContact = contactRepository.getContactByEmail(merchant.getEmail());
+                    if ( chatContact == null ) {
+                        chatContact = new ChatContact(merchant.getName(), merchant.getFacebookPhoto(), merchant.getEmail(), merchant.getPhone(), ContactType.PRIVATE);
+                    }
                     ChatPageActivity.startChatFromLocation(getActivity(), chatContact, lokasi, currentBestLocation);
                     finish();
                 } catch (Exception e) {
@@ -391,5 +399,23 @@ public class DetailLocationWithMerchantActivity extends AppCompatActivity implem
         }
 
         dots[0].setImageDrawable(getResources().getDrawable(R.drawable.selecteditem_dot));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(Constants.TAG_CHAT, getLocalClassName() + " => ON PAUSE");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(Constants.TAG_CHAT, getLocalClassName() + " => ON RESUME");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d(Constants.TAG_CHAT, getLocalClassName() + " => ON STOP");
     }
 }

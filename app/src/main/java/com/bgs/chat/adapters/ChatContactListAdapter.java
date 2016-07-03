@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bgs.dheket.R;
-import com.bgs.chat.model.ChatContact;
+import com.bgs.domain.chat.model.ChatContact;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

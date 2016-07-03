@@ -8,15 +8,16 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bgs.common.NativeUtilities;
-import com.bgs.dheket.R;
-import com.bgs.chat.model.ChatMessage;
-import com.bgs.chat.model.MessageStatus;
-import com.bgs.chat.model.MessageType;
 import com.bgs.chat.widgets.Emoji;
+import com.bgs.common.Utility;
+import com.bgs.dheket.R;
+import com.bgs.domain.chat.model.ChatMessage;
+import com.bgs.domain.chat.model.MessageSendStatus;
+import com.bgs.domain.chat.model.MessageType;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by madhur on 17/01/15.
@@ -70,20 +71,19 @@ public class ChatListAdapter extends BaseAdapter {
 
             }
 
-            sendHolder.messageTextView.setText(Emoji.replaceEmoji(message.getMessageText(), sendHolder.messageTextView.getPaint().getFontMetricsInt(), NativeUtilities.dp(16) ));
+            sendHolder.messageTextView.setText(Emoji.replaceEmoji(message.getMessageText(), sendHolder.messageTextView.getPaint().getFontMetricsInt(), Utility.dp(16) ));
             //holder2.messageTextView.setText(message.getMessageText());
-            sendHolder.timeTextView.setText(SIMPLE_DATE_FORMAT.format(message.getMessageTime()));
+            sendHolder.timeTextView.setText(SIMPLE_DATE_FORMAT.format(new Date(message.getCreateTime())));
 
-            if (message.getMessageStatus() == MessageStatus.DELIVERED) {
+            if (message.getMessageSendStatus() == MessageSendStatus.DELIVERED) {
                 sendHolder.messageStatus.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_double_tick));
-            } else if (message.getMessageStatus() == MessageStatus.SENT) {
+            } else if (message.getMessageSendStatus() == MessageSendStatus.NEW) {
                 sendHolder.messageStatus.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_single_tick));
             }
 
         } else if (message.getMessageType() == MessageType.IN) {
-            boolean grupMessage = (message.getSenderName() == null || "".equalsIgnoreCase(message.getSenderName())) ? false : true;
+            boolean grupMessage = false;//(message.getContactId() > 0 ) ? false : true;
             if (convertView == null) {
-
                 if ( grupMessage)
                     v = LayoutInflater.from(context).inflate(R.layout.chat_user_reply_withsender_item, null, false);
                 else
@@ -103,11 +103,11 @@ public class ChatListAdapter extends BaseAdapter {
                 replyHolder = (ViewHolderReply) v.getTag();
 
             }
-            if ( grupMessage)
-                replyHolder.senderTextView.setText(message.getSenderName());
+            //if ( grupMessage)
+            //    replyHolder.senderTextView.setText(message.getSenderName());
 
-            replyHolder.messageTextView.setText(Emoji.replaceEmoji(message.getMessageText(), replyHolder.messageTextView.getPaint().getFontMetricsInt(), NativeUtilities.dp(16)));
-            replyHolder.timeTextView.setText(SIMPLE_DATE_FORMAT.format(message.getMessageTime()));
+            replyHolder.messageTextView.setText(Emoji.replaceEmoji(message.getMessageText(), replyHolder.messageTextView.getPaint().getFontMetricsInt(), Utility.dp(16)));
+            replyHolder.timeTextView.setText(SIMPLE_DATE_FORMAT.format(new Date(message.getCreateTime())));
 
         }
 

@@ -248,12 +248,6 @@ public class MapViewWithListActivity extends AppCompatActivity {
 
                     // After zooming, turn on the Location pan mode to show the location
                     // symbol. This will disable as soon as you interact with the map.
-                    /*
-                    if (!isFirst) {
-                        category.setLatitude(currentBestLocation.getLatitude());
-                        category.setLongitude( currentBestLocation.getLongitude());
-                    }
-                    */
                     if ( !isFirst && locationChanged ) {
                         getDataFromServer();
                         mLDM.setAutoPanMode(LocationDisplayManager.AutoPanMode.LOCATION);
