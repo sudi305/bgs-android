@@ -65,6 +65,8 @@ import com.bgs.common.DialogUtils;
 import com.bgs.common.ExtraParamConstants;
 import com.bgs.common.GpsUtils;
 import com.bgs.common.Utility;
+import com.bgs.domain.chat.repository.IMessageRepository;
+import com.bgs.domain.chat.repository.MessageRepository;
 import com.bgs.imageOrView.MySeekBar;
 import com.bgs.imageOrView.ProfilePictureView_viaFB;
 import com.bgs.model.Category;
@@ -154,8 +156,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     RelativeLayout.LayoutParams p;
 
     //CHATS
-
     private ChatClientService chatClientService;
+    private IMessageRepository messageRepository;
 
     //add by supri
     private Location currentBestLocation = null;
@@ -167,9 +169,10 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(Constants.TAG, "ON CREATE");
         setContentView(R.layout.activity_main_menu);
 
-        Log.d(Constants.TAG, "ON CREATE");
+        messageRepository = new MessageRepository(getApplicationContext());
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -349,9 +352,9 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         Log.d(Constants.TAG_CHAT,"chatClientService = " + chatClientService);
         attemptLogin();
         //update new message counter drawer menu
-        updateNewMessageCounter();
+        int newMessageCount = (int)messageRepository.getNewMessageCount();
+        updateNewMessageCounter(newMessageCount);
     }
-
 
     public void preProcessingGetData() {
         actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius ... </font>"));
@@ -1125,21 +1128,19 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     /**
      * update new message counter inline chat menu
      */
-    private void updateNewMessageCounter() {
+    private void updateNewMessageCounter(int newMessageCount) {
         //update chat meenu item
         Menu menuNav = navigationView.getMenu();
         MenuItem element = menuNav.findItem(R.id.nav_chat);
         String before = element.getTitle().toString();
 
-        String counter = Integer.toString(99);
+        String counter = Integer.toString(newMessageCount);
         String s = before + " " + counter;
         SpannableString sColored = new SpannableString(s);
 
         int textSize = getResources().getDimensionPixelSize(R.dimen.chat_counter);
         int start = s.length() - (counter.length());
-        sColored.setSpan(new CircleBackgroundSpan(Color.RED, Color.DKGRAY, Color.WHITE, textSize, 2, 8), start, s.length(), 0);
-        //sColored.setSpan(new BackgroundColorSpan( Color.GRAY ), s.length()-3, s.length(), 0);
-        //sColored.setSpan(new ForegroundColorSpan( Color.WHITE ), s.length()-3, s.length(), 0);
+        sColored.setSpan(new CircleBackgroundSpan(Color.RED, Color.DKGRAY, Color.WHITE, textSize, 2, 20), start, s.length(), 0);
         element.setTitle(sColored);
     }
 
@@ -1182,7 +1183,6 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                     from = joData.getJSONObject("from");
                     message = joData.getString("message");
 
-                    //String id = from.getString("id");
                     String name = from.getString("name");
                     String email = from.getString("email");
                     String phone = from.getString("phone");

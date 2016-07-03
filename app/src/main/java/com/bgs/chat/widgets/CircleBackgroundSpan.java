@@ -63,9 +63,10 @@ public class CircleBackgroundSpan extends ReplacementSpan
 
         //make even
         width += mPadding;
-        width -= width % 2;
+        width -= (width % 2);
         bottom = (int)width; //bottom==width -> fully circle
-        x -= x % 2;
+        //x -= mPadding;
+        x -= (x % 2);
 
         textPaint.setTextAlign(Paint.Align.CENTER);
         float textHeight = textPaint.descent() - textPaint.ascent();
