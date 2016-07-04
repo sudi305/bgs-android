@@ -10,9 +10,12 @@ import android.widget.TextView;
 
 import com.bgs.chat.viewmodel.ChatHistory;
 import com.bgs.dheket.R;
+import com.bgs.domain.chat.model.ChatMessage;
+import com.bgs.domain.chat.model.MessageType;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by madhur on 17/01/15.
@@ -66,15 +69,20 @@ public class ChatContactHistoryListAdapter extends BaseAdapter {
             holder = (ViewHolder) v.getTag();
         }
 
+        holder.timeTextView.setText("");
         if ( contact != null ) {
             //holder1.picture.setBackground();
             holder.nameTextView.setText(contact.getContact().getName());
             holder.messageTextView.setText("");
-            if ( contact.getLastChatMessage() != null ) {
-                String msg = contact.getLastChatMessage().getMessageText();
-                if ( msg.length() > 40 ) msg = msg.substring(0, 40) + "...";
-                holder.messageTextView.setText( msg);
+            ChatMessage msg = contact.getLastChatMessage();
+            if (  msg != null ) {
+                String msgText = contact.getLastChatMessage().getMessageText();
+                if ( msgText.length() > 40 ) msgText = msgText.substring(0, 40) + "...";
+                holder.messageTextView.setText( msgText);
+                long time = msg.getMessageType() == MessageType.IN ? msg.getReceiveTime() : msg.getSendTime();
+                holder.timeTextView.setText(SIMPLE_DATE_FORMAT.format(new Date(time)));
             }
+
             if ( contact.getNewMessageCount() > 0 ) {
                 holder.msgCountTextView.setVisibility(TextView.VISIBLE);
                 holder.msgCountTextView.setText(String.valueOf(contact.getNewMessageCount()));

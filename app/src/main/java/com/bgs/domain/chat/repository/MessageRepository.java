@@ -6,6 +6,8 @@ import android.util.Log;
 import com.bgs.common.Constants;
 import com.bgs.domain.chat.model.ChatMessage;
 import com.bgs.domain.chat.model.MessageReadStatus;
+import com.bgs.domain.chat.model.MessageSendStatus;
+import com.bgs.domain.chat.model.MessageType;
 import com.j256.ormlite.stmt.QueryBuilder;
 
 import java.sql.SQLException;
@@ -138,4 +140,38 @@ public class MessageRepository extends BaseRepository<ChatMessage> implements  I
             Log.e(Constants.TAG_CHAT, e.getMessage(), e);
         }
     }
+
+    @Override
+    public void updateReadStatus(List<ChatMessage> messages, MessageReadStatus status) {
+        for(ChatMessage msg : messages) {
+            updateReadStatus(msg, status);
+        }
+    }
+
+    @Override
+    public void updateReadStatus(ChatMessage message, MessageReadStatus status) {
+        //update hanya status yg belum sama dengan param
+        if ( message.getMessageType() == MessageType.IN && message.getMessageReadStatus() != status) {
+            message.setMessageReadStatus(status);
+            createOrUpdate(message);
+        }
+    }
+
+    @Override
+    public void updateSendStatus(List<ChatMessage> messages, MessageSendStatus status) {
+        for(ChatMessage msg : messages) {
+            updateSendStatus(msg, status);
+        }
+    }
+
+    @Override
+    public void updateSendStatus(ChatMessage message, MessageSendStatus status) {
+        //update hanya status yg belum sama dengan param
+        if ( message.getMessageType() == MessageType.OUT && message.getMessageSendStatus() != status) {
+            message.setMessageSendStatus(status);
+            createOrUpdate(message);
+        }
+    }
+
+
 }

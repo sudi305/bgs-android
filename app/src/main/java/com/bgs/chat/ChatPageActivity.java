@@ -39,6 +39,7 @@ import com.bgs.dheket.R;
 import com.bgs.domain.chat.model.ChatContact;
 import com.bgs.domain.chat.model.ChatMessage;
 import com.bgs.domain.chat.model.ContactType;
+import com.bgs.domain.chat.model.MessageReadStatus;
 import com.bgs.domain.chat.model.MessageType;
 import com.bgs.domain.chat.repository.ContactRepository;
 import com.bgs.domain.chat.repository.IContactRepository;
@@ -208,23 +209,18 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
         chatListView.requestFocus();
 
         chatClientService = App.getChatClientService();
-        //chatClientService.registerReceivers(makeReceivers());
-        //socket.on("new message", onNewMessage);
-        //socket.on("user joined", onUserJoined);
-        //socket.on("user left", onUserLeft);
-        //socket.on("typing", onTyping);
-        //socket.on("stop typing", onStopTyping);
+
         Log.d(Constants.TAG_CHAT, "ID => " + chatContact.getId());
 
-        List<ChatMessage> messages;/*messageRepository.getListMessageByContact(chatContact.getId());
+        List<ChatMessage> messages ;/*messageRepository.getListMessageByContact(chatContact.getId());
         for(ChatMessage msg : messages) {
             Log.d(Constants.TAG_CHAT, String.format("MSG => %s, TIME => %s  ", msg.getMessageText(), new Date(msg.getCreateTime())));
         }
         */
         messages = messageRepository.getListMessageByContactAndDate(chatContact.getId(), new Date(System.currentTimeMillis()));
-        for(ChatMessage msg : messages) {
-            Log.d(Constants.TAG_CHAT, String.format("MSG => %s, READ-STATUS => %s, TYPE=%s  ", msg.getMessageText(), msg.getMessageReadStatus(), msg.getMessageType()));
-        }
+        //for(ChatMessage msg : messages) {
+            //Log.d(Constants.TAG_CHAT, String.format("MSG => %s, READ-STATUS => %s, TYPE=%s  ", msg.getMessageText(), msg.getMessageReadStatus(), msg.getMessageType()));
+        //}
         addMessage(messages);
 
     }
@@ -241,8 +237,6 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
         //if (null == userContact.getName()) return;
         if (!chatClientService.isConnected()) return;
 
-        //mTyping = false;
-
         String message = chatEditText1.getText().toString().trim();
         if (TextUtils.isEmpty(message)) {
             chatEditText1.requestFocus();
@@ -252,10 +246,9 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
         chatEditText1.setText("");
         ChatMessage msg = ChatHelper.createMessage(chatContact.getId(), message, MessageType.OUT);
         addMessage(msg);
-        //save
-        messageRepository.createOrUpdate(msg);
+
         Log.d(getResources().getString(R.string.app_name), "before send = " + message);
-        JSONObject obj = new JSONObject();
+        JSONObject joMessage = new JSONObject();
         JSONObject user = new JSONObject();
         try {
             String name = Utility.getDeviceUniqueID(getContentResolver());
@@ -265,30 +258,36 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
             user.put("email", userApp.getEmail());
             user.put("phone", userApp.getPhone());
 
-            obj.put("from", user);
-            obj.put("to", chatContact.getEmail());
-            obj.put("msg", message);
+            joMessage.put("from", user);
+            joMessage.put("to", chatContact.getEmail());
+            joMessage.put("msg", message);
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e(Constants.TAG_CHAT, e.getMessage(), e);
         }
         //message = String.format("{to:'%s',msg:'%s'}",userContact.getName(), message);
         // perform the sending message attempt.
-        chatClientService.emit(ChatClientService.SocketEmit.NEW_MESSAGE, obj);
+        chatClientService.emit(ChatClientService.SocketEmit.NEW_MESSAGE, joMessage);
 
     }
 
+    //call on create / resume : list source from db
     private void addMessage(List<ChatMessage> messages) {
+        messageRepository.updateReadStatus(messages, MessageReadStatus.READ);
         chatMessages.addAll(messages);
-
         if(listAdapter!=null) {
             listAdapter.notifyDataSetChanged();
             scrollToBottom();
         }
     }
 
+    //call when user send message or receive new message
     private void addMessage(ChatMessage message) {
+        if ( message.getMessageType() == MessageType.IN) {
+            message.setMessageReadStatus(MessageReadStatus.READ);
+            message.setReceiveTime(System.currentTimeMillis());
+        }
+        messageRepository.createOrUpdate(message);
         chatMessages.add(message);
-
         if(listAdapter!=null) {
             listAdapter.notifyDataSetChanged();
             scrollToBottom();
@@ -696,7 +695,6 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
 
 
     private void scrollToBottom() {
-        //chatListView.scrollToPosition(listAdapter.getItemCount() - 1);
         chatListView.smoothScrollToPosition(listAdapter.getCount() - 1);
     }
 

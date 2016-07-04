@@ -18,11 +18,12 @@ public class ChatHelper {
         if ( contactId > 0 )
             message.setContactId(contactId);
 
-        if ( messageType == MessageType.OUT)
+        if ( messageType == MessageType.OUT) {
             message.setMessageSendStatus(MessageSendStatus.NEW);
-        else if ( messageType == MessageType.IN)
+            message.setSendTime(System.currentTimeMillis());
+        } else if ( messageType == MessageType.IN) {
             message.setMessageReadStatus(MessageReadStatus.NEW);
-
+        }
         message.setMessageText(messageText);
         message.setMessageType(messageType);
         message.setCreateTime(System.currentTimeMillis());

@@ -1,6 +1,8 @@
 package com.bgs.domain.chat.repository;
 
 import com.bgs.domain.chat.model.ChatMessage;
+import com.bgs.domain.chat.model.MessageReadStatus;
+import com.bgs.domain.chat.model.MessageSendStatus;
 
 import java.util.Date;
 import java.util.List;
@@ -17,4 +19,9 @@ public interface IMessageRepository {
     long getNewMessageCount();
     long getNewMessageCountByContact(int contactId);
     void createOrUpdate(ChatMessage message);
+    void updateReadStatus(List<ChatMessage> messages, MessageReadStatus status);
+    void updateReadStatus(ChatMessage message, MessageReadStatus status);
+
+    void updateSendStatus(List<ChatMessage> messages, MessageSendStatus status);
+    void updateSendStatus(ChatMessage message, MessageSendStatus status);
 }
