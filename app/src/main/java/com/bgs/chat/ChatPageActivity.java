@@ -90,19 +90,18 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
     }
 
     private Lokasi lokasi;
-    private Location currentBestLocation;
 
     private static final String ACTION_CHAT_FROM_CONTACT = "com.bgs.chat.action.CHAT_FROM_CONTACT";
     private static final String ACTION_CHAT_FROM_HISTORY = "com.bgs.chat.action.CHAT_FROM_HISTORY";
     private static final String ACTION_CHAT_FROM_LOCATION = "com.bgs.chat.action.FROM_LOCATION";
 
     public static void startChatFromContact(Context context, ChatContact contact) {
-        startChatActivity(context, ACTION_CHAT_FROM_CONTACT, contact, null, null);
+        startChatActivity(context, ACTION_CHAT_FROM_CONTACT, contact, null);
         Log.d(Constants.TAG_CHAT, "START CHAT FROM CONTACT");
     }
 
     public static void startChatFromHistory(Context context, ChatContact contact) {
-        startChatActivity(context, ACTION_CHAT_FROM_HISTORY, contact, null, null);
+        startChatActivity(context, ACTION_CHAT_FROM_HISTORY, contact, null);
         Log.d(Constants.TAG_CHAT, "START CHAT FROM HISTORY");
     }
 
@@ -111,22 +110,19 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
      * @param context
      * @param contact chat contact
      * @param lokasiDetail lokasi data
-     * @param location lokasi gps
      */
-    public static void startChatFromLocation(Context context, ChatContact contact, Lokasi lokasiDetail, Location location) {
-        startChatActivity(context, ACTION_CHAT_FROM_LOCATION, contact, lokasiDetail, location);
+    public static void startChatFromLocation(Context context, ChatContact contact, Lokasi lokasiDetail) {
+        startChatActivity(context, ACTION_CHAT_FROM_LOCATION, contact, lokasiDetail);
         Log.d(Constants.TAG_CHAT, "START CHAT FROM LOCATION");
     }
 
-    private static void startChatActivity(Context context, String action, ChatContact contact, Lokasi lokasiDetail, Location location) {
+    private static void startChatActivity(Context context, String action, ChatContact contact, Lokasi lokasiDetail) {
         Intent intent = new Intent(context, ChatPageActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setAction(action);
         intent.putExtra(ExtraParamConstants.CHAT_CONTACT, contact);
         if ( lokasiDetail != null )
             intent.putExtra(ExtraParamConstants.LOKASI_DETAIL, lokasiDetail);
-        if ( location != null )
-            intent.putExtra(ExtraParamConstants.CURRENT_BEST_LOCATION, location);
 
         context.startActivity(intent);
     }
@@ -141,7 +137,6 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
         chatContact =  (ChatContact)getIntent().getParcelableExtra(ExtraParamConstants.CHAT_CONTACT);
         if (getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_LOCATION)) {
             lokasi = (Lokasi) getIntent().getParcelableExtra(ExtraParamConstants.LOKASI_DETAIL);
-            currentBestLocation = (Location) getIntent().getParcelableExtra(ExtraParamConstants.CURRENT_BEST_LOCATION);
         }
 
         contactRepository = new ContactRepository(getApplicationContext());
@@ -173,7 +168,6 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
                 if (getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_LOCATION)) {
                     intent = new Intent(getActivity(), DetailLocationWithMerchantActivity.class);
                     intent.putExtra(ExtraParamConstants.LOKASI_DETAIL, lokasi);
-                    intent.putExtra(ExtraParamConstants.CURRENT_BEST_LOCATION, currentBestLocation);
 
                 } else if ( getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_CONTACT)
                         || getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_HISTORY)) {

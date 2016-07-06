@@ -3,7 +3,6 @@ package com.bgs.dheket;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -47,7 +46,6 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
 
     //store location detail sent via intent
     private Lokasi lokasi;
-    private Location currentBestLocation;
     //double radius, latitude, longitude;
     //int cat_id, id_loc;
     //String email, kategori, icon;
@@ -88,7 +86,6 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
 //        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
 
         lokasi = getIntent().getParcelableExtra(ExtraParamConstants.LOKASI_DETAIL);
-        currentBestLocation = getIntent().getParcelableExtra(ExtraParamConstants.CURRENT_BEST_LOCATION);
 
         if (" ".equalsIgnoreCase(lokasi.getCategory().getName())){
             //icon_cat = lokasi.getCategory().getIcon();
@@ -145,7 +142,7 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
     }
 
     public void toMapScreen(){
-        MapViewSingleActivity.startFromLocationNoMerchant(getApplicationContext(), lokasi, currentBestLocation);
+        MapViewSingleActivity.startFromLocationNoMerchant(getApplicationContext(), lokasi);
         /*
         //paket.putInt("location_id", Integer.parseInt(arraylist.get(0).get("loc_id")));
         */
@@ -167,19 +164,14 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
         }
 
         intent.putExtra(ExtraParamConstants.CATEGORY, category);
-        intent.putExtra(ExtraParamConstants.CURRENT_BEST_LOCATION, currentBestLocation);
         startActivity(intent);
         finish();
     }
 
     public void getDetailLocation() {
+        if ( lokasi == null ) return;
         CallWebPageTask task = new CallWebPageTask(this);
-        double latitude =0, longitude = 0;
-        if ( currentBestLocation != null) {
-            latitude = currentBestLocation.getLatitude();
-            longitude = currentBestLocation.getLongitude();
-        }
-        String urls = url + "/" + latitude + "/" + longitude + "/" + lokasi.getId();
+        String urls = url + "/" + lokasi.getLatitude() + "/" + lokasi.getLongitude() + "/" + lokasi.getId();
         Log.d(Constants.TAG, "Get Detail Lokasi url => " + urls);
         task.execute(new String[]{urls});
     }

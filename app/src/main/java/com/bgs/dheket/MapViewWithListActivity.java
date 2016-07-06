@@ -128,7 +128,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
 
         //get category from bundle
         category = (Category) getIntent().getParcelableExtra(ExtraParamConstants.CATEGORY);
-        currentBestLocation = (Location) getIntent().getParcelableExtra(ExtraParamConstants.CURRENT_BEST_LOCATION);
+        currentBestLocation = GpsUtils.DEMO_LOCATION;
 
         actionBar.setTitle(category.getName());
 //        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
@@ -186,7 +186,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
         @Override
         public void onSingleTap(float x, float y) {
             // Find out if we tapped on a Graphic
-            MapViewExtendActivity.startFromMapWithList(getApplicationContext(), category, currentBestLocation);
+            MapViewExtendActivity.startFromMapWithList(getApplicationContext(), category);
             //stop location manager
             //onStop();
             //hack mode
@@ -479,7 +479,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
                             lokasi.setMerchant(merchantMap.get(merchId));
                             locationList.add(lokasi);
 
-                            Location locationPin = Constants.DEMO_LOCATION;
+                            Location locationPin = GpsUtils.DEMO_LOCATION;
                             locationPin.setLatitude(lokasi.getLatitude());
                             locationPin.setLongitude(lokasi.getLongitude());
                             Point point = MapUtils.getAsPoint(mMapSr, locationPin);
@@ -555,7 +555,6 @@ public class MapViewWithListActivity extends AppCompatActivity {
                         }
                         if ( goToScreen != null ) {
                             goToScreen.putExtra(ExtraParamConstants.LOKASI_DETAIL, _lokasi);
-                            goToScreen.putExtra(ExtraParamConstants.CURRENT_BEST_LOCATION, currentBestLocation);
                             startActivity(goToScreen);
                             finish();
                         }

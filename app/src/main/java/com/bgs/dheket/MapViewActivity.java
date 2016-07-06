@@ -36,13 +36,9 @@ import com.esri.android.map.LocationDisplayManager;
 import com.esri.android.map.MapView;
 import com.esri.android.map.event.OnSingleTapListener;
 import com.esri.android.map.event.OnStatusChangedListener;
-import com.esri.core.geometry.Envelope;
-import com.esri.core.geometry.GeometryEngine;
-import com.esri.core.geometry.LinearUnit;
 import com.esri.core.geometry.MultiPoint;
 import com.esri.core.geometry.Point;
 import com.esri.core.geometry.SpatialReference;
-import com.esri.core.geometry.Unit;
 import com.esri.core.map.Graphic;
 import com.esri.core.symbol.PictureMarkerSymbol;
 import com.esri.core.symbol.Symbol;
@@ -112,19 +108,16 @@ public class MapViewActivity extends AppCompatActivity {
 
     private static final String ACTION_CALL_FROM_MAINMENU = "com.bgs.dheket.map.action.CALL_FROM_MAINMENU";
 
-    public static void startFromMainMenu(Context context, Category[] categories, Location location) {
-        startMapActivity(context, ACTION_CALL_FROM_MAINMENU, categories, location);
+    public static void startFromMainMenu(Context context, Category[] categories) {
+        startMapActivity(context, ACTION_CALL_FROM_MAINMENU, categories);
     }
 
-    private static void startMapActivity(Context context, String action, Category[] categories, Location location) {
+    private static void startMapActivity(Context context, String action, Category[] categories) {
         Intent intent = new Intent(context, MapViewActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setAction(action);
         if ( categories != null )
             intent.putExtra(ExtraParamConstants.CATEGORIES, categories);
-
-        if ( location != null )
-            intent.putExtra(ExtraParamConstants.CURRENT_BEST_LOCATION, location);
 
         context.startActivity(intent);
     }
@@ -152,7 +145,7 @@ public class MapViewActivity extends AppCompatActivity {
         Parcelable[] parcelables = getIntent().getParcelableArrayExtra(ExtraParamConstants.CATEGORIES);
         categories = new Category[parcelables.length];
         System.arraycopy(parcelables, 0, categories, 0, parcelables.length);
-        currentBestLocation = (Location) getIntent().getParcelableExtra(ExtraParamConstants.CURRENT_BEST_LOCATION);
+        currentBestLocation = GpsUtils.DEMO_LOCATION;
 
         madd = new PictureMarkerSymbol[categories.length];
         PictureMarkerSymbol a = null;
@@ -181,9 +174,6 @@ public class MapViewActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent goToScreen = new Intent(getApplicationContext(), DetailLocationWithNoMerchantActivity.class);
-                //goToScreen.putExtra("lokasi", lokasi);
-                goToScreen.putExtra(ExtraParamConstants.CURRENT_BEST_LOCATION, currentBestLocation);
-
                 startActivity(goToScreen);
                 finish();
             }
@@ -552,7 +542,7 @@ public class MapViewActivity extends AppCompatActivity {
                 //skip null icon
                 if ( "null".equalsIgnoreCase(data.get("loc_icon"))) continue;
 
-                Location locationPin = Constants.DEMO_LOCATION;
+                Location locationPin = GpsUtils.DEMO_LOCATION;
 
                 locationPin.setLatitude(Double.parseDouble(data.get("loc_lat")));
                 locationPin.setLongitude(Double.parseDouble(data.get("loc_lng")));

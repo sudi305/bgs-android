@@ -15,6 +15,11 @@ import java.util.concurrent.TimeUnit;
  * Created by zhufre on 6/20/2016.
  */
 public class GpsUtils {
+    public static final Location DEMO_LOCATION = new Location(LocationManager.GPS_PROVIDER){{
+        setLatitude(-6.212601);//-6.212601
+        setLongitude(106.617825);//106.617825
+    }};
+
     static final long TWO_MINUTES = TimeUnit.MINUTES.toSeconds(2);
 
     //GPS METHOD

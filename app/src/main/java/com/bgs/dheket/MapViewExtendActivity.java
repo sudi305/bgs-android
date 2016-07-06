@@ -102,19 +102,16 @@ public class MapViewExtendActivity extends AppCompatActivity {
     private Location currentBestLocation;
     private static final String ACTION_CALL_FROM_LOC_MAPWITHLIST = "com.bgs.dheket.map.action.CALL_FROM_MAPWITHLIST";
 
-    public static void startFromMapWithList(Context context, Category category, Location location) {
-        startMapActivity(context, ACTION_CALL_FROM_LOC_MAPWITHLIST, category, location);
+    public static void startFromMapWithList(Context context, Category category) {
+        startMapActivity(context, ACTION_CALL_FROM_LOC_MAPWITHLIST, category);
     }
 
-    private static void startMapActivity(Context context, String action, Category category, Location location) {
+    private static void startMapActivity(Context context, String action, Category category) {
         Intent intent = new Intent(context, MapViewExtendActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setAction(action);
         if ( category != null )
             intent.putExtra(ExtraParamConstants.CATEGORY, category);
-
-        if ( location != null )
-            intent.putExtra(ExtraParamConstants.CURRENT_BEST_LOCATION, location);
 
         context.startActivity(intent);
     }
@@ -139,7 +136,7 @@ public class MapViewExtendActivity extends AppCompatActivity {
         //mMapView.setOnLongPressListener(mapLongPress);
 
         category = (Category) getIntent().getParcelableExtra(ExtraParamConstants.CATEGORY);
-        currentBestLocation = (Location) getIntent().getParcelableExtra(ExtraParamConstants.CURRENT_BEST_LOCATION);
+        currentBestLocation = GpsUtils.DEMO_LOCATION;
 
 
         urls = String.format(getResources().getString(R.string.link_getLocationAndMerchByCategory));//"http://dheket.esy.es/getLocationByCategory.php"
@@ -419,7 +416,6 @@ public class MapViewExtendActivity extends AppCompatActivity {
         Log.d(Constants.TAG, "BACK TO => MapViewWithListActivity FROM => MapViewExtendActivity");
         Intent toListMap = new Intent(this, MapViewWithListActivity.class);
         toListMap.putExtra(ExtraParamConstants.CATEGORY, category);
-        toListMap.putExtra(ExtraParamConstants.CURRENT_BEST_LOCATION, currentBestLocation);
         /*
         Bundle paket = new Bundle();
         paket.putInt("cat_id", cat_id);
@@ -552,7 +548,7 @@ public class MapViewExtendActivity extends AppCompatActivity {
                             lokasi.setDistance(Double.parseDouble(data.getString("distance")));
 
 
-                            Location locationPin = Constants.DEMO_LOCATION;
+                            Location locationPin = GpsUtils.DEMO_LOCATION;
                             locationPin.setLatitude(lokasi.getLatitude());
                             locationPin.setLongitude(lokasi.getLongitude());
                             Point point = getAsPoint(locationPin);

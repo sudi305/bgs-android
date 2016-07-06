@@ -4,7 +4,6 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -265,7 +264,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         getServiceFromGPS();
         if ( currentBestLocation == null ) {
             //hacked for emu
-            currentBestLocation = Constants.DEMO_LOCATION;
+            currentBestLocation = GpsUtils.DEMO_LOCATION;
             Log.d(Constants.TAG, String.format("latitude=%s, longitude=%s", currentBestLocation.getLatitude(), currentBestLocation.getLongitude()));
         }
 
@@ -340,7 +339,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             public void onClick(View v) {
                 if (radius != 0) {
                     removeUpdateLocationManager();
-                    MapViewActivity.startFromMainMenu(MainMenuActivity.this, categories, currentBestLocation);
+                    MapViewActivity.startFromMainMenu(MainMenuActivity.this, categories);
                     finish();
                 }
             }
@@ -513,8 +512,6 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             //goToScreen = new Intent(getApplicationContext(), ListAndMapAllLocActivity.class);
             goToScreen = new Intent(this, MapViewWithListActivity.class);
             final Category category = new Category(catId, icon, kategori, radius);
-
-            goToScreen.putExtra(ExtraParamConstants.CURRENT_BEST_LOCATION, currentBestLocation);
             goToScreen.putExtra(ExtraParamConstants.CATEGORY, category);
 
             removeUpdateLocationManager();

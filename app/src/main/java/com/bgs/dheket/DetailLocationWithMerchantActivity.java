@@ -53,7 +53,6 @@ public class DetailLocationWithMerchantActivity extends AppCompatActivity implem
 
     //store location detail sent via intent
     private Lokasi lokasi;
-    private Location currentBestLocation;
     //double radius, latitude, longitude;
     //int cat_id, id_loc;
     //String email, kategori, icon;
@@ -97,7 +96,6 @@ public class DetailLocationWithMerchantActivity extends AppCompatActivity implem
         //actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
 
         lokasi = getIntent().getParcelableExtra(ExtraParamConstants.LOKASI_DETAIL);
-        currentBestLocation = getIntent().getParcelableExtra(ExtraParamConstants.CURRENT_BEST_LOCATION);
 
         if (" ".equalsIgnoreCase(lokasi.getCategory().getName())){
             //icon_cat = lokasi.getCategory().getIcon();
@@ -127,7 +125,7 @@ public class DetailLocationWithMerchantActivity extends AppCompatActivity implem
                     if ( chatContact == null ) {
                         chatContact = new ChatContact(merchant.getName(), merchant.getFacebookPhoto(), merchant.getEmail(), merchant.getPhone(), ContactType.PRIVATE);
                     }
-                    ChatPageActivity.startChatFromLocation(getActivity(), chatContact, lokasi, currentBestLocation);
+                    ChatPageActivity.startChatFromLocation(getActivity(), chatContact, lokasi);
                     finish();
                 } catch (Exception e) {
                     Log.e(Constants.TAG_CHAT, e.getMessage(), e);
@@ -174,7 +172,7 @@ public class DetailLocationWithMerchantActivity extends AppCompatActivity implem
     }
 
     public void toMapScreen(){
-        MapViewSingleActivity.startFromLocationWithMerchant(this, lokasi, currentBestLocation);
+        MapViewSingleActivity.startFromLocationWithMerchant(this, lokasi);
         /*
         //paket.putInt("location_id", Integer.parseInt(arraylist.get(0).get("loc_id")));
         */
@@ -215,19 +213,14 @@ public class DetailLocationWithMerchantActivity extends AppCompatActivity implem
         */
 
         intent.putExtra(ExtraParamConstants.CATEGORY, category);
-        intent.putExtra(ExtraParamConstants.CURRENT_BEST_LOCATION, currentBestLocation);
         startActivity(intent);
         finish();
     }
 
     public void getDetailLocation() {
+        if ( lokasi == null) return;
         CallWebPageTask task = new CallWebPageTask(this);
-        double latitude =0, longitude = 0;
-        if ( currentBestLocation != null) {
-            latitude = currentBestLocation.getLatitude();
-            longitude = currentBestLocation.getLongitude();
-        }
-        String urls = url + "/" + latitude + "/" + longitude + "/" + lokasi.getId();
+        String urls = url + "/" + lokasi.getLatitude() + "/" + lokasi.getLongitude() + "/" + lokasi.getId();
         Log.d(Constants.TAG, "Get Detail Lokasi url => " + urls);
         task.execute(new String[]{urls});
     }

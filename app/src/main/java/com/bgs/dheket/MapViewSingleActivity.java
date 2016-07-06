@@ -109,22 +109,19 @@ public class MapViewSingleActivity extends AppCompatActivity {
     private static final String ACTION_CALL_FROM_LOC_WITHMERCHANT = "com.bgs.dheket.map.action.CALL_FROM_LOC_WITHMERCHANT";
 
 
-    public static void startFromLocationWithMerchant(Context context, Lokasi lokasiDetail, Location location) {
-        startMapActivity(context, ACTION_CALL_FROM_LOC_WITHMERCHANT, lokasiDetail, location);
+    public static void startFromLocationWithMerchant(Context context, Lokasi lokasiDetail) {
+        startMapActivity(context, ACTION_CALL_FROM_LOC_WITHMERCHANT, lokasiDetail);
     }
-    public static void startFromLocationNoMerchant(Context context, Lokasi lokasiDetail, Location location) {
-        startMapActivity(context, ACTION_CALL_FROM_LOC_NOMERCHANT, lokasiDetail, location);
+    public static void startFromLocationNoMerchant(Context context, Lokasi lokasiDetail) {
+        startMapActivity(context, ACTION_CALL_FROM_LOC_NOMERCHANT, lokasiDetail);
     }
 
-    private static void startMapActivity(Context context, String action, Lokasi lokasiDetail, Location location) {
+    private static void startMapActivity(Context context, String action, Lokasi lokasiDetail) {
         Intent intent = new Intent(context, MapViewSingleActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setAction(action);
         if ( lokasiDetail != null )
             intent.putExtra(ExtraParamConstants.LOKASI_DETAIL, lokasiDetail);
-
-        if ( location != null )
-            intent.putExtra(ExtraParamConstants.CURRENT_BEST_LOCATION, location);
 
         context.startActivity(intent);
     }
@@ -148,7 +145,7 @@ public class MapViewSingleActivity extends AppCompatActivity {
         //mMapView.setOnLongPressListener(mapLongPress);
 
         lokasi = getIntent().getParcelableExtra(ExtraParamConstants.LOKASI_DETAIL);
-        currentBestLocation = getIntent().getParcelableExtra(ExtraParamConstants.CURRENT_BEST_LOCATION);
+        currentBestLocation = GpsUtils.DEMO_LOCATION;
 
         /*
         paket = getIntent().getExtras();
@@ -203,7 +200,6 @@ public class MapViewSingleActivity extends AppCompatActivity {
                     goToScreen = new Intent(MapViewSingleActivity.this, DetailLocationWithMerchantActivity.class);
                 }
                 goToScreen.putExtra(ExtraParamConstants.LOKASI_DETAIL, lokasi);
-                goToScreen.putExtra(ExtraParamConstants.CURRENT_BEST_LOCATION, currentBestLocation);
 
                 startActivity(goToScreen);
                 finish();
@@ -244,8 +240,9 @@ public class MapViewSingleActivity extends AppCompatActivity {
     }
 
     public void getDataFromServer() {
+        if (lokasi == null ) return;
         task = new CallWebPageTask(this);
-        double latitude =0, longitude = 0;
+        double latitude = lokasi.getLatitude(), longitude = lokasi.getLongitude();
         if ( currentBestLocation != null) {
             latitude = currentBestLocation.getLatitude();
             longitude = currentBestLocation.getLongitude();
@@ -445,7 +442,6 @@ public class MapViewSingleActivity extends AppCompatActivity {
             toDetail = new Intent(this, DetailLocationWithMerchantActivity.class);
         }
         toDetail.putExtra(ExtraParamConstants.LOKASI_DETAIL, lokasi);
-        toDetail.putExtra(ExtraParamConstants.CURRENT_BEST_LOCATION, currentBestLocation);
         if ( toDetail != null) {
             startActivity(toDetail);
             finish();
@@ -584,7 +580,7 @@ public class MapViewSingleActivity extends AppCompatActivity {
         if (arraylist != null) {
             clearCurrentResults();
             for (int i = 0; i < arraylist.size() ; i++) {
-                Location locationPin = Constants.DEMO_LOCATION;
+                Location locationPin = GpsUtils.DEMO_LOCATION;
                 locationPin.setLatitude(Double.parseDouble(arraylist.get(i).get("loc_lat").toString()));
                 locationPin.setLongitude(Double.parseDouble(arraylist.get(i).get("loc_lng").toString()));
                 Point point = getAsPoint(locationPin);
