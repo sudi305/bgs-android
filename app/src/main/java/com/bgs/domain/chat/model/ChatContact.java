@@ -34,7 +34,7 @@ public class ChatContact implements Parcelable {
     @DatabaseField(columnName = FIELD_NAME_TYPE, dataType = DataType.ENUM_INTEGER)
     private ContactType contactType;
 
-    @DatabaseField(columnName = FIELD_NAME_ACTIVE, readOnly = true)
+    //transient
     private int active;
 
     public ChatContact() {}

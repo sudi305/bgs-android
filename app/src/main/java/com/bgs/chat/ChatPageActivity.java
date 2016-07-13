@@ -171,7 +171,7 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
 
                 } else if ( getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_CONTACT)
                         || getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_HISTORY)) {
-                    intent = new Intent(getActivity(), MainChatActivity.class);
+                    intent = new Intent(getActivity(), ChatHistoryActivity.class);
                 }
                 if ( intent != null ) {
                     startActivity(intent);
@@ -251,6 +251,7 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
             user.put("name", userApp.getName());
             user.put("email", userApp.getEmail());
             user.put("phone", userApp.getPhone());
+            user.put("picture", userApp.getPicture());
 
             joMessage.put("from", user);
             joMessage.put("to", chatContact.getEmail());
@@ -260,7 +261,7 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
         }
         //message = String.format("{to:'%s',msg:'%s'}",userContact.getName(), message);
         // perform the sending message attempt.
-        chatClientService.emit(ChatClientService.SocketEmit.NEW_MESSAGE, joMessage);
+        chatClientService.emitNewMessage(joMessage);
 
     }
 
@@ -296,7 +297,8 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
                 user.put("name", userApp.getName());
                 user.put("email", userApp.getEmail());
                 user.put("phone", userApp.getPhone());
-                chatClientService.emit(ChatClientService.SocketEmit.DO_LOGIN, user);
+                user.put("picture", userApp.getPicture());
+                chatClientService.emitDoLogin( user);
             } catch (JSONException e) {
                 Log.e(Constants.TAG_CHAT, e.getMessage(), e);
             }
@@ -318,17 +320,14 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
                 public void run() {
                     String data = intent.getStringExtra("data");
                     JSONObject from;
-                    String message;
-                    String email;
-                    String name;
-                    String phone;
+                    String message, email, name, phone, picture;
                     try {
                         JSONObject joData = new JSONObject(data);
                         from = joData.getJSONObject("from");
                         name = from.getString("name");
                         email = from.getString("email");
                         phone = from.getString("phone");
-
+                        picture = from.getString("picture");
                         message = joData.getString("message");
                     } catch (JSONException e) {
                         return;
@@ -337,9 +336,16 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
                     Log.d(Constants.TAG_CHAT, String.format("from=%s\r\nmessage=%s ", from, message));
                     ChatContact contact = contactRepository.getContactByEmail(email);
                     if ( contact == null) {
-                        contact = new ChatContact(name, "", email, phone, ContactType.PRIVATE);
-                        contactRepository.createOrUpdate(contact);
+                        contact = new ChatContact(name, picture, email, phone, ContactType.PRIVATE);
+                    } else {
+                        contact.setName(name);
+                        contact.setPicture(picture);
+                        contact.setPhone(phone);
                     }
+
+
+                    contactRepository.createOrUpdate(contact);
+
                     //removeTyping(username);
                     ChatMessage msg = ChatHelper.createMessage(contact.getId(), message, MessageType.IN);
                     addMessage(msg);

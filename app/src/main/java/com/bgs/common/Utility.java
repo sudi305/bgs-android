@@ -2,6 +2,10 @@ package com.bgs.common;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapShader;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
@@ -11,6 +15,7 @@ import android.view.View;
 import android.view.WindowManager;
 
 import com.bgs.dheket.App;
+import com.squareup.picasso.Transformation;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -122,7 +127,6 @@ public class Utility {
         }
         return true;
     }
-
 
 
 }

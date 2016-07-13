@@ -37,6 +37,7 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Log.d(Constants.TAG, getClass().getCanonicalName() + " => ON CREATE" );
         FacebookSdk.sdkInitialize(getApplicationContext());
         try {
             PackageInfo info = getPackageManager().getPackageInfo(
@@ -74,5 +75,10 @@ public class App extends Application {
     public static ChatClientService getChatClientService() { return mChatClientService; }
 
 
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+        Log.d(Constants.TAG, getClass().getCanonicalName() + " => ON TERMINATE" );
 
+    }
 }

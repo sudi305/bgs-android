@@ -11,7 +11,7 @@ public class Constants {
     public static final String TAG="dheket-log";
     public static final String TAG_CHAT="dheket-log-chat";
     //dheket chat server
-    public static final String CHAT_SERVER_URL = "http://136.243.214.45:3300/";
+    //public static final String CHAT_SERVER_URL = "http://136.243.214.45:3300/";
     //local chat server
-    //public static final String CHAT_SERVER_URL = "http://192.168.1.100:3300/";
+    public static final String CHAT_SERVER_URL = "http://192.168.1.100:3300/";
 }

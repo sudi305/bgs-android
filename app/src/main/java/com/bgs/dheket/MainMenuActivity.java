@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -56,7 +55,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bgs.chat.MainChatActivity;
+import com.bgs.chat.ChatHistoryActivity;
 import com.bgs.chat.services.ChatClientService;
 import com.bgs.chat.widgets.CircleBackgroundSpan;
 import com.bgs.common.Constants;
@@ -66,6 +65,7 @@ import com.bgs.common.GpsUtils;
 import com.bgs.common.Utility;
 import com.bgs.domain.chat.repository.IMessageRepository;
 import com.bgs.domain.chat.repository.MessageRepository;
+import com.bgs.extended.CircleTransform;
 import com.bgs.imageOrView.MySeekBar;
 import com.bgs.imageOrView.ProfilePictureView_viaFB;
 import com.bgs.model.Category;
@@ -78,7 +78,6 @@ import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Transformation;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -168,7 +167,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(Constants.TAG, "ON CREATE");
+        Log.d(Constants.TAG, getLocalClassName() + " => ON RESUME");
         setContentView(R.layout.activity_main_menu);
 
         messageRepository = new MessageRepository(getApplicationContext());
@@ -346,13 +345,11 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         });
 
         //CHAT SOCKET
-        Log.d(Constants.TAG_CHAT,"ON CREATE");
         chatClientService = App.getChatClientService();
         Log.d(Constants.TAG_CHAT,"chatClientService = " + chatClientService);
         attemptLogin();
         //update new message counter drawer menu
-        int newMessageCount = (int)messageRepository.getNewMessageCount();
-        updateNewMessageCounter(newMessageCount);
+        updateNewMessageCounter();
     }
 
     public void preProcessingGetData() {
@@ -556,8 +553,9 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                         email = json.getString("email");
                         txt_nav_name.setText(name);
                         txt_nav_email.setText(email);
+                        String profilePicUrl = "";
                         if (json.has("picture")) {
-                            String profilePicUrl = json.getJSONObject("picture").getJSONObject("data").getString("url");
+                            profilePicUrl = json.getJSONObject("picture").getJSONObject("data").getString("url");
                             // set profile image to imageview using Picasso or Native methods
                             picasso.with(getApplicationContext()).load(profilePicUrl).transform(new CircleTransform()).into(imVi_nav_usrPro);
                         }
@@ -570,7 +568,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                         userApp.setName(name);
                         userApp.setEmail(email);
                         userApp.setId(id);
-                        userApp.setPicture(imageUsr);
+                        userApp.setPicture(profilePicUrl);
 
                         App.updateUserApp(userApp);
                         Log.d(Constants.TAG, "App.getInstance().getUserApp()=" + App.getUserApp());
@@ -747,7 +745,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         } else if (id == R.id.nav_profile) {
 
         } else if (id == R.id.nav_chat) {
-            Intent toChat = new Intent(this, MainChatActivity.class);
+            Intent toChat = new Intent(this, ChatHistoryActivity.class);
             startActivity(toChat);
             finish();
         } else if (id == R.id.nav_setting) {
@@ -1079,40 +1077,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
     }
 
-    public class CircleTransform implements Transformation {
-        @Override
-        public Bitmap transform(Bitmap source) {
-            int size = Math.min(source.getWidth(), source.getHeight());
 
-            int x = (source.getWidth() - size) / 2;
-            int y = (source.getHeight() - size) / 2;
-
-            Bitmap squaredBitmap = Bitmap.createBitmap(source, x, y, size, size);
-            if (squaredBitmap != source) {
-                source.recycle();
-            }
-
-            Bitmap bitmap = Bitmap.createBitmap(size, size, source.getConfig());
-
-            Canvas canvas = new Canvas(bitmap);
-            Paint paint = new Paint();
-            BitmapShader shader = new BitmapShader(squaredBitmap,
-                    BitmapShader.TileMode.CLAMP, BitmapShader.TileMode.CLAMP);
-            paint.setShader(shader);
-            paint.setAntiAlias(true);
-
-            float r = size / 2f;
-            canvas.drawCircle(r, r, r, paint);
-
-            squaredBitmap.recycle();
-            return bitmap;
-        }
-
-        @Override
-        public String key() {
-            return "circle";
-        }
-    }
 
     //BEGIN SOCKET METHOD BLOCK
     public Map<String, BroadcastReceiver> makeReceivers(){
@@ -1122,6 +1087,10 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         return map;
     }
 
+    public void updateNewMessageCounter() {
+        int newMessageCount = (int)messageRepository.getNewMessageCount();
+        updateNewMessageCounter(newMessageCount);
+    }
     /**
      * update new message counter inline chat menu
      */
@@ -1152,7 +1121,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                     user.put("name", userApp.getName());
                     user.put("email", userApp.getEmail());
                     user.put("phone", userApp.getPhone());
-                    chatClientService.emit(ChatClientService.SocketEmit.DO_LOGIN, user);
+                    user.put("picture", userApp.getPicture());
+                    chatClientService.emitDoLogin( user);
                 }
             } catch (JSONException e) {
                 Log.e(Constants.TAG_CHAT, e.getMessage(), e);
@@ -1184,7 +1154,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                     String name = from.getString("name");
                     String email = from.getString("email");
                     String phone = from.getString("phone");
-
+                    String picture = from.getString("picture");
                     //Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT );
                     Log.d(Constants.TAG_CHAT, "message2 = " + message);
                     //update new message count - option menu
@@ -1212,6 +1182,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         Log.d(Constants.TAG, getLocalClassName() + " => ON RESUME");
         chatClientService.registerReceivers(makeReceivers());
         Log.d(Constants.TAG, "locManager = " + App.getInstance().getLocationManager());
+        attemptLogin();
 
     }
 

@@ -230,7 +230,9 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
                         String name = json.getString("name");
                         //String gender = json.getString("gender");
                         String email = json.getString("email");
-                        //String imageUsr = json.getString("picture");
+                        String profilePicUrl = "";
+
+
                         String link = json.getString("link");
 
                         String text = String.format("<b>Name :</b> %s<br><br><b>Email :</b>%s<br><br><b>Profile link :</b>%s ",name,email,link);
@@ -243,12 +245,16 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
                         checkExistingUser(email, latitude, longitude);
                         Log.d(Constants.TAG, "Success => 2a");
 
+                        if (json.has("picture")) {
+                            profilePicUrl = json.getJSONObject("picture").getJSONObject("data").getString("url");
+                        }
                         //add by supri 2016/6/16
                         UserApp userApp = App.getInstance().getUserApp();
                         if ( userApp == null) userApp = new UserApp();
                         userApp.setName(name);
                         userApp.setEmail(email);
                         userApp.setId(id);
+                        userApp.setPicture(profilePicUrl);
 
                         App.getInstance().updateUserApp(userApp);
 

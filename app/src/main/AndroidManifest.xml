@@ -58,6 +58,7 @@
         <activity android:name="com.bgs.dheket.DetailLocationWithNoMerchantActivity"/>
         <activity android:name="com.bgs.dheket.DetailLocationWithMerchantActivity"/>
 
+        <activity android:name="com.bgs.chat.ChatHistoryActivity"/>
         <activity
             android:name="com.bgs.chat.ChatPageActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -66,8 +67,6 @@
         <activity android:name="com.bgs.chat.MainChatActivity"
             android:label="@string/title_activity_main_chat"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
-        <receiver android:name="com.bgs.chat.services.ChatTaskAlarmReceiver" android:process=":remote" android:enabled="true" />
-        <service android:name="com.bgs.chat.services.ChatTaskService" android:enabled="true" android:exported="false" />
 
     </application>
 

@@ -1,7 +1,6 @@
 package com.bgs.chat.fragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -13,7 +12,7 @@ import android.widget.TextView;
 
 import com.bgs.chat.ChatPageActivity;
 import com.bgs.chat.adapters.ChatContactListAdapter;
-import com.bgs.chat.services.ChatTaskService;
+import com.bgs.dheket.App;
 import com.bgs.dheket.R;
 import com.bgs.domain.chat.model.ChatContact;
 import com.bgs.domain.chat.repository.ContactRepository;
@@ -95,7 +94,8 @@ public class ChatContactFragment extends Fragment {
         contactRepository = new ContactRepository(getActivity());
         List<ChatContact> contactList = contactRepository.getListContact();
         if ( contactList.size() == 0) {
-            ChatTaskService.startActionGetContacts(getActivity());
+            App.getChatClientService().emitGetContacts();
+            //ChatTaskService.startActionGetContacts(getActivity());
         } else {
             chatContacts.addAll(contactList);
         }

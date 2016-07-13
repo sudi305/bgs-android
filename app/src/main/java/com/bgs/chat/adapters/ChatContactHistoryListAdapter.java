@@ -1,6 +1,7 @@
 package com.bgs.chat.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,9 +10,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bgs.chat.viewmodel.ChatHistory;
+import com.bgs.common.Constants;
 import com.bgs.dheket.R;
+import com.bgs.domain.chat.model.ChatContact;
 import com.bgs.domain.chat.model.ChatMessage;
 import com.bgs.domain.chat.model.MessageType;
+import com.bgs.extended.CircleTransform;
+import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,6 +30,7 @@ public class ChatContactHistoryListAdapter extends BaseAdapter {
     private ArrayList<ChatHistory> chatContactHistories;
     private Context context;
     public static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("HH:mm");
+    Picasso picasso;
 
     public ChatContactHistoryListAdapter(ArrayList<ChatHistory> chatContactHistories, Context context) {
         this.chatContactHistories = chatContactHistories;
@@ -50,7 +56,7 @@ public class ChatContactHistoryListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View v = null;
-        ChatHistory contact = chatContactHistories.get(position);
+        ChatHistory history = chatContactHistories.get(position);
         ViewHolder holder;
 
         if (convertView == null) {
@@ -70,22 +76,27 @@ public class ChatContactHistoryListAdapter extends BaseAdapter {
         }
 
         holder.timeTextView.setText("");
-        if ( contact != null ) {
-            //holder1.picture.setBackground();
-            holder.nameTextView.setText(contact.getContact().getName());
+        if ( history != null ) {
+            ChatContact contact = history.getContact();
+            if ( contact != null && !"".equalsIgnoreCase(contact.getPicture()) ) {
+                // set profile image to imageview using Picasso or Native methods
+                picasso.with(context).load(contact.getPicture()).transform(new CircleTransform()).into(holder.picture);
+            }
+
+            holder.nameTextView.setText(history.getContact().getName());
             holder.messageTextView.setText("");
-            ChatMessage msg = contact.getLastChatMessage();
+            ChatMessage msg = history.getLastChatMessage();
             if (  msg != null ) {
-                String msgText = contact.getLastChatMessage().getMessageText();
+                String msgText = history.getLastChatMessage().getMessageText();
                 if ( msgText.length() > 40 ) msgText = msgText.substring(0, 40) + "...";
                 holder.messageTextView.setText( msgText);
                 long time = msg.getMessageType() == MessageType.IN ? msg.getReceiveTime() : msg.getSendTime();
                 holder.timeTextView.setText(SIMPLE_DATE_FORMAT.format(new Date(time)));
             }
 
-            if ( contact.getNewMessageCount() > 0 ) {
+            if ( history.getNewMessageCount() > 0 ) {
                 holder.msgCountTextView.setVisibility(TextView.VISIBLE);
-                holder.msgCountTextView.setText(String.valueOf(contact.getNewMessageCount()));
+                holder.msgCountTextView.setText(String.valueOf(history.getNewMessageCount()));
             }
 
         }
