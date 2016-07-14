@@ -164,19 +164,7 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
         goBackButton.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = null;
-                if (getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_LOCATION)) {
-                    intent = new Intent(getActivity(), DetailLocationWithMerchantActivity.class);
-                    intent.putExtra(ExtraParamConstants.LOKASI_DETAIL, lokasi);
-
-                } else if ( getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_CONTACT)
-                        || getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_HISTORY)) {
-                    intent = new Intent(getActivity(), ChatHistoryActivity.class);
-                }
-                if ( intent != null ) {
-                    startActivity(intent);
-                    finish();
-                }
+                goBackActivity();
             }
         });
 
@@ -218,6 +206,27 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
         //}
         addMessage(messages);
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        goBackActivity();
+    }
+
+    private void goBackActivity() {
+        Intent intent = null;
+        if (getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_LOCATION)) {
+            intent = new Intent(getActivity(), DetailLocationWithMerchantActivity.class);
+            intent.putExtra(ExtraParamConstants.LOKASI_DETAIL, lokasi);
+
+        } else if ( getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_CONTACT)
+                || getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_HISTORY)) {
+            intent = new Intent(getActivity(), ChatHistoryActivity.class);
+        }
+        if ( intent != null ) {
+            startActivity(intent);
+            finish();
+        }
     }
 
     public Map<String, BroadcastReceiver> makeReceivers(){

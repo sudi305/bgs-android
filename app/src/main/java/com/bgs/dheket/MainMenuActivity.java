@@ -63,6 +63,10 @@ import com.bgs.common.DialogUtils;
 import com.bgs.common.ExtraParamConstants;
 import com.bgs.common.GpsUtils;
 import com.bgs.common.Utility;
+import com.bgs.domain.chat.model.ChatContact;
+import com.bgs.domain.chat.model.ContactType;
+import com.bgs.domain.chat.repository.ContactRepository;
+import com.bgs.domain.chat.repository.IContactRepository;
 import com.bgs.domain.chat.repository.IMessageRepository;
 import com.bgs.domain.chat.repository.MessageRepository;
 import com.bgs.extended.CircleTransform;
@@ -93,6 +97,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -156,6 +161,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     //CHATS
     private ChatClientService chatClientService;
     private IMessageRepository messageRepository;
+    private IContactRepository contactRepository;
 
     //add by supri
     private Location currentBestLocation = null;
@@ -167,9 +173,10 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(Constants.TAG, getLocalClassName() + " => ON RESUME");
+        Log.d(Constants.TAG, getLocalClassName() + " => ON CREATE");
         setContentView(R.layout.activity_main_menu);
 
+        contactRepository = new ContactRepository(getApplicationContext());
         messageRepository = new MessageRepository(getApplicationContext());
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -1083,6 +1090,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     public Map<String, BroadcastReceiver> makeReceivers(){
         Map<String, BroadcastReceiver> map = new HashMap<String, BroadcastReceiver>();
         map.put(ChatClientService.SocketEvent.CONNECT, connectReceiver);
+        map.put(ChatClientService.SocketEvent.LIST_CONTACT, listContactReceiver);
         map.put(ChatClientService.SocketEvent.NEW_MESSAGE, newMessageReceiver);
         return map;
     }
@@ -1167,6 +1175,52 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         }
     };
 
+    private BroadcastReceiver listContactReceiver = new BroadcastReceiver()  {
+        @Override
+        public void onReceive(Context context, Intent intent){
+            String data = intent.getStringExtra("data");
+            //Log.d(getResources().getString(R.string.app_name), "list contact ");
+            JSONArray contacts = new JSONArray();
+            try {
+                JSONObject joData = new JSONObject(data);
+                contacts = joData.getJSONArray("contacts");
+                //Toast.makeText(getApplicationContext(), "Login1 " + isLogin, Toast.LENGTH_SHORT).show();
+            } catch (JSONException e) {
+                Log.e(Constants.TAG_CHAT, e.getMessage(), e);
+                return;
+            }
+            Log.d(Constants.TAG_CHAT, "list contacts = " + contacts);
+            //Toast.makeText(getApplicationContext(), "Login2 " + isLogin, Toast.LENGTH_SHORT).show();
+
+            for(int i = 0; i < contacts.length(); i++) {
+                try {
+                    JSONObject joContact = contacts.getJSONObject(i);
+                    String id = joContact.getString("id");
+                    String name = joContact.getString("name");
+                    String email = joContact.getString("email");
+                    String phone = joContact.getString("phone");
+                    String picture = joContact.getString("picture");
+                    //skip contact for current app user
+
+                    //if ( email.equalsIgnoreCase(app.getUserApp().getEmail())) continue;
+                    ChatContact contact = contactRepository.getContactByEmail(email);
+                    if ( contact == null ) {
+                        contact = new ChatContact(name, picture, email, phone, ContactType.PRIVATE);
+                    } else {
+                        contact.setName(name);
+                        contact.setPicture(picture);
+                        contact.setPhone(phone);
+                    }
+
+                    //save new or update
+                    contactRepository.createOrUpdate(contact);
+
+                } catch (JSONException e) {
+                    Log.d(Constants.TAG_CHAT,e.getMessage(), e);
+                }
+            }
+        }
+    };
     //END SOCKET METHOD BLOCK
 
     @Override
@@ -1181,8 +1235,10 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         super.onResume();
         Log.d(Constants.TAG, getLocalClassName() + " => ON RESUME");
         chatClientService.registerReceivers(makeReceivers());
-        Log.d(Constants.TAG, "locManager = " + App.getInstance().getLocationManager());
+        //Log.d(Constants.TAG, "locManager = " + App.getInstance().getLocationManager());
         attemptLogin();
+
+        chatClientService.emitGetContacts();
 
     }
 

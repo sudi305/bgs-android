@@ -90,6 +90,7 @@ public class ChatHistoryActivity extends AppCompatActivity {
                 //Toast.makeText(getActivity(), contact.getName(), Toast.LENGTH_LONG).show();
                 contact.setActive(1);
                 ChatPageActivity.startChatFromHistory(getActivity(), contact);
+                finish();
             }
         });
 
