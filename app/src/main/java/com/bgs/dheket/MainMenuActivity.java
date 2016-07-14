@@ -354,7 +354,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         //CHAT SOCKET
         chatClientService = App.getChatClientService();
         Log.d(Constants.TAG_CHAT,"chatClientService = " + chatClientService);
-        attemptLogin();
+        loginToChatServer();
         //update new message counter drawer menu
         updateNewMessageCounter();
     }
@@ -580,7 +580,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                         App.updateUserApp(userApp);
                         Log.d(Constants.TAG, "App.getInstance().getUserApp()=" + App.getUserApp());
                         //DO LOGIN
-                        //attemptLogin();
+                        //loginToChatServer();
                     }
 
                 } catch (JSONException e) {
@@ -1119,7 +1119,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         element.setTitle(sColored);
     }
 
-    private void attemptLogin() {
+    private void loginToChatServer() {
         if ( !chatClientService.isLogin() ) {
             JSONObject user = new JSONObject();
             try {
@@ -1141,7 +1141,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     private BroadcastReceiver connectReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            attemptLogin();
+            loginToChatServer();
         }
     };
 
@@ -1236,7 +1236,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         Log.d(Constants.TAG, getLocalClassName() + " => ON RESUME");
         chatClientService.registerReceivers(makeReceivers());
         //Log.d(Constants.TAG, "locManager = " + App.getInstance().getLocationManager());
-        attemptLogin();
+        loginToChatServer();
 
         chatClientService.emitGetContacts();
 

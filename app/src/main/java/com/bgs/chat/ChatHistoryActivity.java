@@ -98,7 +98,7 @@ public class ChatHistoryActivity extends AppCompatActivity {
         contactHistoryListView.setAdapter(listAdapter);
 
         chatClientService = App.getChatClientService();
-        attemptLogin();
+        loginToChatServer();
 
         contactRepository = new ContactRepository(getActivity());
         messageRepository = new MessageRepository(getActivity());
@@ -107,7 +107,7 @@ public class ChatHistoryActivity extends AppCompatActivity {
 
     }
 
-    private void attemptLogin() {
+    private void loginToChatServer() {
         if ( !chatClientService.isLogin() ) {
             JSONObject user = new JSONObject();
             try {
@@ -127,7 +127,7 @@ public class ChatHistoryActivity extends AppCompatActivity {
     private BroadcastReceiver connectReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            attemptLogin();
+            loginToChatServer();
         }
     };
 

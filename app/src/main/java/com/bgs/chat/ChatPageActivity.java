@@ -298,7 +298,7 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
         }
     }
 
-    private void attemptLogin() {
+    private void loginToChatServer() {
         if ( !chatClientService.isLogin() ) {
             JSONObject user = new JSONObject();
             try {
@@ -317,7 +317,7 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
     private BroadcastReceiver connectReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            attemptLogin();
+            loginToChatServer();
         }
     };
 

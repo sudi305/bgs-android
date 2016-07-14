@@ -38,6 +38,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         Log.d(Constants.TAG, getClass().getCanonicalName() + " => ON CREATE" );
+        /*
         FacebookSdk.sdkInitialize(getApplicationContext());
         try {
             PackageInfo info = getPackageManager().getPackageInfo(
@@ -51,7 +52,7 @@ public class App extends Application {
         } catch (PackageManager.NameNotFoundException e) {
         } catch (NoSuchAlgorithmException e) {
         }
-
+        */
         mInstance = this;
         applicationHandler = new Handler(getInstance().getMainLooper());
         mChatClientService = new ChatClientService(getApplicationContext());
