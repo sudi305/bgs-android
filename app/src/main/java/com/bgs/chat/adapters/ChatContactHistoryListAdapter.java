@@ -1,7 +1,6 @@
 package com.bgs.chat.adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bgs.chat.viewmodel.ChatHistory;
-import com.bgs.common.Constants;
 import com.bgs.dheket.R;
 import com.bgs.domain.chat.model.ChatContact;
 import com.bgs.domain.chat.model.ChatMessage;
@@ -112,7 +110,7 @@ public class ChatContactHistoryListAdapter extends BaseAdapter {
     @Override
     public int getItemViewType(int position) {
         ChatHistory contact = chatContactHistories.get(position);
-        return contact.getContact().getContactType().ordinal();
+        return contact.getContact().getUserType().ordinal();
     }
 
 

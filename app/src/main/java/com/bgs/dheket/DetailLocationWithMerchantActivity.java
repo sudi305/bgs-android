@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,7 +24,7 @@ import com.bgs.common.DialogUtils;
 import com.bgs.common.ExtraParamConstants;
 import com.bgs.common.Utility;
 import com.bgs.domain.chat.model.ChatContact;
-import com.bgs.domain.chat.model.ContactType;
+import com.bgs.domain.chat.model.UserType;
 import com.bgs.domain.chat.repository.ContactRepository;
 import com.bgs.domain.chat.repository.IContactRepository;
 import com.bgs.imageOrView.ViewPagerAdapter;
@@ -121,9 +120,9 @@ public class DetailLocationWithMerchantActivity extends AppCompatActivity implem
                 Log.d(Constants.TAG, "GOTO CHAT");
                 try {
                     Merchant merchant = lokasi.getMerchant();
-                    ChatContact chatContact = contactRepository.getContactByEmail(merchant.getEmail());
+                    ChatContact chatContact = contactRepository.getContactByEmail(merchant.getEmail(), UserType.USER);
                     if ( chatContact == null ) {
-                        chatContact = new ChatContact(merchant.getName(), merchant.getFacebookPhoto(), merchant.getEmail(), merchant.getPhone(), ContactType.PRIVATE);
+                        chatContact = new ChatContact(merchant.getName(), merchant.getFacebookPhoto(), merchant.getEmail(), merchant.getPhone(), UserType.USER);
                     }
                     ChatPageActivity.startChatFromLocation(getActivity(), chatContact, lokasi);
                     finish();

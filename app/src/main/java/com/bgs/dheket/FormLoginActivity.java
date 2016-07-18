@@ -1,11 +1,8 @@
 package com.bgs.dheket;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -18,7 +15,6 @@ import android.os.AsyncTask;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Html;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
@@ -30,6 +26,7 @@ import android.widget.Toast;
 
 import com.bgs.common.Constants;
 import com.bgs.common.DialogUtils;
+import com.bgs.domain.chat.model.UserType;
 import com.bgs.model.UserApp;
 import com.bgs.networkAndSensor.HttpGetOrPost;
 import com.facebook.AccessToken;
@@ -39,14 +36,9 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
-import com.facebook.Profile;
 import com.facebook.appevents.AppEventsLogger;
-import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.facebook.login.widget.ProfilePictureView;
-import com.facebook.share.model.ShareLinkContent;
-import com.facebook.share.widget.ShareDialog;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -255,7 +247,7 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
                         userApp.setEmail(email);
                         userApp.setId(id);
                         userApp.setPicture(profilePicUrl);
-
+                        userApp.setType(UserType.USER);
                         App.getInstance().updateUserApp(userApp);
 
 
