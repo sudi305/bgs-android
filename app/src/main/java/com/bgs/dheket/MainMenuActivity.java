@@ -1110,9 +1110,9 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         //update chat meenu item
         Menu menuNav = navigationView.getMenu();
         MenuItem element = menuNav.findItem(R.id.nav_chat);
-        String before = element.getTitle().toString();
+        String before = "Chat"; //element.getTitle().toString();
 
-        String counter = Integer.toString(newMessageCount);
+        String counter = Integer.toString(newMessageCount) + " ";
         String s = before + " " + counter;
         SpannableString sColored = new SpannableString(s);
 
