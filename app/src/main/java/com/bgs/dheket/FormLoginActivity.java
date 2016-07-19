@@ -15,6 +15,9 @@ import android.os.AsyncTask;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.Html;
+import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
@@ -65,7 +68,7 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
     CallbackManager callbackManager;
     LoginButton loginBtn;
     Button signup;
-    TextView loading, login_fb;
+    TextView loading, login_fb, check_email;
     //android.support.v7.app.ActionBar actionBar;
 
     String url = "";
@@ -118,8 +121,8 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
         signup = (Button)findViewById(R.id.signup_button);
         loading = (TextView)findViewById(R.id.textView_formLogin_loading);
         login_fb = (TextView)findViewById(R.id.textView_login_fb);
-
-        url = String.format(getResources().getString(R.string.link_cekUserLogin));
+        check_email = (TextView)findViewById(R.id.textView_checkemail);
+        url = String.format(getResources().getString(R.string.link_cekExistingUser));
         urlCreateAccount = String.format(getResources().getString(R.string.link_addUserCustomerByEmail));
 
 //        if(AccessToken.getCurrentAccessToken() != null){
@@ -167,7 +170,31 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
             }
         });
 
+        check_email.addTextChangedListener(textWatcher);
     }
+
+    final TextWatcher textWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            Log.e("belum","belum");
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            Log.e("belum","saat");
+            /*if (check_email.getText().equals(temp_email) && !temp_email.isEmpty()){
+                //checkExistingUser(check_email.getText().toString(),latitude,longitude);
+                Log.e("belum","ok");
+                Toast.makeText(getApplicationContext(),check_email.getText().toString(),Toast.LENGTH_SHORT).show();
+            }*/
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            Log.e("belum","sudah");
+            checkExistingUser(check_email.getText().toString(), latitude, longitude);
+        }
+    };
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -230,16 +257,23 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
                         String text = String.format("<b>Name :</b> %s<br><br><b>Email :</b>%s<br><br><b>Profile link :</b>%s ",name,email,link);
 
                         temp_email = email;
-                        username = name;
+                        username = ""+name.replace(" ","");
+                        username = ""+username.replace("'","");
                         password = "123456";
                         facebook_id = id;
                         Log.d(Constants.TAG, "Success => 2");
-                        checkExistingUser(email, latitude, longitude);
+                        //checkExistingUser(email, latitude, longitude);
                         Log.d(Constants.TAG, "Success => 2a");
 
                         if (json.has("picture")) {
                             profilePicUrl = json.getJSONObject("picture").getJSONObject("data").getString("url");
                         }
+
+                        if (email.equalsIgnoreCase("")||email.isEmpty()){
+                            temp_email = "user"+facebook_id+"@dheket.co.id";
+                        }
+                        check_email.setText(temp_email);
+
                         //add by supri 2016/6/16
                         UserApp userApp = App.getInstance().getUserApp();
                         if ( userApp == null) userApp = new UserApp();
@@ -263,19 +297,20 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
         request.setParameters(parameters);
         Log.d(Constants.TAG, "Success => 3");
         request.executeAsync();
-        if (email.equalsIgnoreCase("")||email.isEmpty()){
+        /*if (email.equalsIgnoreCase("")||email.isEmpty()){
             temp_email = "user"+facebook_id+"@dheket.co.id";
             createUserAccountCustomer();
         } else {
             checkExistingUser(email, latitude, longitude);
         }
-        Log.d(Constants.TAG, "Success => 3a");
+        Log.d(Constants.TAG, "Success => 3a");*/
     }
 
     public void checkExistingUser(String email, double latitude, double longitude) {
         CallWebPageTaskCheckEmail task = new CallWebPageTaskCheckEmail(this);
         task.applicationContext = getApplicationContext();
-        String urls = url + "/" + email + "/" + latitude + "/" + longitude;
+        //String urls = url + "/" + email + "/" + latitude + "/" + longitude;
+        String urls = url + "/" + email;
         Log.d(Constants.TAG, "Sukses =>" + urls);
         task.execute(new String[]{urls});
     }
@@ -338,8 +373,16 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
             try {
                 //simpan data dari web ke dalam array
                 jObject = new JSONObject(response);
-                menuItemArray = jObject.getJSONArray("tag_cat");
-                email = jObject.getString("email");
+                //menuItemArray = jObject.getJSONArray("tag_cat");
+                //email = jObject.getString("email");
+                menuItemArray = jObject.getJSONArray("result_user");
+                if (menuItemArray.length()!=0) {
+                    for (int i = 0; i < menuItemArray.length(); i++) {
+                        email = menuItemArray.getJSONObject(i).getString("email").toString();
+                    }
+                }else{
+                    email = "kosong";
+                }
             } catch (JSONException e) {
                 Log.e(Constants.TAG, e.getMessage(), e);
             }
@@ -350,7 +393,8 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
         protected void onPostExecute(String result) {
             //this.dialog.cancel();
             Log.d(Constants.TAG, "Success => 4");
-            if (email.equalsIgnoreCase("guest@dheket.co.id") || email.equalsIgnoreCase("") || email.equalsIgnoreCase(null)) {
+            //if (email.equalsIgnoreCase("guest@dheket.co.id") || email.equalsIgnoreCase("") || email.equalsIgnoreCase(null)) {
+            if (email.equalsIgnoreCase("kosong")) {
                 Log.d(Constants.TAG, "Success => 5");
                 createUserAccountCustomer();
                 Log.d(Constants.TAG, "Success => 5a");
