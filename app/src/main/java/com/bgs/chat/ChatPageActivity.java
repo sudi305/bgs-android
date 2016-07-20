@@ -24,7 +24,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bgs.chat.adapters.ChatListAdapter;
-import com.bgs.chat.services.ChatClientService;
+import com.bgs.chat.services.ChatEngine;
 import com.bgs.chat.viewmodel.ChatHelper;
 import com.bgs.chat.widgets.Emoji;
 import com.bgs.chat.widgets.EmojiView;
@@ -37,9 +37,9 @@ import com.bgs.dheket.DetailLocationWithMerchantActivity;
 import com.bgs.dheket.R;
 import com.bgs.domain.chat.model.ChatContact;
 import com.bgs.domain.chat.model.ChatMessage;
-import com.bgs.domain.chat.model.UserType;
 import com.bgs.domain.chat.model.MessageReadStatus;
 import com.bgs.domain.chat.model.MessageType;
+import com.bgs.domain.chat.model.UserType;
 import com.bgs.domain.chat.repository.ContactRepository;
 import com.bgs.domain.chat.repository.IContactRepository;
 import com.bgs.domain.chat.repository.IMessageRepository;
@@ -80,7 +80,7 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
     private IContactRepository contactRepository;
     private IMessageRepository messageRepository;
     private ChatContact chatContact;
-    private ChatClientService chatClientService;
+    private ChatEngine chatEngine;
 
     //private App app;
     private Activity getActivity() {
@@ -189,7 +189,7 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
         chatEditText1.clearFocus();
         chatListView.requestFocus();
 
-        chatClientService = App.getChatClientService();
+        chatEngine = App.getChatEngine();
 
         Log.d(Constants.TAG_CHAT, "ID => " + chatContact.getId());
 
@@ -229,15 +229,14 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
 
     public Map<String, BroadcastReceiver> makeReceivers(){
         Map<String, BroadcastReceiver> map = new HashMap<String, BroadcastReceiver>();
-        map.put(ChatClientService.SocketEvent.CONNECT, connectReceiver);
-        map.put(ChatClientService.SocketEvent.NEW_MESSAGE, newMessageReceiver);
+        map.put(ChatEngine.SocketEvent.NEW_MESSAGE, newMessageReceiver);
         return map;
     }
 
     //SOCKET METHOD
     private void attemptSend() {
         //if (null == userContact.getName()) return;
-        if (!chatClientService.isConnected()) return;
+        if (!chatEngine.isConnected()) return;
 
         String message = chatEditText1.getText().toString().trim();
         if (TextUtils.isEmpty(message)) {
@@ -274,7 +273,7 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
 
             //message = String.format("{to:'%s',msg:'%s'}",userContact.getName(), message);
             // perform the sending message attempt.
-            chatClientService.emitNewMessage(joMessage);
+            chatEngine.emitNewMessage(joMessage);
         } catch (JSONException e) {
             Log.e(Constants.TAG_CHAT, e.getMessage(), e);
         }
@@ -307,15 +306,8 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
     }
 
     private void loginToChatServer() {
-        chatClientService.emitDoLogin( App.getUserApp());
+        chatEngine.emitDoLogin( App.getUserApp());
     }
-
-    private BroadcastReceiver connectReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            loginToChatServer();
-        }
-    };
 
     private BroadcastReceiver newMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -674,14 +666,15 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
         super.onPause();
         Log.d(Constants.TAG_CHAT, getLocalClassName() + " => ON PAUSE");
         hideEmojiPopup();
-        chatClientService.unregisterReceivers();
+        chatEngine.unregisterReceivers();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         Log.d(Constants.TAG_CHAT, getLocalClassName() + " => ON RESUME");
-        chatClientService.registerReceivers(makeReceivers());
+        chatEngine.registerReceivers(makeReceivers());
+        loginToChatServer();
     }
 
     @Override
@@ -694,11 +687,6 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
     @Override
     public void onDestroy() {
         super.onDestroy();
-        //socket.off("new message", onNewMessage);
-        //socket.off("user joined", onUserJoined);
-        //socket.off("user left", onUserLeft);
-        //socket.off("typing", onTyping);
-        //socket.off("stop typing", onStopTyping);
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.emojiDidLoaded);
 
     }

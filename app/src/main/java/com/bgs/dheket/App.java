@@ -1,28 +1,17 @@
 package com.bgs.dheket;
 
 import android.app.Application;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
+import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Handler;
-import android.util.Base64;
 import android.util.Log;
 
 import com.bgs.chat.services.ChatClientService;
+import com.bgs.chat.services.ChatEngine;
 import com.bgs.common.Constants;
 import com.bgs.common.NativeLoader;
 import com.bgs.model.UserApp;
 import com.facebook.FacebookSdk;
-
-import java.net.URISyntaxException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Map;
-
-import io.socket.client.IO;
-import io.socket.client.Socket;
-import io.socket.emitter.Emitter;
 
 /**
  * Created by madhur on 3/1/15.
@@ -32,14 +21,15 @@ public class App extends Application {
     private static LocationManager mLocationManager;
     private static App mInstance;
     public static volatile Handler applicationHandler = null;
-    private static ChatClientService mChatClientService;
+    private static ChatEngine mChatEngine;
 
     @Override
     public void onCreate() {
         super.onCreate();
         Log.d(Constants.TAG, getClass().getCanonicalName() + " => ON CREATE" );
-        /*
+
         FacebookSdk.sdkInitialize(getApplicationContext());
+        /*
         try {
             PackageInfo info = getPackageManager().getPackageInfo(
                     "com.bgs.dheket",  // replace with your unique package name
@@ -55,10 +45,11 @@ public class App extends Application {
         */
         mInstance = this;
         applicationHandler = new Handler(getInstance().getMainLooper());
-        mChatClientService = new ChatClientService(getApplicationContext());
+        mChatEngine = new ChatEngine(getApplicationContext());
         NativeLoader.initNativeLibs(App.getInstance());
 
-
+        Intent startServiceIntent = new Intent(this, ChatClientService.class);
+        startService(startServiceIntent);
     }
 
     public static App getInstance() {
@@ -73,7 +64,9 @@ public class App extends Application {
     public static LocationManager getLocationManager() {
         return mLocationManager;
     }
-    public static ChatClientService getChatClientService() { return mChatClientService; }
+    public static ChatEngine getChatEngine() {
+        return mChatEngine;
+    }
 
 
     @Override

@@ -98,7 +98,7 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
 
         }
 
-        FacebookSdk.sdkInitialize(getApplicationContext());
+        //FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
         setContentView(R.layout.activity_form_login);
 

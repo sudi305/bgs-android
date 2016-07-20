@@ -56,7 +56,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bgs.chat.ChatHistoryActivity;
-import com.bgs.chat.services.ChatClientService;
+import com.bgs.chat.services.ChatEngine;
 import com.bgs.chat.viewmodel.ChatHelper;
 import com.bgs.chat.widgets.CircleBackgroundSpan;
 import com.bgs.common.Constants;
@@ -79,10 +79,8 @@ import com.bgs.model.Category;
 import com.bgs.model.UserApp;
 import com.bgs.networkAndSensor.ConfigInternetAndGPS;
 import com.bgs.networkAndSensor.HttpGetOrPost;
-import com.esri.core.internal.catalog.User;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
-import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.squareup.picasso.Picasso;
@@ -162,7 +160,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     RelativeLayout.LayoutParams p;
 
     //CHATS
-    private ChatClientService chatClientService;
+    private ChatEngine chatEngine;
     private IMessageRepository messageRepository;
     private IContactRepository contactRepository;
 
@@ -213,7 +211,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         txt_nav_email = (TextView) header.findViewById(R.id.nav_hm_textView_email);
         imVi_nav_usrPro = (ImageView) header.findViewById(R.id.nav_hm_imageView);
 
-        FacebookSdk.sdkInitialize(getApplicationContext());
+
 
         //url = String.format(getResources().getString(R.string.link_cekUserLogin));
         url = String.format(getResources().getString(R.string.link_getDataUser));
@@ -355,8 +353,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         });
 
         //CHAT SOCKET
-        chatClientService = App.getChatClientService();
-        Log.d(Constants.TAG_CHAT,"chatClientService = " + chatClientService);
+        chatEngine = App.getChatEngine();
+        Log.d(Constants.TAG_CHAT,"chatEngine = " + chatEngine);
         loginToChatServer();
         //update new message counter drawer menu
         updateNewMessageCounter();
@@ -1092,9 +1090,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     //BEGIN SOCKET METHOD BLOCK
     public Map<String, BroadcastReceiver> makeReceivers(){
         Map<String, BroadcastReceiver> map = new HashMap<String, BroadcastReceiver>();
-        map.put(ChatClientService.SocketEvent.CONNECT, connectReceiver);
-        map.put(ChatClientService.SocketEvent.LIST_CONTACT, listContactReceiver);
-        map.put(ChatClientService.SocketEvent.NEW_MESSAGE, newMessageReceiver);
+        map.put(ChatEngine.SocketEvent.LIST_CONTACT, listContactReceiver);
+        map.put(ChatEngine.SocketEvent.NEW_MESSAGE, newMessageReceiver);
         return map;
     }
 
@@ -1123,15 +1120,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     }
 
     private void loginToChatServer() {
-        chatClientService.emitDoLogin( App.getUserApp());
+        chatEngine.emitDoLogin( App.getUserApp());
     }
-
-    private BroadcastReceiver connectReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            loginToChatServer();
-        }
-    };
 
     private BroadcastReceiver newMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -1239,17 +1229,17 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     public void onPause() {
         super.onPause();
         Log.d(Constants.TAG_CHAT, getLocalClassName() + " => ON PAUSE");
-        chatClientService.unregisterReceivers();
+        chatEngine.unregisterReceivers();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         Log.d(Constants.TAG, getLocalClassName() + " => ON RESUME");
-        chatClientService.registerReceivers(makeReceivers());
+        chatEngine.registerReceivers(makeReceivers());
         //Log.d(Constants.TAG, "locManager = " + App.getInstance().getLocationManager());
         loginToChatServer();
-        chatClientService.emitGetContacts();
+        chatEngine.emitGetContacts();
 
     }
 

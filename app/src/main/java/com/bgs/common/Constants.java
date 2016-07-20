@@ -8,11 +8,11 @@ import android.location.LocationManager;
  */
 public class Constants {
 
-    public static final String TAG="dheket-log";
-    public static final String TAG_CHAT="dheket-chat-log";
+    public static final String TAG = "dheket-log";
+    public static final String TAG_CHAT = "dheket-chat-log";
     //dheket chat server
     //public static final String CHAT_SERVER_URL = "http://136.243.214.45:3300/";
     //local chat server
-    //public static final String CHAT_SERVER_URL = "http://192.168.1.101:3300/";
-    public static final String CHAT_SERVER_URL = "http://192.168.43.228:3300/";
+    public static final String CHAT_SERVER_URL = "http://192.168.1.101:3300/";
+    //public static final String CHAT_SERVER_URL = "http://192.168.43.228:3300/";
 }

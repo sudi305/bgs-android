@@ -15,23 +15,21 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bgs.chat.adapters.ChatContactHistoryListAdapter;
-import com.bgs.chat.services.ChatClientService;
+import com.bgs.chat.services.ChatEngine;
 import com.bgs.chat.viewmodel.ChatHelper;
 import com.bgs.chat.viewmodel.ChatHistory;
 import com.bgs.common.Constants;
-import com.bgs.common.Utility;
 import com.bgs.dheket.App;
 import com.bgs.dheket.MainMenuActivity;
 import com.bgs.dheket.R;
 import com.bgs.domain.chat.model.ChatContact;
 import com.bgs.domain.chat.model.ChatMessage;
-import com.bgs.domain.chat.model.UserType;
 import com.bgs.domain.chat.model.MessageType;
+import com.bgs.domain.chat.model.UserType;
 import com.bgs.domain.chat.repository.ContactRepository;
 import com.bgs.domain.chat.repository.IContactRepository;
 import com.bgs.domain.chat.repository.IMessageRepository;
 import com.bgs.domain.chat.repository.MessageRepository;
-import com.bgs.model.UserApp;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -52,7 +50,7 @@ public class ChatHistoryActivity extends AppCompatActivity {
     String urls = "";
     Picasso picasso;
 
-    private ChatClientService chatClientService;
+    private ChatEngine chatEngine;
     private ListView contactHistoryListView;
     private ChatContactHistoryListAdapter listAdapter;
     private ArrayList<ChatHistory> chatContactHistories;
@@ -97,7 +95,7 @@ public class ChatHistoryActivity extends AppCompatActivity {
         listAdapter = new ChatContactHistoryListAdapter(chatContactHistories, getActivity());
         contactHistoryListView.setAdapter(listAdapter);
 
-        chatClientService = App.getChatClientService();
+        chatEngine = App.getChatEngine();
         loginToChatServer();
 
         contactRepository = new ContactRepository(getActivity());
@@ -108,15 +106,8 @@ public class ChatHistoryActivity extends AppCompatActivity {
     }
 
     private void loginToChatServer() {
-        chatClientService.emitDoLogin( App.getUserApp());
+        chatEngine.emitDoLogin( App.getUserApp());
     }
-
-    private BroadcastReceiver connectReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            loginToChatServer();
-        }
-    };
 
     private BroadcastReceiver newMessageReceiver = new BroadcastReceiver()  {
         @Override
@@ -230,17 +221,16 @@ public class ChatHistoryActivity extends AppCompatActivity {
                 return;
             }
             //retrive contact
-            chatClientService.emitGetContacts();
+            chatEngine.emitGetContacts();
             //ChatTaskService.startActionGetContacts(getActivity());
         }
     };
 
     public Map<String, BroadcastReceiver> makeReceivers(){
         Map<String, BroadcastReceiver> map = new HashMap<String, BroadcastReceiver>();
-        map.put(ChatClientService.SocketEvent.CONNECT, connectReceiver);
-        map.put(ChatClientService.SocketEvent.USER_JOIN, userJoinReceiver);
-        map.put(ChatClientService.SocketEvent.NEW_MESSAGE, newMessageReceiver);
-        map.put(ChatClientService.SocketEvent.LIST_CONTACT, listContactReceiver);
+        map.put(ChatEngine.SocketEvent.USER_JOIN, userJoinReceiver);
+        map.put(ChatEngine.SocketEvent.NEW_MESSAGE, newMessageReceiver);
+        map.put(ChatEngine.SocketEvent.LIST_CONTACT, listContactReceiver);
         return map;
     }
 
@@ -254,7 +244,7 @@ public class ChatHistoryActivity extends AppCompatActivity {
 
     private void fillContactHistory(List<ChatContact> contactList, boolean update) {
         for (ChatContact contact : contactList) {
-            Log.d(Constants.TAG_CHAT, "CONTACT-PICTURE = "+ contact.getPicture());
+            //Log.d(Constants.TAG_CHAT, "CONTACT-PICTURE = "+ contact.getPicture());
             long newMessageCount = messageRepository.getNewMessageCountByContact(contact.getId());
             //Log.d(Constants.TAG_CHAT, "newMessageCount=" + newMessageCount);
             ChatMessage lastMessage = messageRepository.getLastMessageByContact(contact.getId());
@@ -346,7 +336,7 @@ public class ChatHistoryActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         Log.d(Constants.TAG_CHAT, getLocalClassName() + " => ON PAUSE");
-        chatClientService.unregisterReceivers();
+        chatEngine.unregisterReceivers();
     }
 
     @Override
@@ -359,9 +349,9 @@ public class ChatHistoryActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Log.d(Constants.TAG_CHAT,getLocalClassName() + " => ON RESUME");
-        Log.d(Constants.TAG_CHAT, "chatClientService=" + chatClientService);
-        chatClientService.registerReceivers(makeReceivers());
-
+        Log.d(Constants.TAG_CHAT, "chatEngine=" + chatEngine);
+        chatEngine.registerReceivers(makeReceivers());
+        loginToChatServer();
         //reset selected contact status
         List<ChatContact> contactList = contactRepository.getListContact();
         fillContactHistory(contactList, true);
@@ -372,6 +362,6 @@ public class ChatHistoryActivity extends AppCompatActivity {
         */
         //hack mode
         if (contactList.size() == 0)
-            chatClientService.emitGetContacts();
+            chatEngine.emitGetContacts();
     }
 }
