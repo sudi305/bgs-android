@@ -24,7 +24,8 @@
     <string name="link_getLocationAndMerchByCategory">http://ws.dheket.com/index.php/getlocationandmerchbycategoryid</string> <!--getlocationandmerchbycategoryid/{rad}/{center_lat}/{center_lng}/{cat}-->
     <string name="link_getDataUser">http://ws.dheket.com/index.php/getprofileuserbyemail</string> <!--getprofileuserbyemail/{email}/{center_lat}/{center_lng}-->
     <string name="link_getUserConfig">http://ws.dheket.com/index.php/getconfigurationuserbyemail</string> <!--getconfigurationuserbyemail/{email}-->
-    <string name="link_cekUserLogin">http://ws.dheket.com/index.php/checkexistinguserbyemail</string><!--checkexistinguserbyemail/{email}-->
+    <string name="link_cekUserLogin">http://ws.dheket.com/index.php/checkexistinguserbyemail</string><!--checkexistinguserbyemail/{email}/{lat}/{lng}-->
+    <string name="link_cekExistingUser">http://ws.dheket.com/index.php/cekOrgetCustomerByEmail</string><!--cekOrgetCustomerByEmail/{email}-->
     <string name="link_updateRadiusByEmail">http://ws.dheket.com/index.php/saveradbyemail/</string><!--saveradbyemail/ {"email"="a@m.c","rad"=5}-->
     <string name="link_updateCategoryUserByEmail">http://ws.dheket.com/index.php/createorupdatecatuserbyemail/</string> <!--updatecatuserbyemail/ {"email"="a@m.c","cat_old"=1,"cat_new"=2}-->
     <string name="link_updateHashtagUserByEmail">http://ws.dheket.com/index.php/updatetagcatuserbyemail/</string> <!--updatetagcatuserbyemail/ {"email"="a@m.c","cat_old"=1,"cat_new"=2}-->
