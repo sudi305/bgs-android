@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * Created by zhufre on 6/28/2016.
  */
-public class MessageRepository extends BaseRepository<ChatMessage> implements  IMessageRepository {
+public class MessageRepository extends BaseRepository<ChatMessage> implements IMessageRepository {
 
     public MessageRepository(Context context) {
         super(context, ChatMessage.class);
@@ -30,6 +30,22 @@ public class MessageRepository extends BaseRepository<ChatMessage> implements  I
         ChatMessage chatMessage = null;
         try {
             chatMessage = getDao().queryForId(id);
+        } catch (SQLException e) {
+            Log.e(Constants.TAG_CHAT, e.getMessage(), e);
+        }
+        return chatMessage;
+    }
+
+    @Override
+    public ChatMessage getMessageInByContactAndMsgid(int contactId, String msgid) {
+        ChatMessage chatMessage = null;
+        try {
+            QueryBuilder<ChatMessage, Integer> builder = getDao().queryBuilder();
+            builder.orderBy(ChatMessage.FIELD_NAME_ID, false)
+                    .where().eq(ChatMessage.FIELD_NAME_TYPE, MessageType.IN)
+                    .and().eq(ChatMessage.FIELD_NAME_CONTACT_ID, contactId)
+                    .and().eq(ChatMessage.FIELD_NAME_MSGID, msgid);
+            chatMessage = getDao().queryForFirst(builder.prepare());
         } catch (SQLException e) {
             Log.e(Constants.TAG_CHAT, e.getMessage(), e);
         }

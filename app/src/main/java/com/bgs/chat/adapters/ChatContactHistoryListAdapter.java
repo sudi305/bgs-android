@@ -9,11 +9,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bgs.chat.viewmodel.ChatHistory;
+import com.bgs.dheket.App;
 import com.bgs.dheket.R;
 import com.bgs.domain.chat.model.ChatContact;
 import com.bgs.domain.chat.model.ChatMessage;
 import com.bgs.domain.chat.model.MessageType;
 import com.bgs.extended.CircleTransform;
+import com.bgs.model.UserApp;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -75,13 +77,24 @@ public class ChatContactHistoryListAdapter extends BaseAdapter {
 
         holder.timeTextView.setText("");
         if ( history != null ) {
+            String contactName = "";
             ChatContact contact = history.getContact();
             if ( contact != null && !"".equalsIgnoreCase(contact.getPicture()) ) {
                 // set profile image to imageview using Picasso or Native methods
                 picasso.with(context).load(contact.getPicture()).transform(new CircleTransform()).into(holder.picture);
+
+                contactName = contact.getName();
+                UserApp user = App.getUserApp();
+                if ( user != null ) {
+                    if ( contact.getUserType().equals(user.getType())
+                            && contact.getEmail().equalsIgnoreCase(user.getEmail())  ) {
+                        contactName = "Me";
+                    }
+                }
             }
 
-            holder.nameTextView.setText(history.getContact().getName());
+            holder.nameTextView.setText(contactName);
+
             holder.messageTextView.setText("");
             ChatMessage msg = history.getLastChatMessage();
             if (  msg != null ) {
@@ -123,4 +136,6 @@ public class ChatContactHistoryListAdapter extends BaseAdapter {
         public TextView msgCountTextView;
 
     }
+
+
 }

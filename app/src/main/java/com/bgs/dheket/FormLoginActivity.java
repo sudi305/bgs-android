@@ -12,11 +12,10 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.Editable;
-import android.text.Html;
 import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
@@ -29,14 +28,12 @@ import android.widget.Toast;
 
 import com.bgs.common.Constants;
 import com.bgs.common.DialogUtils;
-import com.bgs.domain.chat.model.UserType;
 import com.bgs.model.UserApp;
 import com.bgs.networkAndSensor.HttpGetOrPost;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.appevents.AppEventsLogger;
@@ -281,7 +278,7 @@ public class FormLoginActivity extends AppCompatActivity implements LocationList
                         userApp.setEmail(email);
                         userApp.setId(id);
                         userApp.setPicture(profilePicUrl);
-                        userApp.setType(UserType.USER);
+                        userApp.setType(Constants.USER_TYPE);
                         App.getInstance().updateUserApp(userApp);
 
 

@@ -4,17 +4,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.bgs.common.Constants;
-import com.bgs.dheket.App;
-import com.bgs.domain.chat.model.UserType;
 import com.bgs.model.UserApp;
-import com.facebook.AccessToken;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -69,59 +63,6 @@ public class ChatEngine {
         }
     }
 
-    public void requestUserFromFB() {
-        if ( AccessToken.getCurrentAccessToken() == null ) return;
-
-        GraphRequest request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
-            @Override
-            public void onCompleted(JSONObject object, GraphResponse response) {
-
-                JSONObject json = response.getJSONObject();
-                try {
-                    if (json != null) {
-                        Log.d(Constants.TAG, "json fb = " + json.toString());
-                        String id = json.getString("id");
-                        String name = json.getString("name");
-                        String gender = json.getString("gender");
-                        String email = json.getString("email");
-                        String imageUsr = json.getString("picture");
-
-                        String profilePicUrl = "";
-                        if (json.has("picture")) {
-                            profilePicUrl = json.getJSONObject("picture").getJSONObject("data").getString("url");
-                        }
-
-                        //update user app
-                        //add by supri 2016/6/16
-                        UserApp userApp = App.getUserApp();
-                        if (userApp == null) userApp = new UserApp();
-                        userApp.setName(name);
-                        userApp.setEmail(email);
-                        userApp.setId(id);
-                        userApp.setPicture(profilePicUrl);
-                        userApp.setType(UserType.USER);
-                        App.updateUserApp(userApp);
-                        Log.d(Constants.TAG, "App.getInstance().getUserApp()=" + App.getUserApp());
-                        //DO LOGIN
-                        //loginToChatServer();
-                    }
-
-                } catch (JSONException e) {
-                    Log.e(Constants.TAG, e.getMessage(), e);
-                }
-            }
-        });
-        Bundle parameters = new Bundle();
-        parameters.putString("fields", "id,name,link,email,gender,picture.type(large)");
-        request.setParameters(parameters);
-        request.executeAndWait();
-    }
-
-    public void emitDoLogin() {
-        requestUserFromFB();
-        emitDoLogin(App.getUserApp());
-    }
-
     public void emitDoLogin(final UserApp userApp) {
         if ( isLogin() || userApp == null) return;
         try {
@@ -130,11 +71,15 @@ public class ChatEngine {
             user.put("email", userApp.getEmail());
             user.put("phone", userApp.getPhone());
             user.put("picture", userApp.getPicture());
-            user.put("type", userApp.getType().toString());
-            emit(SocketEmit.DO_LOGIN, user);
+            user.put("type", userApp.getType());
+            emitDoLogin(user);
         } catch (JSONException e) {
             Log.e(Constants.TAG_CHAT, e.getMessage(), e);
         }
+    }
+
+    public void emitDoLogin(final Object... args) {
+        emit(SocketEmit.DO_LOGIN, args);
     }
 
     public void emitGetContacts(final Object... args) {
@@ -163,8 +108,7 @@ public class ChatEngine {
         @Override
         public void call(Object... args) {
             //JSONObject data = (JSONObject) args[0];
-            Log.d(Constants.TAG_CHAT, "CONNECTED");
-            emitDoLogin();
+            Log.d(Constants.TAG_CHAT, getClass().getName() + " => CONNECTED");
             if ( mReceivers.containsKey(SocketEvent.CONNECT))
                 sendChatServiceBroadcast(SocketEvent.CONNECT);
         }
@@ -175,7 +119,7 @@ public class ChatEngine {
         public void call(Object... args) {
             mLogin = false;
             //JSONObject data = (JSONObject) args[0];
-            Log.d(Constants.TAG_CHAT , "DISCONNECTED");
+            Log.d(Constants.TAG_CHAT , getClass().getName() + " => DISCONNECTED");
             if ( mReceivers.containsKey(SocketEvent.DISCONNECT))
                 sendChatServiceBroadcast(SocketEvent.DISCONNECT);
         }
@@ -186,7 +130,7 @@ public class ChatEngine {
         public void call(Object... args) {
             mLogin = false;
             //JSONObject data = (JSONObject) args[0];
-            Log.d(Constants.TAG_CHAT , "CONNECTION ERROR");
+            Log.d(Constants.TAG_CHAT , getClass().getName() + " => CONNECTION ERROR");
             if ( mReceivers.containsKey(SocketEvent.CONNECT_ERROR))
                 sendChatServiceBroadcast(SocketEvent.CONNECT_ERROR);
         }
@@ -202,7 +146,7 @@ public class ChatEngine {
                 Log.e(Constants.TAG_CHAT , e.getMessage(), e);
                 return;
             }
-            Log.d(Constants.TAG_CHAT , "Login " + mLogin);
+            Log.d(Constants.TAG_CHAT , getClass().getName() + " => Login " + mLogin);
             if ( mReceivers.containsKey(SocketEvent.LOGIN))
                 sendChatServiceBroadcast(SocketEvent.LOGIN, data.toString());
         }
@@ -222,7 +166,7 @@ public class ChatEngine {
         @Override
         public void call(Object... args) {
             JSONObject data = (JSONObject) args[0];
-            Log.d(Constants.TAG_CHAT, "UserLeft " + data.toString());
+            Log.d(Constants.TAG_CHAT, getClass().getName() + " => UserLeft " + data.toString());
             if ( mReceivers.containsKey(SocketEvent.USER_LEFT))
                 sendChatServiceBroadcast(SocketEvent.USER_LEFT, data.toString());
         }
@@ -232,7 +176,7 @@ public class ChatEngine {
         @Override
         public void call(Object... args) {
             JSONObject data = (JSONObject) args[0];
-            Log.d(Constants.TAG_CHAT, "Typing " + data.toString());
+            Log.d(Constants.TAG_CHAT, getClass().getName() + " => Typing " + data.toString());
             if ( mReceivers.containsKey(SocketEvent.TYPING))
                 sendChatServiceBroadcast(SocketEvent.TYPING, data.toString());
 
@@ -243,7 +187,7 @@ public class ChatEngine {
         @Override
         public void call(Object... args) {
             JSONObject data = (JSONObject) args[0];
-            Log.d(Constants.TAG_CHAT, "StopTyping " + data.toString());
+            Log.d(Constants.TAG_CHAT, getClass().getName() + " => StopTyping " + data.toString());
             if ( mReceivers.containsKey(SocketEvent.STOP_TYPING))
                 sendChatServiceBroadcast(SocketEvent.STOP_TYPING, data.toString());
 
@@ -276,8 +220,7 @@ public class ChatEngine {
     }
     private void sendChatServiceBroadcast(String event, String data){
         Intent intent = new Intent(event);
-        if ( data != null )
-            intent.putExtra("data", data);
+        if ( data != null ) intent.putExtra("data", data);
 
         LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
     }
@@ -288,30 +231,28 @@ public class ChatEngine {
 
     public void registerReceivers(Map<String, BroadcastReceiver> receivers) {
         synchronized (mReceivers) {
+            unregisterReceivers();
             mReceivers = receivers;
+            //re-register
             for (String event : mReceivers.keySet()) {
                 LocalBroadcastManager.getInstance(mContext).registerReceiver(mReceivers.get(event), new IntentFilter(event));
             }
         }
     }
 
-    public void unregisterReceivers() {
+    private void unregisterReceivers() {
         //Log.d(Constants.TAG_CHAT, "unregisterReceivers()=>mRegistered=" + mRegistered);
-        synchronized (mReceivers) {
-            for (String event : mReceivers.keySet()) {
-                LocalBroadcastManager.getInstance(mContext).unregisterReceiver(mReceivers.get(event));
-            }
-            //clear map
-            mReceivers.clear();
+        for (String event : mReceivers.keySet()) {
+            LocalBroadcastManager.getInstance(mContext).unregisterReceiver(mReceivers.get(event));
         }
     }
-
     public static class SocketEmit {
         //EVENT OUT
         public final static String DO_LOGIN = "do login";
         public final static String NEW_MESSAGE = "new message";
         public final static String GET_CONTACTS = "get contacts";
     }
+
 
     public static class SocketEvent
     {
@@ -330,7 +271,8 @@ public class ChatEngine {
         public final static String UPDATE_CONTACT = "update contact";
 
 
-        private static String[] EVENTS = {CONNECT, DISCONNECT,
+        private static String[] EVENTS = {
+                CONNECT, DISCONNECT,
                 CONNECT_ERROR, CONNECT_TIMEOUT,
                 LOGIN, USER_JOIN,
                 USER_LEFT, NEW_MESSAGE,

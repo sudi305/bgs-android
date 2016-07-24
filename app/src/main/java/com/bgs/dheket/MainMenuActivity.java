@@ -56,8 +56,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bgs.chat.ChatHistoryActivity;
-import com.bgs.chat.services.ChatEngine;
-import com.bgs.chat.viewmodel.ChatHelper;
+import com.bgs.chat.services.ChatClientService;
 import com.bgs.chat.widgets.CircleBackgroundSpan;
 import com.bgs.common.Constants;
 import com.bgs.common.DialogUtils;
@@ -66,7 +65,6 @@ import com.bgs.common.GpsUtils;
 import com.bgs.common.Utility;
 import com.bgs.domain.chat.model.ChatContact;
 import com.bgs.domain.chat.model.ChatMessage;
-import com.bgs.domain.chat.model.MessageType;
 import com.bgs.domain.chat.model.UserType;
 import com.bgs.domain.chat.repository.ContactRepository;
 import com.bgs.domain.chat.repository.IContactRepository;
@@ -99,6 +97,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -160,7 +159,6 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     RelativeLayout.LayoutParams p;
 
     //CHATS
-    private ChatEngine chatEngine;
     private IMessageRepository messageRepository;
     private IContactRepository contactRepository;
 
@@ -352,10 +350,6 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             }
         });
 
-        //CHAT SOCKET
-        chatEngine = App.getChatEngine();
-        Log.d(Constants.TAG_CHAT,"chatEngine = " + chatEngine);
-        loginToChatServer();
         //update new message counter drawer menu
         updateNewMessageCounter();
     }
@@ -577,7 +571,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                         userApp.setEmail(email);
                         userApp.setId(id);
                         userApp.setPicture(profilePicUrl);
-                        userApp.setType(UserType.USER);
+                        userApp.setType(Constants.USER_TYPE);
                         App.updateUserApp(userApp);
                         Log.d(Constants.TAG, "App.getInstance().getUserApp()=" + App.getUserApp());
                         //DO LOGIN
@@ -1090,8 +1084,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     //BEGIN SOCKET METHOD BLOCK
     public Map<String, BroadcastReceiver> makeReceivers(){
         Map<String, BroadcastReceiver> map = new HashMap<String, BroadcastReceiver>();
-        map.put(ChatEngine.SocketEvent.LIST_CONTACT, listContactReceiver);
-        map.put(ChatEngine.SocketEvent.NEW_MESSAGE, newMessageReceiver);
+        map.put(ChatClientService.ActivityEvent.LIST_CONTACT, listContactReceiver);
+        map.put(ChatClientService.ActivityEvent.NEW_MESSAGE, newMessageReceiver);
         return map;
     }
 
@@ -1120,7 +1114,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     }
 
     private void loginToChatServer() {
-        chatEngine.emitDoLogin( App.getUserApp());
+        App.getChatEngine().emitDoLogin(App.getUserApp());
     }
 
     private BroadcastReceiver newMessageReceiver = new BroadcastReceiver() {
@@ -1129,47 +1123,9 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    JSONObject joData;
-                    JSONObject from;
-                    String message, email, name, phone, picture, type;
-
-                    try {
-                        String data = intent.getStringExtra("data");
-                        joData = new JSONObject(data);
-                        from = joData.getJSONObject("from");
-                        message = joData.getString("message");
-
-                        name = from.getString("name");
-                        email = from.getString("email");
-                        phone = from.getString("phone");
-                        picture = from.getString("picture");
-                        type = from.getString("type");
-
-                        Log.d(Constants.TAG_CHAT, "message2 = " + message);
-                        //update new message count - option menu
-
-
-                    } catch (JSONException e) {
-                        Log.e(Constants.TAG_CHAT,e.getMessage(), e);
-                        return;
-                    }
-
-                    ChatContact contact = contactRepository.getContactByEmail(email, UserType.parse(type));
-                    Log.d(Constants.TAG_CHAT, String.format("from=%s\r\nmessage=%s ", from, message));
-                    if ( contact == null) {
-                        contact = new ChatContact(name, picture, email, phone, UserType.parse(type));
-                    } else {
-                        contact.setName(name);
-                        contact.setPicture(picture);
-                        contact.setPhone(phone);
-                        contact.setUserType(UserType.parse(type));
-
-                    }
-                    contactRepository.createOrUpdate(contact);
-                    //removeTyping(username);
-                    ChatMessage msg = ChatHelper.createMessage(contact.getId(), message, MessageType.IN);
-                    messageRepository.createOrUpdate(msg);
-
+                    ChatContact contact = intent.getParcelableExtra("contact");
+                    ChatMessage msg = intent.getParcelableExtra("msg");
+                    Log.d(Constants.TAG_CHAT, getClass().getName() + String.format(" => new message = %s from %s ", msg.getMessageText(), contact.getEmail()));
                     updateNewMessageCounter();
                 }
             });
@@ -1179,48 +1135,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     private BroadcastReceiver listContactReceiver = new BroadcastReceiver()  {
         @Override
         public void onReceive(Context context, Intent intent){
-            String data = intent.getStringExtra("data");
-            //Log.d(getResources().getString(R.string.app_name), "list contact ");
-            JSONArray contacts = new JSONArray();
-            try {
-                JSONObject joData = new JSONObject(data);
-                contacts = joData.getJSONArray("contacts");
-                //Toast.makeText(getApplicationContext(), "Login1 " + isLogin, Toast.LENGTH_SHORT).show();
-            } catch (JSONException e) {
-                Log.e(Constants.TAG_CHAT, e.getMessage(), e);
-                return;
-            }
-            Log.d(Constants.TAG_CHAT, "list contacts = " + contacts);
-            //Toast.makeText(getApplicationContext(), "Login2 " + isLogin, Toast.LENGTH_SHORT).show();
-
-            for(int i = 0; i < contacts.length(); i++) {
-                try {
-                    JSONObject joContact = contacts.getJSONObject(i);
-                    String id = joContact.getString("id");
-                    String name = joContact.getString("name");
-                    String email = joContact.getString("email");
-                    String phone = joContact.getString("phone");
-                    String picture = joContact.getString("picture");
-                    String type = joContact.getString("type");
-                    //skip contact for current app user
-
-                    //if ( email.equalsIgnoreCase(app.getUserApp().getEmail())) continue;
-                    ChatContact contact = contactRepository.getContactByEmail(email, UserType.parse(type));
-                    if ( contact == null ) {
-                        contact = new ChatContact(name, picture, email, phone, UserType.parse(type));
-                    } else {
-                        contact.setName(name);
-                        contact.setPicture(picture);
-                        contact.setPhone(phone);
-                    }
-
-                    //save new or update
-                    contactRepository.createOrUpdate(contact);
-
-                } catch (JSONException e) {
-                    Log.e(Constants.TAG_CHAT,e.getMessage(), e);
-                }
-            }
+            ArrayList<ChatContact> contactList = intent.getParcelableArrayListExtra("contactList");
+            Log.d(Constants.TAG_CHAT, getClass().getName() + " => list contacts = " + contactList.size());
         }
     };
     //END SOCKET METHOD BLOCK
@@ -1229,18 +1145,14 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     public void onPause() {
         super.onPause();
         Log.d(Constants.TAG_CHAT, getLocalClassName() + " => ON PAUSE");
-        chatEngine.unregisterReceivers();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         Log.d(Constants.TAG, getLocalClassName() + " => ON RESUME");
-        chatEngine.registerReceivers(makeReceivers());
-        //Log.d(Constants.TAG, "locManager = " + App.getInstance().getLocationManager());
+        ChatClientService.registerReceivers(makeReceivers());
         loginToChatServer();
-        chatEngine.emitGetContacts();
-
     }
 
     @Override
