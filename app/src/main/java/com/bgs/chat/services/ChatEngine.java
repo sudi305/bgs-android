@@ -57,6 +57,7 @@ public class ChatEngine {
             mSocket.on(SocketEvent.LIST_CONTACT, onListContact);
             mSocket.on(SocketEvent.UPDATE_CONTACT, onUpdateContact);
             mSocket.on(SocketEvent.NEW_MESSAGE, onNewMessage);
+            mSocket.on(SocketEvent.DELIVERY_STATUS, onDeliveryStatus);
             mSocket.connect();
         } catch (URISyntaxException e) {
             Log.e(Constants.TAG_CHAT, e.getMessage(), e);
@@ -90,10 +91,21 @@ public class ChatEngine {
         emit(SocketEmit.NEW_MESSAGE, args);
     }
 
+    public void emitDeliveryStatus(final Object... args) { emit(SocketEmit.DELIVERY_STATUS, args); }
+
     private void emit(final String event, final Object... args) {
         if ( mSocket.connected() )
             mSocket.emit(event, args);
     }
+
+    private Emitter.Listener onDeliveryStatus = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            JSONObject data = (JSONObject) args[0];
+            if ( mReceivers.containsKey(SocketEvent.DELIVERY_STATUS))
+                sendChatServiceBroadcast(SocketEvent.DELIVERY_STATUS, data.toString());
+        }
+    };
 
     private Emitter.Listener onNewMessage = new Emitter.Listener() {
         @Override
@@ -246,10 +258,13 @@ public class ChatEngine {
             LocalBroadcastManager.getInstance(mContext).unregisterReceiver(mReceivers.get(event));
         }
     }
+
+
     public static class SocketEmit {
         //EVENT OUT
         public final static String DO_LOGIN = "do login";
         public final static String NEW_MESSAGE = "new message";
+        public final static String DELIVERY_STATUS = "delivery status";
         public final static String GET_CONTACTS = "get contacts";
     }
 
@@ -265,6 +280,7 @@ public class ChatEngine {
         public final static String USER_JOIN = "user join";
         public final static String USER_LEFT = "user left";
         public final static String NEW_MESSAGE = "new message";
+        public final static String DELIVERY_STATUS = "delivery status";
         public final static String TYPING = "typing";
         public final static String STOP_TYPING = "stop typing";
         public final static String LIST_CONTACT = "list contact";
@@ -275,7 +291,7 @@ public class ChatEngine {
                 CONNECT, DISCONNECT,
                 CONNECT_ERROR, CONNECT_TIMEOUT,
                 LOGIN, USER_JOIN,
-                USER_LEFT, NEW_MESSAGE,
+                USER_LEFT, NEW_MESSAGE, DELIVERY_STATUS,
                 TYPING, STOP_TYPING,
                 LIST_CONTACT, UPDATE_CONTACT
         };

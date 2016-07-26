@@ -39,13 +39,16 @@ import com.bgs.dheket.R;
 import com.bgs.domain.chat.model.ChatContact;
 import com.bgs.domain.chat.model.ChatMessage;
 import com.bgs.domain.chat.model.MessageReadStatus;
+import com.bgs.domain.chat.model.MessageSendStatus;
 import com.bgs.domain.chat.model.MessageType;
 import com.bgs.domain.chat.repository.ContactRepository;
 import com.bgs.domain.chat.repository.IContactRepository;
 import com.bgs.domain.chat.repository.IMessageRepository;
 import com.bgs.domain.chat.repository.MessageRepository;
+import com.bgs.extended.CircleTransform;
 import com.bgs.model.Lokasi;
 import com.bgs.model.UserApp;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -62,12 +65,12 @@ import java.util.Map;
  */
 public class ChatPageActivity extends AppCompatActivity implements SizeNotifierRelativeLayout.SizeNotifierRelativeLayoutDelegate, NotificationCenter.NotificationCenterDelegate {
 
-    private TextView userContactTextView;
+    private TextView contactNameTextView;
     private ListView chatListView;
     private EditText chatEditText1;
     private ArrayList<ChatMessage> chatMessages;
 
-    private ImageView enterChatView1, emojiButton;
+    private ImageView enterChatView1, emojiButton, contactPicture;
     private ImageButton goBackButton;
     private ChatListAdapter listAdapter;
     private EmojiView emojiView;
@@ -76,7 +79,7 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
     private int keyboardHeight;
     private boolean keyboardVisible;
     private WindowManager.LayoutParams windowLayoutParams;
-
+    private Picasso picasso;
     private IContactRepository contactRepository;
     private IMessageRepository messageRepository;
     private ChatContact chatContact;
@@ -140,8 +143,14 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
         messageRepository = new MessageRepository(getApplicationContext());
 
         DisplayUtils.statusBarHeight = getStatusBarHeight();
-        userContactTextView = (TextView) findViewById(R.id.user_contact);
-        userContactTextView.setText(chatContact != null ? chatContact.getName() : "");
+        contactPicture = (ImageView) findViewById(R.id.contact_picture);
+        if ( chatContact != null && chatContact.getPicture() != null ) {
+            picasso.with(this).load(chatContact.getPicture()).transform(new CircleTransform()).into(contactPicture);
+        } else {
+            picasso.with(this).load(R.drawable.com_facebook_profile_picture_blank_portrait).transform(new CircleTransform()).into(contactPicture);
+        }
+        contactNameTextView = (TextView) findViewById(R.id.contact_name);
+        contactNameTextView.setText(chatContact != null ? chatContact.getName() : "");
 
         chatMessages = new ArrayList<>();
         chatListView = (ListView) findViewById(R.id.chat_list_view);
@@ -190,16 +199,7 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
 
         Log.d(Constants.TAG_CHAT, "ID => " + chatContact.getId());
 
-        List<ChatMessage> messages ;/*messageRepository.getListMessageByContact(chatContact.getId());
-        for(ChatMessage msg : messages) {
-            Log.d(Constants.TAG_CHAT, String.format("MSG => %s, TIME => %s  ", msg.getMessageText(), new Date(msg.getCreateTime())));
-        }
-        */
-        messages = messageRepository.getListMessageByContactAndDate(chatContact.getId(), new Date(System.currentTimeMillis()));
-        //for(ChatMessage msg : messages) {
-            //Log.d(Constants.TAG_CHAT, String.format("MSG => %s, READ-STATUS => %s, TYPE=%s  ", msg.getMessageText(), msg.getMessageReadStatus(), msg.getMessageType()));
-        //}
-        addMessage(messages);
+        loadMessage();
 
     }
 
@@ -210,11 +210,7 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
 
     private void goBackActivity() {
         Intent intent = null;
-        if (getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_LOCATION)) {
-            intent = new Intent(getActivity(), DetailLocationWithMerchantActivity.class);
-            intent.putExtra(ExtraParamConstants.LOKASI_DETAIL, lokasi);
-
-        } else if ( getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_CONTACT)
+        if ( getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_CONTACT)
                 || getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_HISTORY)) {
             intent = new Intent(getActivity(), ChatHistoryActivity.class);
         }
@@ -222,7 +218,6 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
             startActivity(intent);
             finish();
         }
-
     }
 
     private EditText.OnKeyListener keyListener = new View.OnKeyListener() {
@@ -531,12 +526,13 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
     public Map<String, BroadcastReceiver> makeReceivers(){
         Map<String, BroadcastReceiver> map = new HashMap<String, BroadcastReceiver>();
         map.put(ChatClientService.ActivityEvent.NEW_MESSAGE, newMessageReceiver);
+        map.put(ChatClientService.ActivityEvent.DELIVERY_STATUS, deliveryStatusReceiver);
         return map;
     }
 
     private void attemptSend() {
-        //if (null == userContact.getName()) return;
-        if (!App.getChatEngine().isConnected()) return;
+        //message always created if offline will be send simultanously until delevered
+        //if (!App.getChatEngine().isConnected()) return;
 
         String message = chatEditText1.getText().toString().trim();
         if (TextUtils.isEmpty(message)) {
@@ -547,8 +543,15 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
         chatEditText1.setText("");
         final ChatMessage msg = ChatHelper.createMessageOut(UUIDUtils.uuidAsBase64(), chatContact.getId(), message);
         //save and add to list
-        boolean success = addMessage(msg);
-        if ( !success ) return;
+        boolean success = addMessageOut(msg);
+        if ( success ) {
+            if(listAdapter!=null) {
+                listAdapter.notifyDataSetChanged();
+                scrollToBottom();
+            }
+        }
+        else return;
+
 
         try {
             final UserApp userApp = App.getUserApp();
@@ -579,7 +582,6 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
             joMessage.put("to", to);
             joMessage.put("msg", joMsg);
 
-
             Log.d(Constants.TAG_CHAT, getClass().getName() + " => before send = " + joMessage);
             // perform the sending message attempt.
             App.getChatEngine().emitNewMessage(joMessage);
@@ -587,11 +589,19 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
             Log.e(Constants.TAG_CHAT, e.getMessage(), e);
         }
 
-
     }
 
     //call on create / resume : list source from db
-    private void addMessage(List<ChatMessage> messages) {
+    private void loadMessage() {
+        List<ChatMessage> messages ;/*messageRepository.getListMessageByContact(chatContact.getId());
+        for(ChatMessage msg : messages) {
+            Log.d(Constants.TAG_CHAT, String.format("MSG => %s, TIME => %s  ", msg.getMessageText(), new Date(msg.getCreateTime())));
+        }
+        */
+        messages = messageRepository.getListMessageByContactAndDate(chatContact.getId(), new Date(System.currentTimeMillis()));
+        //for(ChatMessage msg : messages) {
+        //Log.d(Constants.TAG_CHAT, String.format("MSG => %s, READ-STATUS => %s, TYPE=%s  ", msg.getMessageText(), msg.getMessageReadStatus(), msg.getMessageType()));
+        //}
         messageRepository.updateReadStatus(messages, MessageReadStatus.READ);
         chatMessages.addAll(messages);
         if(listAdapter!=null) {
@@ -601,18 +611,28 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
     }
 
     //call when user send message or receive new message
-    private boolean addMessage(ChatMessage message) {
+    private boolean addMessageOut(ChatMessage message) {
         try {
-            if (message.getMessageType() == MessageType.IN) {
-                message.setMessageReadStatus(MessageReadStatus.READ);
-                message.setReceiveTime(System.currentTimeMillis());
-            }
+            if (message.getMessageType() != MessageType.OUT) return false;
+
             messageRepository.createOrUpdate(message);
             chatMessages.add(message);
-            if (listAdapter != null) {
-                listAdapter.notifyDataSetChanged();
-                scrollToBottom();
-            }
+            return true;
+        } catch ( Exception e ) {
+            Log.e(Constants.TAG_CHAT, e.getMessage(),e);
+        }
+
+        return false;
+    }
+
+    private boolean addMessageIn(ChatMessage message) {
+        try {
+            if (message.getMessageType() != MessageType.IN) return false;
+
+            message.setMessageReadStatus(MessageReadStatus.READ);
+            message.setReceiveTime(System.currentTimeMillis());
+            messageRepository.createOrUpdate(message);
+            chatMessages.add(message);
             return true;
         } catch ( Exception e ) {
             Log.e(Constants.TAG_CHAT, e.getMessage(),e);
@@ -625,7 +645,6 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
         App.getChatEngine().emitDoLogin( App.getUserApp());
     }
 
-
     private BroadcastReceiver newMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, final Intent intent) {
@@ -634,12 +653,65 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
                 public void run() {
                     ChatContact contact = intent.getParcelableExtra("contact");
                     ChatMessage msg = intent.getParcelableExtra("msg");
+                    ChatMessage repliedMsg = intent.getParcelableExtra("repliedMsg");
                     Log.d(Constants.TAG_CHAT, getClass().getName() + String.format(" => new message = %s from %s ", msg.getMessageText(), contact.getEmail()));
-                    addMessage(msg);
+                    //add in messasge
+                    boolean success = addMessageIn(msg);
+                    //update latest out message as replied
+                    Log.d(Constants.TAG_CHAT, getClass().getName() + String.format(" => reply status = %s from %s ", msg.getMsgid(), contact.getEmail()));
+                    updateMessageSendStatus(contact, repliedMsg);
+
+                    if (success) {
+                        if (listAdapter != null) {
+                            listAdapter.notifyDataSetChanged();
+                            scrollToBottom();
+                        }
+                    }
                 }
             });
         }
     };
+
+    private BroadcastReceiver deliveryStatusReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, final Intent intent) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    ChatContact contact = intent.getParcelableExtra("contact");
+                    ChatMessage msg = intent.getParcelableExtra("msg");
+                    Log.d(Constants.TAG_CHAT, getClass().getName() + String.format(" => delivery status = %s from %s ", msg.getMsgid(), contact.getEmail()));
+                    //update delivery status
+                    updateMessageSendStatus(contact, msg);
+                    listAdapter.notifyDataSetChanged();
+                }
+            });
+        }
+    };
+
+    //update delivered / reply
+    public void updateMessageSendStatus(final ChatContact contact, final ChatMessage chatMessage) {
+        if ( contact == null || chatMessage == null) return;
+        //update only current active contact
+        //Log.d(Constants.TAG_CHAT, String.format("UPDATED CONTACT => eq1=%s, eq2=%s", contact.getEmail().equalsIgnoreCase(chatContact.getEmail()), contact.getUserType().equals(chatContact.getUserType())));
+        if ( contact.getEmail().equalsIgnoreCase(chatContact.getEmail()) && contact.getUserType().equals(chatContact.getUserType()) ) {
+            ChatMessage _chatMessage = null;
+            for(int i = chatMessages.size() - 1; i>=0; i-- ) {
+                _chatMessage = chatMessages.get(i);
+                if ( _chatMessage.getMessageType() != MessageType.OUT ) continue;
+
+                //Log.d(Constants.TAG_CHAT, String.format("MSG => eq1=%s, eq2=%s", _chatMessage.getMsgid().equalsIgnoreCase(chatMessage.getMsgid()), _chatMessage.getMessageType().equals(chatMessage.getMessageType())));
+                Log.d(Constants.TAG_CHAT, String.format("msgid=%s, type=%s, newsendstatus=%s",  _chatMessage.getMsgid(), _chatMessage.getMessageType(), chatMessage.getMessageSendStatus() ));
+                if(_chatMessage.getMsgid().equalsIgnoreCase(chatMessage.getMsgid()) && _chatMessage.getMessageType().equals(chatMessage.getMessageType())) {
+                    //hack for self chat jika sudah status replied tidak update
+                    if ( MessageSendStatus.REPLIED.equals(_chatMessage.getMessageSendStatus()) == false )
+                        _chatMessage.setMessageSendStatus(chatMessage.getMessageSendStatus());
+
+                    break;
+                }
+            }
+        }
+    }
 
 
     @Override
@@ -663,18 +735,18 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
         Log.d(Constants.TAG_CHAT, getLocalClassName() + " => ON STOP");
     }
 
-
     @Override
     public void onDestroy() {
         super.onDestroy();
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.emojiDidLoaded);
-
     }
-
 
     private void scrollToBottom() {
-        chatListView.smoothScrollToPosition(listAdapter.getCount() - 1);
+        chatListView.post(new Runnable() {
+            @Override
+            public void run() {
+                chatListView.setSelection(listAdapter.getCount() - 1);
+            }
+        });
     }
-
-
 }

@@ -17,8 +17,8 @@ import java.sql.SQLException;
  */
 public class DBHelper extends OrmLiteSqliteOpenHelper {
 
-    private static final String DATABASE_NAME    = "dheket-user.db";
-    private static final int    DATABASE_VERSION = 4;
+    private static final String DATABASE_NAME    = "dheket-user-chat.db";
+    private static final int    DATABASE_VERSION = 5;
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
