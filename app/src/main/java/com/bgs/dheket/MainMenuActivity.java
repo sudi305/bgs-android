@@ -427,12 +427,15 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
             }
 
-            @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+            @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress,
                                           boolean fromUser) {
                 // TODO Auto-generated method stub
-                Rect thumbRect = bar.getThumb().getBounds();
+                Rect thumbRect = bar.getSeekBarThumb().getBounds();
+                if ( Build.VERSION.SDK_INT > 15) {
+                    thumbRect = bar.getThumb().getBounds();
+                }
                 //Toast.makeText(getApplicationContext(),"position "+thumbRect.centerX(),Toast.LENGTH_SHORT).show();
                 p = new RelativeLayout.LayoutParams(
                         RelativeLayout.LayoutParams.WRAP_CONTENT,

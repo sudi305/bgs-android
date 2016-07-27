@@ -49,7 +49,7 @@ public class ContactRepository extends BaseRepository<ChatContact> implements  I
         try {
             QueryBuilder<ChatContact, Integer> builder = getDao().queryBuilder();
             builder.where().eq(ChatContact.FIELD_NAME_EMAIL, email)
-                .and().eq(ChatContact.FIELD_NAME_USER_TYPE, userType);
+                .and().eq(ChatContact.FIELD_NAME_USER_TYPE, userType.toString());
 
             chatContac = getDao().queryForFirst(builder.prepare());
         } catch (SQLException e) {

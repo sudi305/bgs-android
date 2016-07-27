@@ -39,6 +39,8 @@ public class ChatContact implements Parcelable {
     //transient
     private int active;
 
+    public ChatContact() {}
+
     public ChatContact(String name, String picture, String email, String phone, UserType userType) {
         this(0, name, picture, email, phone, userType);
     }
