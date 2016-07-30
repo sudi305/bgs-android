@@ -198,6 +198,9 @@ public class ChatClientService extends Service {
             sendNewMessageEventBroadcast(contact, repliedMsg, msg);
             //send delivery status to sender
             try {
+                final JSONObject joFrom = new JSONObject();
+                joFrom.put("email", App.getUserApp().getEmail());
+                joFrom.put("type", App.getUserApp().getType());
                 final JSONObject joTo = new JSONObject();
                 joTo.put("email", contact.getEmail());
                 joTo.put("type", contact.getUserType());
@@ -205,9 +208,11 @@ public class ChatClientService extends Service {
                 joMsg.put("msgid", msgid);
                 joMsg.put("status", MessageSendStatus.DELIVERED.ordinal());
                 JSONObject joData = new JSONObject() {{
+                    put("from", joFrom);
                     put("to", joTo);
                     put("msg", joMsg);
                 }};
+                Log.d(Constants.TAG_CHAT, "::::" + getClass().getName() + " => delivery status = " + joData);
                 chatEngine.emitDeliveryStatus(joData);
             } catch (JSONException e) {
                 Log.e(Constants.TAG_CHAT, e.getMessage(), e);
@@ -224,7 +229,7 @@ public class ChatClientService extends Service {
             try {
                 JSONObject joData = new JSONObject(data);
                 Log.d(Constants.TAG_CHAT, "::::" + getClass().getName() + " => delivery status = " + joData);
-                JSONObject joTo = joData.getJSONObject("to");
+                JSONObject joTo = joData.getJSONObject("from");
                 email = joTo.getString("email");
                 type = joTo.getString("type");
 

@@ -250,7 +250,8 @@ public class DetailLocationWithNoMerchantActivity extends AppCompatActivity impl
 
                 lokasiDetail.setDescription(data.getString("description"));
                 lokasiDetail.setLocationTag(data.getString("location_tag"));
-                lokasiDetail.setDistance(Double.parseDouble(data.getString("distance")));
+                if ( data.getString("distance") != null )
+                    lokasiDetail.setDistance(Double.parseDouble(data.getString("distance")));
             } catch (JSONException e) {
                 Log.e(Constants.TAG, e.getMessage(), e);
             }

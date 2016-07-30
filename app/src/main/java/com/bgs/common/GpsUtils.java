@@ -15,12 +15,13 @@ import java.util.concurrent.TimeUnit;
  * Created by zhufre on 6/20/2016.
  */
 public class GpsUtils {
-    public static final Location DEMO_LOCATION = new Location(LocationManager.GPS_PROVIDER){{
+    public static final Location DUMMY_LOCATION = new Location(LocationManager.GPS_PROVIDER){{
         setLatitude(-6.212601);//-6.212601
         setLongitude(106.617825);//106.617825
     }};
 
-    static final long TWO_MINUTES = TimeUnit.MINUTES.toSeconds(2);
+    public static final long TWO_MINUTES = TimeUnit.MINUTES.toMillis(2);
+    public static final long LOCATION_UPDATE_RATE = TimeUnit.SECONDS.toMillis(3);
 
     //GPS METHOD
     /**
@@ -67,6 +68,10 @@ public class GpsUtils {
             return true;
         }
 
+        //check if lat-long equal
+        if ( location.getLatitude() == currentBestLocation.getLatitude() && location.getLongitude() == currentBestLocation.getLongitude() )
+            return false;
+
         // Check whether the new location fix is newer or older
         long timeDelta = location.getTime() - currentBestLocation.getTime();
         boolean isSignificantlyNewer = timeDelta > TWO_MINUTES;
@@ -84,20 +89,23 @@ public class GpsUtils {
 
         // Check whether the new location fix is more or less accurate
         int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
+        Log.d(Constants.TAG_GPS, String.format("location.getAccuracy()=%s, currentBestLocation.getAccuracy()=%s",location.getAccuracy(), currentBestLocation.getAccuracy()));
         boolean isLessAccurate = accuracyDelta > 0;
         boolean isMoreAccurate = accuracyDelta < 0;
         boolean isSignificantlyLessAccurate = accuracyDelta > 200;
 
         // Check if the old and new location are from the same provider
-        boolean isFromSameProvider = isSameProvider(location.getProvider(),
-                currentBestLocation.getProvider());
+        boolean isFromSameProvider = isSameProvider(location.getProvider(), currentBestLocation.getProvider());
 
         // Determine location quality using a combination of timeliness and accuracy
         if (isMoreAccurate) {
+            Log.d(Constants.TAG_GPS, "new location isMoreAccurate ( < 0 )");
             return true;
         } else if (isNewer && !isLessAccurate) {
+            Log.d(Constants.TAG_GPS, "new location isNewer && !isLessAccurate ( > 0 )");
             return true;
         } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
+            Log.d(Constants.TAG_GPS, "new location isNewer && !isSignificantlyLessAccurate ( > 200 )");
             return true;
         }
         return false;
@@ -110,4 +118,6 @@ public class GpsUtils {
         }
         return provider1.equals(provider2);
     }
+
+
 }

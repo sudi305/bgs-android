@@ -136,7 +136,6 @@ public class MapViewExtendActivity extends AppCompatActivity {
         //mMapView.setOnLongPressListener(mapLongPress);
 
         category = (Category) getIntent().getParcelableExtra(ExtraParamConstants.CATEGORY);
-        currentBestLocation = GpsUtils.DEMO_LOCATION;
 
 
         urls = String.format(getResources().getString(R.string.link_getLocationAndMerchByCategory));//"http://dheket.esy.es/getLocationByCategory.php"
@@ -216,16 +215,12 @@ public class MapViewExtendActivity extends AppCompatActivity {
         mCompass = new Compass(getApplicationContext(), null, mMapView);
         mMapView.addView(mCompass);
         //mAdd = new PictureMarkerSymbol(rootView.getContext().getApplicationContext(), ContextCompat.getDrawable(rootView.getContext().getApplicationContext(), R.drawable.pin_add));
+        //setup locator di pindah ke resume
 
-        setupLocator();
-        setupLocationListener();
-
-        //first init
-        getDataFromServer();
     }
 
-    public void getDataFromServer() {
-        task = new CallWebPageTask(this);
+    public void getDataFromServer(boolean showProgress) {
+        task = new CallWebPageTask(this, showProgress);
         double latitude = 0, longitude = 0;
         if ( currentBestLocation != null ) {
             latitude = currentBestLocation.getLatitude();
@@ -316,21 +311,25 @@ public class MapViewExtendActivity extends AppCompatActivity {
             mLDM.setLocationListener(new LocationListener() {
                 // Zooms to the current location when first GPS fix arrives.
                 @Override
-                public void onLocationChanged(Location loc) {
+                public void onLocationChanged(Location location) {
                     boolean locationChanged = false;
-                    Log.d(Constants.TAG, "sukses location -> lat " + loc.getLatitude() + " | lng " + loc.getLongitude() + " | point " + getAsPoint(loc));
+                    Log.d(Constants.TAG, "sukses location -> lat " + location.getLatitude() + " | lng " + location.getLongitude() + " | point " + getAsPoint(location));
 
                     if ( currentBestLocation != null ) {
-                        if (GpsUtils.isBetterLocation(loc, currentBestLocation)) {
-                            currentBestLocation = loc;
-                        } else {
+                        if (GpsUtils.isBetterLocation(location, currentBestLocation)) {
+                            currentBestLocation = location;
                             locationChanged = true;
                         }
-                    } else { currentBestLocation = loc; }
+                    }
+                    else {
+                        currentBestLocation = location;
+                        locationChanged = true;
+                    }
 
                     locationTouch = currentBestLocation;
-                    if ( !isFirst && locationChanged ) {
-                        getDataFromServer();
+                    if (locationChanged ) {
+                        boolean loader = isFirst ? true : false;
+                        getDataFromServer(loader);
                         mLDM.setAutoPanMode(LocationDisplayManager.AutoPanMode.LOCATION);
                         isFirst = false;
                     }
@@ -351,6 +350,11 @@ public class MapViewExtendActivity extends AppCompatActivity {
             });
 
             mLDM.start();
+
+            currentBestLocation = mLDM.getLocation();
+            if ( currentBestLocation == null ) {
+                currentBestLocation = GpsUtils.DUMMY_LOCATION;
+            }
         }
     }
 
@@ -501,18 +505,20 @@ public class MapViewExtendActivity extends AppCompatActivity {
     }
 
     private class CallWebPageTask extends AsyncTask<String, Void, String> {
+        boolean showProgress;
         protected Context context;
         private Dialog dialog;
         private Graphic[] graphics;
         MultiPoint fullExtent = new MultiPoint();
 
-        public CallWebPageTask(Context context) {
+        public CallWebPageTask(Context context, boolean showProgress) {
+            this.showProgress = showProgress;
             dialog = DialogUtils.LoadingSpinner(context);
         }
 
         @Override
         protected void onPreExecute() {
-            dialog.show();
+            if ( showProgress ) dialog.show();
         }
 
         @Override
@@ -548,7 +554,7 @@ public class MapViewExtendActivity extends AppCompatActivity {
                             lokasi.setDistance(Double.parseDouble(data.getString("distance")));
 
 
-                            Location locationPin = GpsUtils.DEMO_LOCATION;
+                            Location locationPin = GpsUtils.DUMMY_LOCATION;
                             locationPin.setLatitude(lokasi.getLatitude());
                             locationPin.setLongitude(lokasi.getLongitude());
                             Point point = getAsPoint(locationPin);

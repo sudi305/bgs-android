@@ -145,7 +145,6 @@ public class MapViewSingleActivity extends AppCompatActivity {
         //mMapView.setOnLongPressListener(mapLongPress);
 
         lokasi = getIntent().getParcelableExtra(ExtraParamConstants.LOKASI_DETAIL);
-        currentBestLocation = GpsUtils.DEMO_LOCATION;
 
         /*
         paket = getIntent().getExtras();
@@ -233,15 +232,12 @@ public class MapViewSingleActivity extends AppCompatActivity {
         mMapView.addView(mCompass);
         //mAdd = new PictureMarkerSymbol(rootView.getContext().getApplicationContext(), ContextCompat.getDrawable(rootView.getContext().getApplicationContext(), R.drawable.pin_add));
 
-        setupLocator();
-        setupLocationListener();
-        //first call
-        getDataFromServer();
+
     }
 
-    public void getDataFromServer() {
+    public void getDataFromServer(boolean showProgress) {
         if (lokasi == null ) return;
-        task = new CallWebPageTask(this);
+        task = new CallWebPageTask(this, showProgress);
         double latitude = lokasi.getLatitude(), longitude = lokasi.getLongitude();
         if ( currentBestLocation != null) {
             latitude = currentBestLocation.getLatitude();
@@ -336,24 +332,28 @@ public class MapViewSingleActivity extends AppCompatActivity {
 
                 // Zooms to the current location when first GPS fix arrives.
                 @Override
-                public void onLocationChanged(Location loc) {
+                public void onLocationChanged(Location location) {
                     boolean locationChanged = false;
-                    Log.e("sukses location ", "lat " + loc.getLatitude() + " | lng " + loc.getLongitude() + " | point " + getAsPoint(loc));
+                    Log.e("sukses location ", "lat " + location.getLatitude() + " | lng " + location.getLongitude() + " | point " + getAsPoint(location));
 
                     if ( currentBestLocation != null ) {
-                        if (GpsUtils.isBetterLocation(loc, currentBestLocation)) {
-                            currentBestLocation = loc;
-                        } else {
+                        if (GpsUtils.isBetterLocation(location, currentBestLocation)) {
+                            currentBestLocation = location;
                             locationChanged = true;
                         }
-                    } else { currentBestLocation = loc; }
+                    }
+                    else {
+                        currentBestLocation = location;
+                        locationChanged = true;
+                    }
 
                     locationTouch = currentBestLocation;
                     // After zooming, turn on the Location pan mode to show the location
                     // symbol. This will disable as soon as you interact with the map.
 
-                    if ( !isFirst && locationChanged ) {
-                        getDataFromServer();
+                    if ( locationChanged ) {
+                        boolean loader = isFirst ? true : false;
+                        getDataFromServer(loader);
                         mLDM.setAutoPanMode(LocationDisplayManager.AutoPanMode.LOCATION);
                         isFirst = false;
                     }
@@ -373,6 +373,11 @@ public class MapViewSingleActivity extends AppCompatActivity {
             });
 
             mLDM.start();
+
+            currentBestLocation = mLDM.getLocation();
+            if ( currentBestLocation == null ) {
+                currentBestLocation = GpsUtils.DUMMY_LOCATION;
+            }
         }
     }
 
@@ -522,15 +527,17 @@ public class MapViewSingleActivity extends AppCompatActivity {
 
     private class CallWebPageTask extends AsyncTask<String, Void, String> {
         public Context context;
+        boolean showProgress;
         private Dialog dialog;
 
-        public CallWebPageTask(Context context) {
+        public CallWebPageTask(Context context, boolean showProgress) {
+            this.showProgress = showProgress;
             this.context = context;
             dialog = DialogUtils.LoadingSpinner(context);
         }
         @Override
         protected void onPreExecute() {
-            dialog.show();
+            if ( showProgress) dialog.show();
         }
 
         @Override
@@ -580,7 +587,7 @@ public class MapViewSingleActivity extends AppCompatActivity {
         if (arraylist != null) {
             clearCurrentResults();
             for (int i = 0; i < arraylist.size() ; i++) {
-                Location locationPin = GpsUtils.DEMO_LOCATION;
+                Location locationPin = GpsUtils.DUMMY_LOCATION;
                 locationPin.setLatitude(Double.parseDouble(arraylist.get(i).get("loc_lat").toString()));
                 locationPin.setLongitude(Double.parseDouble(arraylist.get(i).get("loc_lng").toString()));
                 Point point = getAsPoint(locationPin);

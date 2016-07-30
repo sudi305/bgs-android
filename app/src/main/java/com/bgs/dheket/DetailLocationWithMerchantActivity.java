@@ -120,9 +120,9 @@ public class DetailLocationWithMerchantActivity extends AppCompatActivity implem
                 Log.d(Constants.TAG, "GOTO CHAT");
                 try {
                     Merchant merchant = lokasi.getMerchant();
-                    ChatContact chatContact = contactRepository.getContactByEmail(merchant.getEmail(), UserType.USER);
+                    ChatContact chatContact = contactRepository.getContactByEmail(merchant.getEmail(), UserType.MERCHANT);
                     if ( chatContact == null ) {
-                        chatContact = new ChatContact(merchant.getName(), merchant.getFacebookPhoto(), merchant.getEmail(), merchant.getPhone(), UserType.USER);
+                        chatContact = new ChatContact(merchant.getName(), merchant.getFacebookPhoto(), merchant.getEmail(), merchant.getPhone(), UserType.MERCHANT);
                     }
                     ChatPageActivity.startChatFromLocation(getActivity(), chatContact, lokasi);
                     finish();

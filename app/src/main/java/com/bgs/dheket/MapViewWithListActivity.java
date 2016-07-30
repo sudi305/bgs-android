@@ -128,7 +128,6 @@ public class MapViewWithListActivity extends AppCompatActivity {
 
         //get category from bundle
         category = (Category) getIntent().getParcelableExtra(ExtraParamConstants.CATEGORY);
-        currentBestLocation = GpsUtils.DEMO_LOCATION;
 
         actionBar.setTitle(category.getName());
 //        actionBar.setSubtitle(Html.fromHtml("<font color='#FFBF00'>Location in Radius " + formatter.format(radius) + " Km</font>"));
@@ -156,16 +155,12 @@ public class MapViewWithListActivity extends AppCompatActivity {
 
         //mAdd = new PictureMarkerSymbol(rootView.getContext().getApplicationContext(), ContextCompat.getDrawable(rootView.getContext().getApplicationContext(), R.drawable.pin_add));
         linearLayout_contentlist = (LinearLayout)findViewById(R.id.linearLayout_result_lm);
-        setupLocator();
-        setupLocationListener();
 
-        //first fill data
-        getDataFromServer();
     }
 
 
-    public void getDataFromServer() {
-        task = new CallWebPageTask(this);
+    public void getDataFromServer(boolean showProgress) {
+        task = new CallWebPageTask(this, showProgress);
         /*getlocationbycategoryid/{rad}/{center_lat}/{center_lng}/{cat}*/
         double latitude =0, longitude = 0;
         if ( currentBestLocation != null) {
@@ -231,25 +226,28 @@ public class MapViewWithListActivity extends AppCompatActivity {
             mLDM.setLocationListener(new LocationListener() {
                 // Zooms to the current location when first GPS fix arrives.
                 @Override
-                public void onLocationChanged(Location loc) {
+                public void onLocationChanged(Location location) {
                     boolean locationChanged = false;
-                    Log.d(Constants.TAG, "sukses location -> lat " + loc.getLatitude() + " | lng " + loc.getLongitude() + " | point " + MapUtils.getAsPoint(mMapSr, loc));
+                    Log.d(Constants.TAG, "sukses location -> lat " + location.getLatitude() + " | lng " + location.getLongitude() + " | point " + MapUtils.getAsPoint(mMapSr, location));
 
                     if ( currentBestLocation != null ) {
-                        if (GpsUtils.isBetterLocation(loc, currentBestLocation)) {
-                            currentBestLocation = loc;
-                        } else {
+                        if (GpsUtils.isBetterLocation(location, currentBestLocation)) {
+                            currentBestLocation = location;
                             locationChanged = true;
                         }
-
-                    } else { currentBestLocation = loc; }
+                    }
+                    else {
+                        currentBestLocation = location;
+                        locationChanged = true;
+                    }
 
                     locationTouch = currentBestLocation;
 
                     // After zooming, turn on the Location pan mode to show the location
                     // symbol. This will disable as soon as you interact with the map.
-                    if ( !isFirst && locationChanged ) {
-                        getDataFromServer();
+                    if ( locationChanged ) {
+                        boolean loader = isFirst ? true : false;
+                        getDataFromServer(loader);
                         mLDM.setAutoPanMode(LocationDisplayManager.AutoPanMode.LOCATION);
                         isFirst = false;
                     }
@@ -269,6 +267,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
             });
 
             mLDM.start();
+
         }
     }
 
@@ -371,6 +370,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
         }
         setupLocator();
         setupLocationListener();
+
     }
 
     @Override
@@ -383,6 +383,8 @@ public class MapViewWithListActivity extends AppCompatActivity {
     }
 
     private class CallWebPageTask extends AsyncTask<String, Void, String> {
+        private boolean showProgress = false;
+
         private Context context;
         private ArrayList<Lokasi> locationList;
         private Dialog dialog;
@@ -390,15 +392,16 @@ public class MapViewWithListActivity extends AppCompatActivity {
         Map<String, ArrayList> graphicMap;
         MultiPoint fullExtent = new MultiPoint();
 
-        public CallWebPageTask(Context context) {
+        public CallWebPageTask(Context context, boolean showProgress) {
             this.context = context;
+            this.showProgress = showProgress;
             this.dialog = DialogUtils.LoadingSpinner(context);
         }
 
         @Override
         protected void onPreExecute() {
             //this.dialog.setMessage("Loading");
-            this.dialog.show();
+            if ( showProgress) this.dialog.show();
         }
 
         @Override
@@ -479,7 +482,7 @@ public class MapViewWithListActivity extends AppCompatActivity {
                             lokasi.setMerchant(merchantMap.get(merchId));
                             locationList.add(lokasi);
 
-                            Location locationPin = GpsUtils.DEMO_LOCATION;
+                            Location locationPin = GpsUtils.DUMMY_LOCATION;
                             locationPin.setLatitude(lokasi.getLatitude());
                             locationPin.setLongitude(lokasi.getLongitude());
                             Point point = MapUtils.getAsPoint(mMapSr, locationPin);

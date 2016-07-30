@@ -145,7 +145,6 @@ public class MapViewActivity extends AppCompatActivity {
         Parcelable[] parcelables = getIntent().getParcelableArrayExtra(ExtraParamConstants.CATEGORIES);
         categories = new Category[parcelables.length];
         System.arraycopy(parcelables, 0, categories, 0, parcelables.length);
-        currentBestLocation = GpsUtils.DEMO_LOCATION;
 
         madd = new PictureMarkerSymbol[categories.length];
         PictureMarkerSymbol a = null;
@@ -215,15 +214,11 @@ public class MapViewActivity extends AppCompatActivity {
         mcat = new PictureMarkerSymbol(getApplicationContext(), ContextCompat.getDrawable(getApplicationContext(), R.drawable.pin_orange));
         //mAdd = new PictureMarkerSymbol(rootView.getContext().getApplicationContext(), ContextCompat.getDrawable(rootView.getContext().getApplicationContext(), R.drawable.pin_add));
 
-        setupLocator();
-        setupLocationListener();
-
-        //first call
-        getDataFromServer();
+        //setup dan ini data dipindah ke resume
     }
 
-    public void getDataFromServer() {
-        task = new CallWebPageTask(this);
+    public void getDataFromServer(boolean showProgress) {
+        task = new CallWebPageTask(this, showProgress);
         UserApp user = ((App)getApplication()).getUserApp();
         double latitude = 0,longitude = 0;
         if ( currentBestLocation != null ) {
@@ -312,23 +307,26 @@ public class MapViewActivity extends AppCompatActivity {
     private void setupLocationListener() {
 
         if ((mMapView != null) && (mMapView.isLoaded())) {
-
             mLDM = mMapView.getLocationDisplayManager();
             mLDM.setLocationListener(new LocationListener() {
                 // Zooms to the current location when first GPS fix arrives.
                 @Override
-                public void onLocationChanged(Location loc) {
+                public void onLocationChanged(Location location) {
                     boolean locationChanged = false;
 
-                    Log.e(Constants.TAG, "sukses location -> lat " + loc.getLatitude() + " | lng " + loc.getLongitude() + " | point " + MapUtils.getAsPoint(mMapSr, loc));
+                    Log.e(Constants.TAG_GPS, "sukses location -> lat " + location.getLatitude() + " | lng " + location.getLongitude() + " | point " + MapUtils.getAsPoint(mMapSr, location));
 
                     if ( currentBestLocation != null ) {
-                        if (GpsUtils.isBetterLocation(loc, currentBestLocation)) {
-                            currentBestLocation = loc;
-                        } else {
+                        boolean betterLocation = GpsUtils.isBetterLocation(location, currentBestLocation);
+                        Log.d(Constants.TAG_GPS, "betterLocation = " + betterLocation);
+                        if (betterLocation) {
+                            currentBestLocation = location;
                             locationChanged = true;
                         }
-                    } else { currentBestLocation = loc; }
+                    } else {
+                        currentBestLocation = location;
+                        locationChanged = true;
+                    }
 
                     locationTouch = currentBestLocation;
 
@@ -340,8 +338,9 @@ public class MapViewActivity extends AppCompatActivity {
                         longitude = loc.getLongitude();
                     }
                     */
-                    if ( !isFirst && locationChanged ) {
-                        getDataFromServer();
+                    if (locationChanged ) {
+                        boolean loader = isFirst ? true : false;
+                        getDataFromServer(loader);
                         mLDM.setAutoPanMode(LocationDisplayManager.AutoPanMode.LOCATION);
                         isFirst = false;
                     }
@@ -358,6 +357,7 @@ public class MapViewActivity extends AppCompatActivity {
 
                 @Override
                 public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
+
                 }
             });
 
@@ -461,8 +461,10 @@ public class MapViewActivity extends AppCompatActivity {
         if (mLDM != null) {
             mLDM.resume();
         }
+        Log.d(Constants.TAG_GPS, "ON RESUME currentBestLocation => " + (currentBestLocation != null ? String.format("lat=%s, long=%s", currentBestLocation.getLatitude(), currentBestLocation.getLongitude()) : null));
         setupLocator();
         setupLocationListener();
+
     }
 
     @Override
@@ -474,17 +476,19 @@ public class MapViewActivity extends AppCompatActivity {
     }
 
     private class CallWebPageTask extends AsyncTask<String, Void, String> {
+        private boolean showProgress = false;
         private Dialog dialog;
         protected Context context;
         ArrayList<HashMap<String, String>> arraylist;
 
-        public CallWebPageTask(Context context) {
+        public CallWebPageTask(Context context, boolean showProgress) {
             this.context = context;
+            this.showProgress = showProgress;
             this.dialog = DialogUtils.LoadingSpinner(context);
         }
         @Override
         protected void onPreExecute() {
-            this.dialog.show();
+            if ( showProgress) this.dialog.show();
 
         }
 
@@ -542,7 +546,7 @@ public class MapViewActivity extends AppCompatActivity {
                 //skip null icon
                 if ( "null".equalsIgnoreCase(data.get("loc_icon"))) continue;
 
-                Location locationPin = GpsUtils.DEMO_LOCATION;
+                Location locationPin = GpsUtils.DUMMY_LOCATION;
 
                 locationPin.setLatitude(Double.parseDouble(data.get("loc_lat")));
                 locationPin.setLongitude(Double.parseDouble(data.get("loc_lng")));

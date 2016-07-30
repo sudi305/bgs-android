@@ -210,9 +210,13 @@ public class ChatPageActivity extends AppCompatActivity implements SizeNotifierR
 
     private void goBackActivity() {
         Intent intent = null;
+
         if ( getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_CONTACT)
                 || getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_HISTORY)) {
             intent = new Intent(getActivity(), ChatHistoryActivity.class);
+        } else if (getIntent().getAction().equalsIgnoreCase(ACTION_CHAT_FROM_LOCATION)) {
+            intent = new Intent(getActivity(), DetailLocationWithMerchantActivity.class);
+            intent.putExtra(ExtraParamConstants.LOKASI_DETAIL, lokasi);
         }
         if ( intent != null ) {
             startActivity(intent);

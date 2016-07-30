@@ -27,6 +27,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bgs.common.Constants;
+import com.bgs.common.GpsUtils;
 import com.bgs.common.Utility;
 import com.bgs.networkAndSensor.Compass;
 import com.bgs.networkAndSensor.HttpGetOrPost;
@@ -108,6 +110,7 @@ public class SingleMapLocationActivity extends AppCompatActivity {
 
     boolean isFirst = true,maxView = true, minView = true;
     CallWebPageTask task;
+    private Location currentBestLocation;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -355,21 +358,22 @@ public class SingleMapLocationActivity extends AppCompatActivity {
                 // Zooms to the current location when first GPS fix arrives.
                 @Override
                 public void onLocationChanged(Location loc) {
-                    if (!locationChanged) {
-                        locationChanged = true;
-                        Log.e("sukses location ", "lat " + loc.getLatitude() + " | lng " + loc.getLongitude() + " | point " + getAsPoint(loc));
-                        location = loc;
-                        locationTouch = location;
-                        // After zooming, turn on the Location pan mode to show the location
-                        // symbol. This will disable as soon as you interact with the map.
-                        if (!isFirst){
-                            latitude = loc.getLatitude();
-                            longitude = loc.getLongitude();
+                    boolean locationChanged = false;
+                    if ( currentBestLocation != null ) {
+                        if (GpsUtils.isBetterLocation(location, currentBestLocation)) {
+                            currentBestLocation = location;
+                            locationChanged = true;
                         }
-
-                        getDataFromServer();
-                        mLDM.setAutoPanMode(LocationDisplayManager.AutoPanMode.LOCATION);
                     }
+                    else {
+                        currentBestLocation = location;
+                        locationChanged = true;
+                    }
+                    //Toast.makeText(getApplicationContext(),"lat "+latitude+" | lgt "+longitude, Toast.LENGTH_LONG).show();
+                    Log.d(Constants.TAG, "Proses 6 -> Ada perubahan lokasi maka panggil WS lagi= " + urls);
+                    if ( locationChanged ) getDataFromServer();;
+                    mLDM.setAutoPanMode(LocationDisplayManager.AutoPanMode.LOCATION);
+
                 }
 
                 @Override

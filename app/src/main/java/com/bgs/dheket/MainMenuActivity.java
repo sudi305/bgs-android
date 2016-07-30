@@ -65,7 +65,6 @@ import com.bgs.common.GpsUtils;
 import com.bgs.common.Utility;
 import com.bgs.domain.chat.model.ChatContact;
 import com.bgs.domain.chat.model.ChatMessage;
-import com.bgs.domain.chat.model.UserType;
 import com.bgs.domain.chat.repository.ContactRepository;
 import com.bgs.domain.chat.repository.IContactRepository;
 import com.bgs.domain.chat.repository.IMessageRepository;
@@ -210,7 +209,6 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         imVi_nav_usrPro = (ImageView) header.findViewById(R.id.nav_hm_imageView);
 
 
-
         //url = String.format(getResources().getString(R.string.link_cekUserLogin));
         url = String.format(getResources().getString(R.string.link_getDataUser));
 
@@ -266,19 +264,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         initFormSettingRadius();
         updateData();
         preProcessingGetData();
-        getServiceFromGPS();
-        if ( currentBestLocation == null ) {
-            //hacked for emu
-            currentBestLocation = GpsUtils.DEMO_LOCATION;
-            Log.d(Constants.TAG, String.format("latitude=%s, longitude=%s", currentBestLocation.getLatitude(), currentBestLocation.getLongitude()));
-        }
-
-        if (AccessToken.getCurrentAccessToken() != null) {
-            Log.d(Constants.TAG, "getdatafrom fb yes");
-            RequestDataFromFB();
-        } else {
-            //getDataCategory(email);
-        }
+        //get data dipindah ke on resume
 
         view_usrPro.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -433,7 +419,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                                           boolean fromUser) {
                 // TODO Auto-generated method stub
                 Rect thumbRect = bar.getSeekBarThumb().getBounds();
-                if ( Build.VERSION.SDK_INT > 15) {
+                if (Build.VERSION.SDK_INT > 15) {
                     thumbRect = bar.getThumb().getBounds();
                 }
                 //Toast.makeText(getApplicationContext(),"position "+thumbRect.centerX(),Toast.LENGTH_SHORT).show();
@@ -564,8 +550,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                             // set profile image to imageview using Picasso or Native methods
                             picasso.with(getApplicationContext()).load(profilePicUrl).transform(new CircleTransform()).into(imVi_nav_usrPro);
                         }
-                        getDataCategory(email);
 
+                        getDataCategory(email);
                         //update user app
                         //add by supri 2016/6/16
                         UserApp userApp = App.getUserApp();
@@ -578,7 +564,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                         App.updateUserApp(userApp);
                         Log.d(Constants.TAG, "App.getInstance().getUserApp()=" + App.getUserApp());
                         //DO LOGIN
-                        //loginToChatServer();
+
                     }
 
                 } catch (JSONException e) {
@@ -596,7 +582,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
      *
      */
     private void removeUpdateLocationManager() {
-        LocationManager locManager = ((App)getApplication()).getLocationManager();
+        LocationManager locManager = ((App) getApplication()).getLocationManager();
         if (locManager != null) {
             if (Build.VERSION.SDK_INT >= 23) {
                 if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
@@ -657,8 +643,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
                 Bundle paket = new Bundle();
                 paket.putString("email", email);
                 paket.putDouble("radius", radius);
-                double latitude = 0, longitude= 0;
-                if ( currentBestLocation != null ) {
+                double latitude = 0, longitude = 0;
+                if (currentBestLocation != null) {
                     latitude = currentBestLocation.getLatitude();
                     longitude = currentBestLocation.getLongitude();
                 }
@@ -785,7 +771,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
             //this.dialog.setMessage("Please Wait...!!!");
             dialog.setCanceledOnTouchOutside(false);
             dialog.setCancelable(false);
-            dialog.show();
+            //dialog.show();
         }
 
         @Override
@@ -966,8 +952,8 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
     public void getDataCategory(String email) {
         CallWebPageTask task = new CallWebPageTask(this);
-        double longitude =0, latitude = 0;
-        if ( currentBestLocation != null ) {
+        double longitude = 0, latitude = 0;
+        if (currentBestLocation != null) {
             latitude = currentBestLocation.getLatitude();
             longitude = currentBestLocation.getLongitude();
         }
@@ -1023,19 +1009,22 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     @Override
     public void onLocationChanged(Location location) {
         boolean locationChanged = false;
-        if ( currentBestLocation != null ) {
+        Log.d(Constants.TAG_GPS, String.format("Location Change => lat =%s, long=%s  ", location.getLatitude(), location.getLongitude()));
+        if (currentBestLocation != null) {
+            Log.d(Constants.TAG_GPS, String.format("currentBestLocation => lat =%s, long=%s  ", currentBestLocation.getLatitude(), currentBestLocation.getLongitude()));
             if (GpsUtils.isBetterLocation(location, currentBestLocation)) {
                 currentBestLocation = location;
-            } else {
                 locationChanged = true;
             }
-        }
-        else {
+        } else {
             currentBestLocation = location;
+            locationChanged = true;
         }
-        //Toast.makeText(getApplicationContext(),"lat "+latitude+" | lgt "+longitude, Toast.LENGTH_LONG).show();
-        Log.d(Constants.TAG, "Proses 6 -> Ada perubahan lokasi maka panggil WS lagi= " + urls);
-        if ( locationChanged ) getDataCategory(email);
+
+        if (locationChanged) {
+            Log.d(Constants.TAG_GPS, "Proses 0 -> Perubahan lokasi");
+            getDataCategory(email);
+        }
     }
 
     @Override
@@ -1057,7 +1046,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
     public void getServiceFromGPS() {
         LocationManager locManager = App.getLocationManager();
-        if ( locManager == null) {
+        if (locManager == null) {
             locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
             App.setLocationManager(locManager);
         }
@@ -1068,24 +1057,34 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
         Criteria criteria = new Criteria();
         String provider = locManager.getBestProvider(criteria, true);
+        Log.d(Constants.TAG_GPS, "locManager => " + locManager);
 
-        Log.d(Constants.TAG, "locManager => " + locManager);
+        locManager.requestSingleUpdate(provider, this, null);
+
         currentBestLocation = locManager.getLastKnownLocation(provider);
-        Log.d(Constants.TAG, "currentBestLocation => " + currentBestLocation);
+        Log.d(Constants.TAG_GPS, "REAL currentBestLocation => " + (currentBestLocation != null ? String.format("lat=%s, long=%s", currentBestLocation.getLatitude(), currentBestLocation.getLongitude()) : null));
+        if (currentBestLocation == null) {
+            currentBestLocation = GpsUtils.getLastBestLocation(locManager);
+            Log.d(Constants.TAG_GPS, "REAL FROM UTILS currentBestLocation => " + (currentBestLocation != null ? String.format("lat=%s, long=%s", currentBestLocation.getLatitude(), currentBestLocation.getLongitude()) : null));
+        }
+        if (currentBestLocation == null) {
+            //hacked for emu
+            currentBestLocation = GpsUtils.DUMMY_LOCATION;
+            Log.d(Constants.TAG_GPS, String.format("DUMMY LOCATION => lat=%s, long=%s", currentBestLocation.getLatitude(), currentBestLocation.getLongitude()));
+        }
 
         /*
         if (currentBestLocation != null) {
             onLocationChanged(currentBestLocation);
         }
-        */
-        locManager.requestLocationUpdates(provider, 20000, 0, this);
+         */
+        locManager.requestLocationUpdates(provider, GpsUtils.TWO_MINUTES, 1, this);
 
     }
 
 
-
     //BEGIN SOCKET METHOD BLOCK
-    public Map<String, BroadcastReceiver> makeReceivers(){
+    public Map<String, BroadcastReceiver> makeReceivers() {
         Map<String, BroadcastReceiver> map = new HashMap<String, BroadcastReceiver>();
         map.put(ChatClientService.ActivityEvent.LIST_CONTACT, listContactReceiver);
         map.put(ChatClientService.ActivityEvent.NEW_MESSAGE, newMessageReceiver);
@@ -1093,14 +1092,15 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     }
 
     public void updateNewMessageCounter() {
-        int newMessageCount = (int)messageRepository.getNewMessageCount();
+        int newMessageCount = (int) messageRepository.getNewMessageCount();
         updateNewMessageCounter(newMessageCount);
     }
+
     /**
      * update new message counter inline chat menu
      */
     private void updateNewMessageCounter(int newMessageCount) {
-        if ( newMessageCount < 1 ) return;
+        if (newMessageCount < 1) return;
         //update chat meenu item
         Menu menuNav = navigationView.getMenu();
         MenuItem element = menuNav.findItem(R.id.nav_chat);
@@ -1112,7 +1112,7 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
 
         int textSize = getResources().getDimensionPixelSize(R.dimen.chat_counter);
         int start = s.length() - (counter.length());
-        sColored.setSpan(new CircleBackgroundSpan(Color.RED, Color.DKGRAY, Color.WHITE, textSize, 2, 20), start, s.length(), 0);
+        sColored.setSpan(new CircleBackgroundSpan(Color.RED, Color.RED, Color.WHITE, textSize, 2, 20), start, s.length(), 0);
         element.setTitle(sColored);
     }
 
@@ -1135,9 +1135,9 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
         }
     };
 
-    private BroadcastReceiver listContactReceiver = new BroadcastReceiver()  {
+    private BroadcastReceiver listContactReceiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent){
+        public void onReceive(Context context, Intent intent) {
             ArrayList<ChatContact> contactList = intent.getParcelableArrayListExtra("contactList");
             Log.d(Constants.TAG_CHAT, getClass().getName() + " => list contacts = " + contactList.size());
         }
@@ -1147,13 +1147,26 @@ public class MainMenuActivity extends AppCompatActivity implements LocationListe
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(Constants.TAG_CHAT, getLocalClassName() + " => ON PAUSE");
+        Log.d(Constants.TAG, getLocalClassName() + " => ON PAUSE");
+        LocationManager locManager = App.getLocationManager();
+        if (locManager != null) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            locManager.removeUpdates(this);
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
         Log.d(Constants.TAG, getLocalClassName() + " => ON RESUME");
+        getServiceFromGPS();
+        if (AccessToken.getCurrentAccessToken() != null) {
+            Log.d(Constants.TAG, "getdatafrom fb yes");
+            RequestDataFromFB();
+        }
+
         ChatClientService.registerReceivers(makeReceivers());
         loginToChatServer();
     }

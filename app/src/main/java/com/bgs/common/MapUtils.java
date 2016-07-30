@@ -191,6 +191,8 @@ public class MapUtils {
      * @return
      */
     private static boolean isGraphicEqual(Graphic graphic1, Graphic graphic2) {
+        if ( graphic1.getAttributeValue("id_loc") == null || graphic2.getAttributeValue("id_loc") == null ) return false;
+
         if ((int) graphic1.getAttributeValue("id_loc") == (int) graphic2.getAttributeValue("id_loc")) {
             return true;
         }

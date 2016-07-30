@@ -12,12 +12,12 @@ public class Constants {
     public static final UserType USER_TYPE = UserType.USER;
 
     public static final String TAG = "DHEKET-USER";
+    public static final String TAG_GPS = "DHEKET-USER-GPS";
     public static final String TAG_CHAT = "DHEKET-USER-CHAT";
     //dheket chat server
     public static final String CHAT_SERVER_URL = "http://136.243.214.45:3300/";
     //local chat server
-    //public static final String CHAT_SERVER_URL = "http://192.168.1.101:3300/";
+    //public static final String CHAT_SERVER_URL = "http://192.168.1.100:3300/";
+
     //public static final String CHAT_SERVER_URL = "http://192.168.43.228:3300/";
-
-
 }
